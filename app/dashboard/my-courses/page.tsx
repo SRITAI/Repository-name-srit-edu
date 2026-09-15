@@ -12,7 +12,7 @@ export default async function MyCoursesPage() {
   const { data: enrollments } = await supabase
     .from('enrollments')
     .select('id, granted_at, courses(id, title, category, languages)')
-    .eq('user_id', user!.id)
+    .eq('user_id', user?.id ?? "")
     .eq('status', 'active')
     .order('granted_at', { ascending: false })
 

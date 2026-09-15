@@ -10,13 +10,13 @@ export default async function DashboardPage() {
   const { data: profile } = await supabase
     .from('profiles')
     .select('full_name')
-    .eq('id', user!.id)
+    .eq('id', user?.id ?? "")
     .single()
 
   const { count: enrollmentCount } = await supabase
     .from('enrollments')
     .select('*', { count: 'exact', head: true })
-    .eq('user_id', user!.id)
+    .eq('user_id', user?.id ?? "")
     .eq('status', 'active')
 
   return (
