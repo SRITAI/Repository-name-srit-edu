@@ -10,8 +10,9 @@ export default async function CoursesPage() {
     .eq('is_published', true)
     .order('created_at')
 
-  const pcm = courses?.filter((c) => c.category === 'pcm') ?? []
-  const pcb = courses?.filter((c) => c.category === 'pcb') ?? []
+  const courseList = (courses ?? []) as Array<{ category: string }>
+  const pcm = courseList.filter((c) => c.category === 'pcm')
+  const pcb = courseList.filter((c) => c.category === 'pcb')
 
   return (
     <div className="container py-14">

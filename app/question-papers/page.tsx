@@ -50,7 +50,7 @@ function PaperSection({ title, papers }: { title: string; papers: Paper[] }) {
       <h2 className="text-xl font-semibold text-navy-900">{title}</h2>
       {papers.length ? (
         <div className="mt-2">
-          {papers.map((paper) => (
+          {papers.map((paper: Paper) => (
             <PaperRow key={paper.id} paper={paper} />
           ))}
         </div>
@@ -68,8 +68,9 @@ export default async function QuestionPapersPage() {
     .select('*')
     .order('year', { ascending: false })
 
-  const pcm = (papers ?? []).filter((p) => p.category === 'pcm')
-  const pcb = (papers ?? []).filter((p) => p.category === 'pcb')
+  const paperList = (papers ?? []) as Paper[]
+  const pcm = paperList.filter((p: Paper) => (p as Paper & { category?: string }).category === 'pcm')
+  const pcb = paperList.filter((p: Paper) => (p as Paper & { category?: string }).category === 'pcb')
 
   return (
     <div className="container py-14">

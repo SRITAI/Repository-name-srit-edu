@@ -32,7 +32,7 @@ export default async function OrderHistoryPage() {
       )}
 
       <div className="mt-6 space-y-3">
-        {orders?.map((order) => {
+        {orders?.map((order: any) => {
           const item = (order.courses as any)?.title
             ? (order.courses as any).title
             : (order.question_papers as any)

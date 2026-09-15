@@ -8,6 +8,8 @@ export default async function UpdatesPage() {
     .eq('status', 'published')
     .order('publish_date', { ascending: false })
 
+  const updateList = (updates ?? []) as Array<{ id: string; title: string; description: string | null; image_url: string | null; publish_date: string | null }>
+
   return (
     <div className="container py-14">
       <h1 className="text-3xl font-semibold text-navy-900">New Updates</h1>
@@ -16,8 +18,8 @@ export default async function UpdatesPage() {
       </p>
 
       <div className="mt-10 space-y-6">
-        {updates?.length ? (
-          updates.map((update) => (
+        {updateList.length ? (
+          updateList.map((update) => (
             <article key={update.id} className="rounded-lg border border-neutral-200 p-6">
               {update.publish_date && (
                 <p className="text-sm text-neutral-500">
