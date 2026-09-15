@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createCourse } from '../actions'
+import { createCourse } from '../../actions'
 import { redirect } from 'next/navigation'
 import { ArrowLeft, BookOpen } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
