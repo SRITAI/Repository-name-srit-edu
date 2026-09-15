@@ -1,5 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
+import { logoutAction } from '@/lib/auth/actions'
+import { MobileNav } from './mobile-nav'
 
 const NAV_LINKS = [
   { href: '/courses', label: 'Courses' },
@@ -10,9 +13,14 @@ const NAV_LINKS = [
   { href: '/contact-us', label: 'Contact' },
 ]
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
   return (
-    <header className="border-b border-neutral-100">
+    <header className="relative border-b border-neutral-100">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image
@@ -37,23 +45,33 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Link href="/login" className="text-sm font-medium text-navy-700">
-            Log in
-          </Link>
-          <Link
-            href="/signup"
-            className="rounded bg-navy px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
-          >
-            Sign up
-          </Link>
+          {user ? (
+            <>
+              <Link href="/dashboard" className="text-sm font-medium text-navy-700">
+                Dashboard
+              </Link>
+              <form action={logoutAction}>
+                <button className="rounded bg-navy px-4 py-2 text-sm font-medium text-white hover:bg-blue-600">
+                  Log out
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm font-medium text-navy-700">
+                Log in
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded bg-navy px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
+              >
+                Sign up
+              </Link>
+            </>
+          )}
         </div>
 
-        {/* Mobile nav trigger — wire this up to a slide-out drawer component */}
-        <button className="flex flex-col gap-1.5 md:hidden" aria-label="Open menu">
-          <span className="block h-0.5 w-6 bg-navy-900" />
-          <span className="block h-0.5 w-6 bg-navy-900" />
-          <span className="block h-0.5 w-4 bg-navy-900" />
-        </button>
+        <MobileNav links={NAV_LINKS} isLoggedIn={!!user} />
       </div>
     </header>
   )
