@@ -46,7 +46,7 @@ export async function submitScholarshipApplication(formData: FormData) {
     }
   }
 
-  const { data: appNumber, error: rpcError } = await supabase.rpc(
+  const { data: appNumber, error: rpcError } = await (supabase as any).rpc(
     'generate_scholarship_application_number'
   )
 
