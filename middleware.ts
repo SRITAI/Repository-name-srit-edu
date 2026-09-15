@@ -7,6 +7,12 @@ import { createServerClient } from '@supabase/ssr'
 // access the student dashboard" — page-level checks in
 // app/dashboard/layout.tsx are a second, defense-in-depth check.
 export async function middleware(request: NextRequest) {
+  // Supabase is optional during the frontend/demo phase.
+  // When the environment variables are absent, allow the public demo site to run.
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return NextResponse.next()
+  }
+
   let response = NextResponse.next({ request })
 
   const supabase = createServerClient(
