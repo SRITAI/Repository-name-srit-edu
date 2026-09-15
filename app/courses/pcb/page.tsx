@@ -31,7 +31,7 @@ export default async function PcbPage() {
 
       <div className="mt-10 grid gap-6 md:grid-cols-2">
         {courses?.length ? (
-          courses.map((course) => <CourseCard key={course.id} course={course as any} />)
+          courses.map((course: any) => <CourseCard key={course.id} course={course as any} />)
         ) : (
           <p className="text-neutral-600">PCB courses will be listed here once published.</p>
         )}
