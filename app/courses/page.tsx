@@ -25,7 +25,7 @@ export default async function CoursesPage() {
         <h2 className="text-xl font-semibold text-navy-900">PCM — Physics, Chemistry, Mathematics</h2>
         <div className="mt-5 grid gap-6 md:grid-cols-2">
           {pcm.length ? (
-            pcm.map((course) => <CourseCard key={course.id} course={course as any} />)
+            pcm.map((course, index) => <CourseCard key={index} course={course as any} />)
           ) : (
             <p className="text-sm text-neutral-600">PCM courses will appear here once published.</p>
           )}
@@ -36,7 +36,7 @@ export default async function CoursesPage() {
         <h2 className="text-xl font-semibold text-navy-900">PCB — Physics, Chemistry, Biology</h2>
         <div className="mt-5 grid gap-6 md:grid-cols-2">
           {pcb.length ? (
-            pcb.map((course) => <CourseCard key={course.id} course={course as any} />)
+            pcb.map((course, index) => <CourseCard key={index} course={course as any} />)
           ) : (
             <p className="text-sm text-neutral-600">PCB courses will appear here once published.</p>
           )}
