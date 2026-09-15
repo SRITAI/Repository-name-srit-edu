@@ -34,6 +34,7 @@ function createDemoClient() {
       signOut: async () => ({ error: null }),
       resetPasswordForEmail: async () => ({ data: {}, error: null }),
       updateUser: async () => ({ data: { user: null }, error: null }),
+      verifyOtp: async () => ({ data: { user: null, session: null }, error: null }),
     },
   }
 }
