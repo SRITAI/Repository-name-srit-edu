@@ -1,7 +1,19 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { ArrowLeft, BookOpen, CheckCircle, Eye, EyeOff } from 'lucide-react'
+import {
+  ArrowLeft,
+  BookOpen,
+  CheckCircle,
+  Edit,
+  Eye,
+  EyeOff,
+  Trash2,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import {
+  deleteCourseAction,
+  toggleCoursePublishAction,
+} from './actions'
 
 export default async function AdminCoursesPage() {
   const supabase = createClient()
@@ -14,7 +26,7 @@ export default async function AdminCoursesPage() {
     redirect('/login?redirectTo=/admin/courses')
   }
 
-  const { data: profile } = await supabase
+  const { data: profile } = await (supabase as any)
     .from('profiles')
     .select('role')
     .eq('id', user.id)
@@ -24,10 +36,10 @@ export default async function AdminCoursesPage() {
     redirect('/dashboard')
   }
 
-  const { data: courses, error } = await supabase
+  const { data: courses, error } = await (supabase as any)
     .from('courses')
     .select(
-      'id, slug, title, category, description, languages, price_paise, original_price_paise, is_published, ncert_based, board_focused, paper_analysis_years'
+      'id, slug, title, category, description, languages, price_paise, original_price_paise, is_published, ncert_based, board_focused, paper_analysis_years',
     )
     .order('created_at', { ascending: false })
 
@@ -43,14 +55,23 @@ export default async function AdminCoursesPage() {
         </Link>
 
         <div className="rounded-lg bg-navy p-6 text-white">
-          <div className="flex items-center gap-3">
-            <BookOpen size={28} />
-            <div>
-              <h1 className="text-2xl font-semibold">Courses</h1>
-              <p className="text-sm text-white/70">
-                Manage SRIT EDU courses and publishing status.
-              </p>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <BookOpen size={28} />
+              <div>
+                <h1 className="text-2xl font-semibold">Courses</h1>
+                <p className="text-sm text-white/70">
+                  Manage SRIT EDU courses and publishing status.
+                </p>
+              </div>
             </div>
+
+            <Link
+              href="/admin/courses/new"
+              className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-navy hover:bg-neutral-100"
+            >
+              + New Course
+            </Link>
           </div>
         </div>
 
@@ -78,6 +99,7 @@ export default async function AdminCoursesPage() {
                       <p className="text-xs font-medium uppercase text-blue-600">
                         {course.category}
                       </p>
+
                       <h3 className="mt-1 font-semibold text-navy-900">
                         {course.title}
                       </h3>
@@ -106,7 +128,7 @@ export default async function AdminCoursesPage() {
                     <div className="rounded bg-neutral-50 p-2">
                       <span className="text-neutral-500">Languages</span>
                       <p className="mt-1 font-medium">
-                        {course.languages?.join(', ') || '—'}
+                        {course.languages?.join(', ') || '-'}
                       </p>
                     </div>
 
@@ -133,14 +155,76 @@ export default async function AdminCoursesPage() {
                       </span>
                     )}
                   </div>
+
+                  <div className="mt-5 flex flex-wrap gap-2 border-t border-neutral-200 pt-4">
+                    <Link
+                      href={`/admin/courses/${course.id}/edit`}
+                      className="inline-flex items-center gap-1 rounded-lg border border-neutral-300 px-3 py-2 text-xs font-medium hover:bg-neutral-50"
+                    >
+                      <Edit size={14} />
+                      Edit
+                    </Link>
+
+                    <form action={toggleCoursePublishAction}>
+                      <input
+                        type="hidden"
+                        name="id"
+                        value={course.id}
+                      />
+                      <input
+                        type="hidden"
+                        name="is_published"
+                        value={course.is_published ? 'true' : 'false'}
+                      />
+
+                      <button
+                        type="submit"
+                        className="inline-flex items-center gap-1 rounded-lg border border-neutral-300 px-3 py-2 text-xs font-medium hover:bg-neutral-50"
+                      >
+                        {course.is_published ? (
+                          <>
+                            <EyeOff size={14} />
+                            Unpublish
+                          </>
+                        ) : (
+                          <>
+                            <Eye size={14} />
+                            Publish
+                          </>
+                        )}
+                      </button>
+                    </form>
+
+                    <form action={deleteCourseAction}>
+                      <input
+                        type="hidden"
+                        name="id"
+                        value={course.id}
+                      />
+
+                      <button
+                        type="submit"
+                        className="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 size={14} />
+                        Delete
+                      </button>
+                    </form>
+                  </div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="rounded-lg bg-neutral-50 p-8 text-center">
-              <BookOpen className="mx-auto text-neutral-400" size={32} />
+              <BookOpen
+                className="mx-auto text-neutral-400"
+                size={32}
+              />
               <p className="mt-3 font-medium text-neutral-700">
                 No courses found
+              </p>
+              <p className="mt-1 text-sm text-neutral-500">
+                Create your first course to get started.
               </p>
             </div>
           )}
