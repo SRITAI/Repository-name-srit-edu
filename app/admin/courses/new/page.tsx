@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createCourse } from '../actions'
+import { createCourseAction } from '../actions'
 import { redirect } from 'next/navigation'
 import { ArrowLeft, BookOpen } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
@@ -48,7 +48,7 @@ export default async function NewCoursePage() {
           </div>
         </div>
 
-        <form action={createCourse} className="mt-6 space-y-6 rounded-lg border border-neutral-200 bg-white p-6">
+        <form action={createCourseAction} className="mt-6 space-y-6 rounded-lg border border-neutral-200 bg-white p-6">
           <div>
             <label className="text-sm font-medium text-neutral-700">
               Course Title
