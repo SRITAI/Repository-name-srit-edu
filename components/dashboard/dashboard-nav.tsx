@@ -14,24 +14,26 @@ export function DashboardNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="w-full space-y-1">
-      {LINKS.map((link) => {
-        const active = pathname === link.href
+    <nav className="w-full rounded-xl border border-neutral-200 bg-white p-2 shadow-sm">
+      <div className="space-y-1">
+        {LINKS.map((link) => {
+          const active = pathname === link.href
 
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`block w-full rounded-lg px-3 py-2 text-sm font-medium ${
-              active
-                ? 'bg-navy text-white'
-                : 'text-navy-700 hover:bg-neutral-100'
-            }`}
-          >
-            {link.label}
-          </Link>
-        )
-      })}
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`flex w-full items-center rounded-lg px-4 py-3 text-sm font-medium transition ${
+                active
+                  ? 'bg-navy text-white shadow-sm'
+                  : 'text-navy-700 hover:bg-neutral-50 hover:text-navy-900'
+              }`}
+            >
+              {link.label}
+            </Link>
+          )
+        })}
+      </div>
     </nav>
   )
 }
