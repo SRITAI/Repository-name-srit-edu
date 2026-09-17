@@ -9,6 +9,7 @@ import {
   Megaphone,
   ShoppingCart,
   ArrowRight,
+  Book,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 
@@ -24,6 +25,12 @@ const sections = [
     description: 'Manage PCM, PCB and course content',
     href: '/admin/courses',
     icon: BookOpen,
+  },
+  {
+    title: 'Chapters',
+    description: 'Manage course chapters for study materials',
+    href: '/admin/chapters',
+    icon: Book,
   },
   {
     title: 'Study Materials',
