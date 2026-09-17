@@ -16,7 +16,6 @@ type Chapter = {
   id: string
   title: string
   sort_order: number
-  created_at: string
   courses?: { id: string; title: string }
   course_subjects?: { id: string; name: string }
 }
@@ -37,9 +36,10 @@ export default async function AdminChaptersPage({
   const { data: chapters, error: loadError } = await adminClient
     .from('course_chapters')
     .select(
-      'id, title, sort_order, created_at, course_subject_id, course_subjects(id, name, course_id, courses(id, title))'
+      'id, title, sort_order, course_subject_id, course_subjects(id, name, course_id, courses(id, title))'
     )
     .order('sort_order', { ascending: true })
+
   // Transform the data for easier rendering and sort by course title, subject name, then sort_order
   const transformedChapters: Chapter[] =
     chapters
@@ -47,7 +47,6 @@ export default async function AdminChaptersPage({
         id: c.id,
         title: c.title,
         sort_order: c.sort_order,
-        created_at: c.created_at,
         courses: c.course_subjects?.courses
           ? { id: c.course_subjects.courses.id, title: c.course_subjects.courses.title }
           : undefined,
@@ -126,7 +125,6 @@ export default async function AdminChaptersPage({
                       <ChevronsUpDown size={14} />
                       Sort Order
                     </th>
-                    <th className="px-4 py-3 font-semibold text-navy-900">Created</th>
                     <th className="px-4 py-3 font-semibold text-navy-900">Actions</th>
                   </tr>
                 </thead>
@@ -145,9 +143,6 @@ export default async function AdminChaptersPage({
                       </td>
                       <td className="px-4 py-3 text-neutral-600 whitespace-nowrap">
                         {chapter.sort_order}
-                      </td>
-                      <td className="px-4 py-3 text-neutral-600 whitespace-nowrap">
-                        {new Date(chapter.created_at).toLocaleDateString('en-IN')}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="flex items-center gap-3">
