@@ -6,7 +6,7 @@ import {
   Edit,
   Trash2,
   Plus,
-  ChevronUpDown,
+  ChevronsUpDown,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth/admin'
@@ -122,7 +122,7 @@ export default async function AdminChaptersPage({
                     <th className="px-4 py-3 font-semibold text-navy-900">Subject</th>
                     <th className="px-4 py-3 font-semibold text-navy-900">Chapter</th>
                     <th className="px-4 py-3 font-semibold text-navy-900 flex items-center gap-1">
-                      <ChevronUpDown size={14} />
+                      <ChevronsUpDown size={14} />
                       Sort Order
                     </th>
                     <th className="px-4 py-3 font-semibold text-navy-900">Created</th>
