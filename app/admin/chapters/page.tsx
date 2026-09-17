@@ -54,7 +54,7 @@ export default async function AdminChaptersPage({
           ? { id: c.course_subjects.id, name: c.course_subjects.name }
           : undefined,
       }))
-      .sort((a, b) => {
+      .sort((a: any, b: any) => {
         const courseA = a.courses?.title || ''
         const courseB = b.courses?.title || ''
         if (courseA !== courseB) return courseA.localeCompare(courseB)
