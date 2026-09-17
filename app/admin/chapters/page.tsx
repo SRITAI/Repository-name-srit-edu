@@ -8,8 +8,8 @@ import {
   Plus,
   ChevronsUpDown,
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth/admin'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { deleteChapterAction } from './actions'
 
 type Chapter = {
@@ -26,20 +26,20 @@ export default async function AdminChaptersPage({
 }: {
   searchParams: Record<string, string | string[] | undefined>
 }) {
-  const { supabase } = await requireAdmin('/admin/chapters')
+  await requireAdmin('/admin/chapters')
 
   const params = searchParams
   const success = params.success === '1'
   const error = typeof params.error === 'string' ? params.error : ''
 
-  const { data: chapters, error: loadError } = await supabase
+  const adminClient = createAdminClient()
+
+  const { data: chapters, error: loadError } = await adminClient
     .from('course_chapters')
     .select(
-      'id, title, sort_order, created_at, course_subjects(id, name, courses(id, title))'
+      'id, title, sort_order, created_at, course_subject_id, course_subjects(id, name, course_id, courses(id, title))'
     )
     .order('sort_order', { ascending: true })
-
-  if (loadError) console.error('Chapter query failed:', loadError)
   // Transform the data for easier rendering and sort by course title, subject name, then sort_order
   const transformedChapters: Chapter[] =
     chapters
