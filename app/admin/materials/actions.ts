@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 
-export const BUCKET_NAME = 'Course files'
+const BUCKET_NAME = 'Course files'
 const MAX_FILE_SIZE = 25 * 1024 * 1024 // 25 MB
 const ALLOWED_LANGUAGES = ['hi', 'en'] as const
 
