@@ -39,6 +39,7 @@ export default async function AdminChaptersPage({
     )
     .order('sort_order', { ascending: true })
 
+  if (loadError) throw new Error('Chapter query failed: ' + loadError.message)
   // Transform the data for easier rendering and sort by course title, subject name, then sort_order
   const transformedChapters: Chapter[] =
     chapters
