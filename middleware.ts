@@ -40,9 +40,14 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard')
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
+  const isEmployeeRoute =
+    request.nextUrl.pathname.startsWith('/employee') &&
+    !request.nextUrl.pathname.startsWith('/employee/login')
 
-  if (isDashboardRoute && !user) {
-    const redirectUrl = new URL('/login', request.url)
+  if ((isDashboardRoute || isAdminRoute || isEmployeeRoute) && !user) {
+    const redirectPath = isEmployeeRoute ? '/employee/login' : '/login'
+    const redirectUrl = new URL(redirectPath, request.url)
     redirectUrl.searchParams.set(
       'redirectTo',
       request.nextUrl.pathname,
@@ -54,5 +59,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/dashboard/:path*', '/admin/:path*', '/employee/:path*'],
 }
