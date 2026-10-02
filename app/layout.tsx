@@ -1,8 +1,11 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { Hind } from 'next/font/google'
 import './globals.css'
+import { NavigationProgress } from '@/components/layout/navigation-progress'
 import { SiteHeader } from '@/components/layout/header'
 import { SiteFooter } from '@/components/layout/footer'
+import { AnimatedGradientBackground } from '@/components/layout/animated-gradient-background'
 
 // Latin + Devanagari in one family, so English and Hindi content
 // share the same typographic voice across the site.
@@ -25,10 +28,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={hind.variable}>
-      <body>
-        <SiteHeader />
-        <main>{children}</main>
-        <SiteFooter />
+      <body className="min-h-screen bg-white text-navy-900 antialiased relative">
+        <AnimatedGradientBackground />
+        <div className="relative z-10 flex min-h-screen flex-col">
+          <Suspense fallback={null}>
+            <NavigationProgress />
+          </Suspense>
+          <SiteHeader />
+          <main className="flex-1">{children}</main>
+          <SiteFooter />
+        </div>
       </body>
     </html>
   )
