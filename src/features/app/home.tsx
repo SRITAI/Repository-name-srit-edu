@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Icon, Avatar, Button, Empty } from "@/components/ui";
 import { topics } from "@/lib/topics";
+import { EditorialPhoto } from "@/components/editorial-photo";
 import { useApp } from "./provider";
 import { PostCard } from "../posts/post-card";
 import { Composer } from "../posts/composer";
@@ -12,6 +13,36 @@ export function ContextRail() {
   const prefix = preview ? "/preview" : "";
   return (
     <aside className="context-rail">
+      <section className="dashboard-profile">
+        <div className="dashboard-profile-cover">
+          <span>YOUR LITTLE CORNER</span>
+          <Icon name="flower" size={38} />
+        </div>
+        <Avatar person={data.me} size="lg" />
+        <h2>{data.me.display_name}</h2>
+        <span className="profile-handle">@{data.me.username}</span>
+        <p>{data.me.bio || "A new chapter, at your own pace."}</p>
+        <Link
+          href={prefix + "/u/" + data.me.username}
+          className="button secondary small"
+        >
+          View my profile <Icon name="arrow" size={14} />
+        </Link>
+        <div className="private-summary">
+          <span>
+            <strong>{data.memberships.length}</strong>Communities
+          </span>
+          <span>
+            <strong>
+              {data.connections.filter((c) => c.status === "accepted").length}
+            </strong>
+            Connections
+          </span>
+        </div>
+        <small className="summary-privacy">
+          <Icon name="lock" size={11} /> Only visible to you
+        </small>
+      </section>
       <div className="gentle-reminder">
         <span className="eyebrow">A GENTLE REMINDER</span>
         <div className="reminder-flower">✷</div>
@@ -120,18 +151,72 @@ export function Home() {
   return (
     <div className="feed-layout">
       <section className="feed-column">
-        <div className="page-heading">
-          <span className="eyebrow muted">YOUR SPACE TO EXHALE</span>
-          <h1>
-            A little less alone,{" "}
-            <span>{data.me.display_name.split(" ")[0]}.</span>
-          </h1>
-          <p>Whatever today looks like, you’re welcome here.</p>
+        <section className="dashboard-welcome">
+          <div className="page-heading">
+            <span className="eyebrow">YOUR SPACE TO EXHALE</span>
+            <h1>
+              A little less alone,
+              <br />
+              <span>{data.me.display_name.split(" ")[0]}.</span>
+            </h1>
+            <p>Whatever today looks like, you’re welcome here.</p>
+            <button
+              className="button primary small"
+              onClick={() => setCreate(true)}
+            >
+              Start a new chapter <Icon name="edit" size={16} />
+            </button>
+          </div>
+          <div className="welcome-photo">
+            <EditorialPhoto topic="finding-connection" eager />
+            <span>
+              <Icon name="heart" size={15} /> You belong here.
+            </span>
+          </div>
+        </section>
+        <div className="dashboard-section-heading">
+          <div>
+            <span className="eyebrow muted">A FAMILIAR FEELING</span>
+            <h2>Find your kind of space</h2>
+          </div>
+          <Link
+            className="text-link"
+            href={(preview ? "/preview" : "") + "/communities"}
+          >
+            View all <Icon name="arrow" size={14} />
+          </Link>
         </div>
-        <div className="welcome-note">
-          <span>✷</span>
-          <p>You don’t have to have it all together to belong here.</p>
-          <Icon name="heart" size={18} />
+        <div className="dashboard-spaces">
+          {["moving-forward", "financial-stress", "emotional-wellbeing"].map(
+            (slug) => {
+              const topic = topics.find((t) => t.slug === slug)!;
+              return (
+                <Link
+                  key={slug}
+                  href={(preview ? "/preview" : "") + "/communities/" + slug}
+                  className="dashboard-space"
+                >
+                  <EditorialPhoto topic={slug} />
+                  <span className="space-icon">
+                    <Icon name={topic.icon} size={17} />
+                  </span>
+                  <strong>{topic.short}</strong>
+                  <span className="space-link">
+                    Find understanding <Icon name="arrow" size={13} />
+                  </span>
+                </Link>
+              );
+            },
+          )}
+        </div>
+        <div className="dashboard-section-heading stories-heading">
+          <div>
+            <span className="eyebrow muted">
+              LITTLE MOMENTS. REAL FEELINGS.
+            </span>
+            <h2>Stories & shared journeys</h2>
+          </div>
+          <Icon name="sprout" size={22} />
         </div>
         <div className="feed-composer">
           <div>

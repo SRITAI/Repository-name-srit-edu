@@ -1,0 +1,1270 @@
+/* Rounded dashboard composition inspired by Dashboard Tennis; sritedu's own palette. */
+.editorial-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--photo-position, center);
+}
+.design-tennis {
+  --panel: #141114;
+  --panel-raised: #1b151a;
+}
+.design-tennis .button {
+  font-weight: 500;
+}
+.design-tennis .button.primary {
+  background: linear-gradient(120deg, #ff8fbe, #ff4f9a 70%);
+  color: #220d17;
+  box-shadow:
+    0 6px 22px #ff4f9a15,
+    inset 0 1px 0 #ffffff50;
+}
+.design-tennis .button.secondary {
+  background: #251a22;
+  border-color: #ff8fbe24;
+}
+.landing.design-tennis {
+  background:
+    radial-gradient(ellipse at 90% 12%, #ff4f9a0c, transparent 35%), #0b090b;
+}
+.design-tennis .marketing-header {
+  border-radius: 23px;
+  padding: 17px 24px;
+  background: #151115cc;
+}
+.design-tennis .marketing-header nav,
+.design-tennis .signin-link {
+  font-size: 12px;
+}
+.design-tennis .marketing-header .button {
+  border-radius: 14px;
+}
+.design-tennis .hero {
+  gap: 40px;
+  min-height: 690px;
+  padding-top: 68px;
+  padding-bottom: 70px;
+}
+.design-tennis .hero .eyebrow {
+  font-size: 9px;
+  letter-spacing: 1.1px;
+  line-height: 1.8;
+}
+.design-tennis .hero h1 {
+  font-size: clamp(44px, 4.7vw, 67px);
+  line-height: 1.15;
+  letter-spacing: -3px;
+  font-weight: 600;
+}
+.design-tennis .headline-star {
+  font-size: 29px;
+  transform: translate(5px, -5px);
+}
+.design-tennis .hero-description {
+  font-size: 13px;
+  line-height: 1.9;
+}
+.design-tennis .hero-actions {
+  gap: 20px;
+}
+.design-tennis .hero-actions .button {
+  border-radius: 15px;
+  padding: 15px 18px;
+  font-size: 11px;
+}
+.design-tennis .hero-footnote {
+  font-size: 9px;
+  line-height: 1.8;
+}
+.design-tennis .hero-art {
+  height: auto;
+  margin: 0;
+  width: 100%;
+  transform: none;
+}
+.photo-board {
+  width: 100%;
+  background: #181217;
+  border: 1px solid #ff8fbe2b;
+  border-radius: 27px;
+  overflow: hidden;
+  box-shadow:
+    0 30px 80px #0006,
+    0 0 70px #ff4f9a09;
+}
+.photo-board.ribbon-motion {
+  animation: board-float 9s ease-in-out infinite;
+}
+@keyframes board-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+.board-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background: linear-gradient(110deg, #fc78ad, #c93373);
+  color: #200c16;
+}
+.board-mark {
+  background: #ffffff24;
+  border: 1px solid #ffffff30;
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+.board-heading strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+.board-heading small {
+  display: block;
+  font-size: 10px;
+  margin-top: 3px;
+}
+.board-spark {
+  margin-left: auto;
+  font-size: 34px;
+  line-height: 1;
+}
+.board-feature {
+  display: block;
+  position: relative;
+  height: 265px;
+  margin: 15px 15px 12px;
+  border-radius: 18px;
+  overflow: hidden;
+}
+.board-feature:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, #160b14ed, transparent 85%);
+}
+.board-feature .editorial-photo {
+  object-position: 50% 35%;
+  transition: transform 0.5s;
+}
+.board-feature:hover .editorial-photo {
+  transform: scale(1.04);
+}
+.board-feature-caption {
+  position: absolute;
+  z-index: 1;
+  inset: auto 19px 20px;
+}
+.photo-label {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 1.8px;
+  color: #ffc0da;
+  margin-bottom: 8px;
+}
+.board-feature h2 {
+  font-size: 25px;
+  line-height: 1.35;
+  letter-spacing: -0.8px;
+  font-weight: 500;
+}
+.board-arrow {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  height: 39px;
+  width: 39px;
+  border-radius: 50%;
+  color: #210a16;
+  background: #ff8fbe;
+}
+.board-bottom {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 15px;
+}
+.board-mini {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #ffffff0c;
+  border-radius: 16px;
+  background: #21181f;
+}
+.board-mini .editorial-photo {
+  height: 103px;
+  filter: saturate(0.75);
+}
+.board-mini > span {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+  padding: 11px 10px;
+  font-size: 9px;
+}
+.board-mini svg {
+  color: #ff8fbe;
+  flex-shrink: 0;
+}
+.board-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  font-size: 9px;
+  color: #c2aeb9;
+}
+.board-note > svg {
+  color: #ff8fbe;
+}
+.board-note > span:last-child {
+  margin-left: auto;
+  font-size: 23px;
+  line-height: 1;
+  color: #ff8fbe;
+}
+.design-tennis .values-strip {
+  border-radius: 20px;
+  background: #151115;
+  border: 1px solid #ffffff0a;
+  padding-top: 19px;
+  padding-bottom: 19px;
+}
+.design-tennis .section-heading h2,
+.design-tennis .how-intro h2,
+.design-tennis .care-copy h2 {
+  font-weight: 500;
+  letter-spacing: -1.7px;
+}
+.design-tennis .topic-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+.design-tennis .topic-card {
+  padding: 0 19px 20px;
+  border-radius: 23px;
+  background: #151215;
+}
+.design-tennis .topic-photo {
+  width: calc(100% + 38px);
+  height: 145px;
+  max-width: none;
+  margin: 0 -19px 0;
+  filter: saturate(0.7);
+  transition: filter 0.25s;
+}
+.design-tennis .topic-card:hover .topic-photo {
+  filter: saturate(1);
+}
+.design-tennis .topic-card .topic-symbol {
+  margin-top: -20px;
+  z-index: 1;
+  background: linear-gradient(140deg, #ef88b3, #a93769);
+  color: #260f1b;
+  border: 3px solid #151215;
+  border-radius: 15px;
+  margin-bottom: 14px;
+  width: 43px;
+  height: 43px;
+}
+.design-tennis .topic-card h3 {
+  font-size: 14px;
+  font-weight: 500;
+}
+.design-tennis .topic-card p {
+  font-size: 10px;
+  line-height: 1.8;
+}
+.design-tennis .topic-link {
+  font-size: 9px;
+  color: #ff8fbe;
+  padding-top: 12px;
+  border-top: 1px solid #ffffff09;
+}
+.design-tennis .care-section,
+.design-tennis .closing {
+  border-radius: 30px;
+}
+.design-tennis .step {
+  border-radius: 18px;
+}
+
+/* The signed-in dashboard keeps the existing working feed and account controls. */
+.app-layout.design-tennis {
+  --sidebar: 232px;
+  background: #0b090b;
+}
+.design-tennis .sidebar {
+  background: #131013;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.design-tennis .sidebar-caption {
+  color: #ac8d9d;
+  letter-spacing: 1.4px;
+  font-size: 8px;
+  margin-bottom: 28px;
+}
+.design-tennis .nav-link {
+  font-size: 12px;
+  min-height: 48px;
+  border-radius: 15px;
+}
+.design-tennis .nav-link.active {
+  color: #ffb1d1;
+}
+.design-tennis .nav-active-bg {
+  background: linear-gradient(100deg, #ff4f9a27, #ff4f9a0d);
+  border-radius: 15px;
+}
+.design-tennis .sidebar-create {
+  border-radius: 14px;
+  font-size: 11px;
+  min-height: 46px;
+}
+.design-tennis .sidebar-note {
+  padding: 15px 10px;
+  margin: 15px 0;
+  border: 1px solid #ff8fbe13;
+  border-radius: 15px;
+  background: #ff4f9a05;
+}
+.design-tennis .app-topbar {
+  background: #0e0b0e;
+  padding-left: 30px;
+  padding-right: 30px;
+  height: 80px;
+}
+.design-tennis .topbar-breadcrumb {
+  font-size: 10px;
+}
+.design-tennis .app-search {
+  border-radius: 13px;
+  padding: 10px 13px;
+  background: #191419;
+  max-width: 290px;
+}
+.design-tennis .app-search input {
+  font-size: 11px;
+}
+.design-tennis .app-main {
+  padding: 28px 30px 40px;
+}
+.design-tennis .feed-layout {
+  grid-template-columns: minmax(0, 1fr) 270px;
+  gap: 24px;
+}
+.design-tennis .feed-column {
+  max-width: none;
+}
+.dashboard-welcome {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 12px;
+  border: 1px solid #ff8fbe22;
+  border-radius: 25px;
+  background: linear-gradient(120deg, #3b1b2e, #25131f 60%, #171116);
+  overflow: hidden;
+  min-height: 238px;
+  margin-bottom: 26px;
+}
+.dashboard-welcome .page-heading {
+  padding: 28px 0 28px 26px;
+  margin: 0;
+  align-self: center;
+  position: relative;
+  z-index: 1;
+}
+.dashboard-welcome .eyebrow {
+  color: #f5a6c9;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+}
+.design-tennis .dashboard-welcome h1 {
+  font-size: clamp(23px, 2.3vw, 34px);
+  font-weight: 500;
+  letter-spacing: -1.1px;
+  margin: 12px 0;
+  line-height: 1.3;
+}
+.dashboard-welcome p {
+  font-size: 10px;
+  max-width: 230px;
+}
+.dashboard-welcome .button {
+  border-radius: 12px;
+  margin-top: 18px;
+  font-size: 10px;
+  min-height: 38px;
+}
+.welcome-photo {
+  position: relative;
+  min-width: 0;
+  margin: 13px 13px 13px 0;
+  border-radius: 18px;
+  overflow: hidden;
+}
+.welcome-photo:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, #190d18ab, transparent 70%);
+}
+.welcome-photo .editorial-photo {
+  object-position: 58% 40%;
+}
+.welcome-photo > span {
+  position: absolute;
+  z-index: 1;
+  left: 12px;
+  right: 12px;
+  bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+}
+.welcome-photo > span svg {
+  color: #ff8fbe;
+}
+.dashboard-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 15px;
+}
+.dashboard-section-heading .eyebrow {
+  font-size: 7px;
+  letter-spacing: 1.3px;
+}
+.dashboard-section-heading h2 {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  margin-top: 5px;
+}
+.dashboard-section-heading .text-link {
+  font-size: 10px;
+  white-space: nowrap;
+}
+.dashboard-spaces {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+  margin-bottom: 30px;
+}
+.dashboard-space {
+  border: 1px solid #ffffff0b;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #181318;
+  position: relative;
+  padding-bottom: 14px;
+  transition:
+    border-color 0.2s,
+    transform 0.2s;
+  min-width: 0;
+}
+.dashboard-space:hover {
+  transform: translateY(-3px);
+  border-color: #ff8fbe44;
+}
+.dashboard-space .editorial-photo {
+  height: 113px;
+  filter: saturate(0.7);
+}
+.space-icon {
+  display: grid;
+  place-items: center;
+  position: relative;
+  width: 33px;
+  height: 33px;
+  margin: -17px 13px 8px;
+  border-radius: 11px;
+  background: linear-gradient(130deg, #fca1c8, #e34f93);
+  border: 3px solid #181318;
+  color: #291020;
+}
+.dashboard-space > strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  margin: 0 13px;
+}
+.space-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 8px;
+  color: #c49aae;
+  margin: 9px 13px 0;
+  gap: 4px;
+}
+.space-link svg {
+  flex-shrink: 0;
+}
+.stories-heading > svg {
+  color: #ff8fbe;
+}
+.design-tennis .feed-composer {
+  border-radius: 21px;
+  background: #171317;
+  border-color: #ffffff0e;
+}
+.design-tennis .post-card {
+  border-radius: 23px;
+  background: #151215;
+  border-color: #ffffff0d;
+}
+.design-tennis .post-body {
+  font-size: 13px;
+}
+.design-tennis .feed-filter {
+  gap: 5px;
+}
+.design-tennis .feed-filter button {
+  font-size: 10px;
+  padding: 9px 10px;
+}
+.design-tennis .feed-filter button.active {
+  border-radius: 10px;
+}
+.design-tennis .context-rail {
+  gap: 18px;
+}
+.design-tennis .context-rail > * + * {
+  margin-top: 20px;
+}
+.design-tennis .rail-community small {
+  color: #b196a4;
+}
+.dashboard-profile {
+  border: 1px solid #ffffff0d;
+  border-radius: 24px;
+  background: #171217;
+  overflow: hidden;
+  text-align: center;
+  padding-bottom: 16px;
+}
+.dashboard-profile-cover {
+  background: linear-gradient(120deg, #ff9ac4, #bd3975);
+  color: #381326;
+  min-height: 94px;
+  padding: 15px 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.dashboard-profile-cover > span {
+  font-size: 7px;
+  letter-spacing: 1.3px;
+  padding-top: 4px;
+}
+.dashboard-profile > .avatar {
+  width: 72px;
+  height: 72px;
+  margin: -35px auto 10px;
+  border: 5px solid #171217;
+  position: relative;
+}
+.dashboard-profile h2 {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+}
+.profile-handle {
+  font-size: 9px;
+  color: #aa8c9c;
+}
+.dashboard-profile > p {
+  font-size: 10px;
+  line-height: 1.9;
+  color: #c5aeba;
+  padding: 12px 23px 15px;
+  overflow-wrap: anywhere;
+}
+.dashboard-profile > .button {
+  font-size: 10px;
+  border-radius: 11px;
+  min-height: 36px;
+}
+.private-summary {
+  margin: 21px 18px 9px;
+  border-top: 1px solid #ffffff0a;
+  padding-top: 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.private-summary > span {
+  font-size: 8px;
+  color: #b399a7;
+}
+.private-summary > span + span {
+  border-left: 1px solid #ffffff0a;
+}
+.private-summary strong {
+  display: block;
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 500;
+  color: #ffb1d1;
+  margin-bottom: 4px;
+}
+.summary-privacy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 7px;
+  color: #9e8190;
+}
+.design-tennis .gentle-reminder {
+  border-radius: 23px;
+  padding: 24px;
+  background: linear-gradient(145deg, #57253f, #24151f);
+}
+.design-tennis .gentle-reminder h3 {
+  font-size: 23px;
+  letter-spacing: -0.8px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+.design-tennis .rail-section {
+  padding: 20px 15px;
+  background: #141114;
+  border: 1px solid #ffffff09;
+  border-radius: 20px;
+}
+.design-tennis .rail-heading h3 {
+  font-size: 12px;
+}
+.design-tennis .page-heading h1 {
+  font-weight: 500;
+}
+.design-tennis .app-community-grid {
+  gap: 20px;
+}
+.design-tennis .app-community-card {
+  padding: 0 21px 20px;
+  border-radius: 24px;
+  background: #171317;
+  overflow: hidden;
+}
+.design-tennis .app-community-card > a {
+  display: block;
+}
+.design-tennis .community-card-photo {
+  width: calc(100% + 42px);
+  max-width: none;
+  height: 170px;
+  margin: 0 -21px;
+  filter: saturate(0.75);
+}
+.design-tennis .app-community-card .topic-symbol {
+  position: relative;
+  z-index: 1;
+  margin-top: -23px;
+  margin-bottom: 15px;
+  border-radius: 16px;
+  border: 4px solid #171317;
+  background: linear-gradient(140deg, #ffb1d1, #de4b8c);
+  color: #29101e;
+  width: 48px;
+  height: 48px;
+}
+.design-tennis .app-community-card .topic-symbol svg {
+  width: 23px;
+}
+.design-tennis .app-community-card .card-arrow {
+  top: 17px;
+  right: -3px;
+  width: 31px;
+  height: 31px;
+  display: grid;
+  place-items: center;
+  background: #18101599;
+  border: 1px solid #ffffff20;
+  border-radius: 10px;
+  color: #fff5f9;
+  backdrop-filter: blur(10px);
+}
+.design-tennis .app-community-card h2 {
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: -0.6px;
+  max-width: 100%;
+}
+.design-tennis .app-community-card p {
+  font-size: 10px;
+  line-height: 1.9;
+}
+.design-tennis .app-community-card > div {
+  margin-top: 20px;
+}
+.design-tennis .app-community-card .button.small {
+  border-radius: 10px;
+  font-size: 9px;
+  min-height: 36px;
+}
+.design-tennis .community-cover {
+  border-radius: 25px;
+  padding: 28px;
+  min-height: 350px;
+  background: #181117;
+}
+.design-tennis .community-cover-photo {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 58%;
+  filter: saturate(0.6);
+}
+.community-cover-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, #181117 25%, #181117e8 48%, #18111735),
+    linear-gradient(0deg, #181117c9, transparent 55%);
+}
+.design-tennis .community-cover h1 {
+  font-weight: 500;
+  font-size: 31px;
+  line-height: 1.3;
+  max-width: 350px;
+}
+.design-tennis .community-cover > p {
+  max-width: 330px;
+  font-size: 11px;
+  color: #dcc1ce;
+}
+.design-tennis .community-cover > .topic-symbol {
+  height: 48px;
+  width: 48px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  background: #ff8fbe20;
+}
+.design-tennis .community-cover .topic-symbol svg {
+  width: 27px;
+}
+.design-tennis .community-cover > div:last-child {
+  flex-wrap: wrap;
+  gap: 17px;
+}
+
+@media (min-width: 1500px) {
+  .design-tennis .feed-layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 28px;
+  }
+  .design-tennis .dashboard-welcome h1 {
+    font-size: 37px;
+  }
+  .dashboard-welcome {
+    min-height: 270px;
+  }
+  .dashboard-space .editorial-photo {
+    height: 145px;
+  }
+}
+@media (max-width: 1200px) {
+  .design-tennis .hero {
+    gap: 25px;
+  }
+  .design-tennis .hero h1 {
+    font-size: 54px;
+  }
+  .design-tennis .hero-actions {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  .design-tennis .feed-layout {
+    grid-template-columns: minmax(0, 1fr) 245px;
+    gap: 20px;
+  }
+  .design-tennis .app-main {
+    padding: 25px 24px 35px;
+  }
+  .dashboard-welcome {
+    grid-template-columns: 1.25fr 1fr;
+  }
+  .dashboard-welcome .page-heading {
+    padding-left: 20px;
+  }
+  .dashboard-space > strong {
+    font-size: 10px;
+  }
+  .space-link {
+    font-size: 7px;
+  }
+  .design-tennis .app-community-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 1000px) {
+  .app-layout.design-tennis {
+    --sidebar: 195px;
+  }
+  .design-tennis .feed-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .design-tennis .app-topbar {
+    padding-left: 24px;
+    padding-right: 24px;
+    gap: 15px;
+  }
+  .design-tennis .nav-link {
+    font-size: 11px;
+    padding-left: 12px;
+    gap: 10px;
+  }
+  .design-tennis .topic-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .design-tennis .hero {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .design-tennis .hero h1 {
+    font-size: 44px;
+    letter-spacing: -2.2px;
+  }
+  .design-tennis .hero .eyebrow {
+    font-size: 8px;
+  }
+  .board-heading {
+    padding: 15px;
+    gap: 9px;
+  }
+  .board-heading strong {
+    font-size: 11px;
+  }
+  .board-heading small {
+    font-size: 8px;
+  }
+  .board-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+  }
+  .board-spark {
+    font-size: 27px;
+  }
+  .board-feature {
+    height: 235px;
+  }
+  .board-feature h2 {
+    font-size: 21px;
+  }
+  .board-mini > span {
+    font-size: 8px;
+  }
+}
+@media (max-width: 760px) {
+  .design-tennis .marketing-header {
+    border-radius: 20px;
+    margin: 15px 20px 0;
+    padding: 13px 16px;
+  }
+  .design-tennis .hero {
+    grid-template-columns: minmax(0, 1fr);
+    text-align: center;
+    gap: 40px;
+    min-height: 0;
+    padding: 48px 28px 45px;
+  }
+  .design-tennis .hero h1 {
+    font-size: clamp(38px, 7.3vw, 54px);
+    letter-spacing: -2px;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+  .design-tennis .hero .eyebrow {
+    margin-bottom: 23px;
+    max-width: 100%;
+    font-size: 8px;
+    letter-spacing: 0.9px;
+  }
+  .design-tennis .hero-description {
+    font-size: 12px;
+    margin-top: 20px;
+  }
+  .design-tennis .hero-actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    margin-top: 25px;
+  }
+  .design-tennis .hero-actions .button {
+    min-height: 48px;
+    width: 100%;
+    max-width: 320px;
+    font-size: 12px;
+  }
+  .design-tennis .hero-footnote {
+    justify-content: center;
+    margin-top: 23px;
+    font-size: 8px;
+  }
+  .design-tennis .hero-art {
+    max-width: 510px;
+    justify-self: center;
+    padding: 0;
+    height: auto;
+    width: 100%;
+    margin: 0;
+    transform: none;
+    text-align: left;
+  }
+  .board-heading {
+    padding: 18px;
+  }
+  .board-heading strong {
+    font-size: 12px;
+  }
+  .board-heading small {
+    font-size: 9px;
+  }
+  .board-feature {
+    height: 260px;
+  }
+  .board-feature h2 {
+    font-size: 24px;
+  }
+  .board-mini .editorial-photo {
+    height: 115px;
+  }
+  .board-mini > span {
+    font-size: 9px;
+  }
+  .design-tennis .values-strip {
+    margin: 0 20px;
+  }
+  .design-tennis .topic-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+  }
+  .design-tennis .app-body {
+    margin-left: 0;
+  }
+  .design-tennis .app-topbar {
+    height: 68px;
+    padding: 0 22px;
+  }
+  .design-tennis .app-search {
+    max-width: 220px;
+    padding: 8px 11px;
+  }
+  .design-tennis .app-main {
+    padding: 25px 22px 100px;
+  }
+  .dashboard-welcome {
+    min-height: 240px;
+  }
+  .design-tennis .dashboard-welcome h1 {
+    font-size: 30px;
+  }
+  .dashboard-welcome .page-heading {
+    padding: 25px 0 25px 23px;
+  }
+  .dashboard-space > strong {
+    font-size: 11px;
+  }
+  .space-link {
+    font-size: 8px;
+  }
+  .dashboard-space .editorial-photo {
+    height: 125px;
+  }
+  .design-tennis .app-community-grid {
+    gap: 16px;
+  }
+  .design-tennis .community-cover {
+    padding: 25px;
+  }
+  .design-tennis .community-cover h1 {
+    font-size: 30px;
+  }
+}
+@media (max-width: 480px) {
+  .design-tennis .marketing-header {
+    margin: 12px 14px 0;
+    padding: 11px 13px;
+    border-radius: 18px;
+  }
+  .design-tennis .marketing-header > .logo {
+    font-size: 22px;
+    gap: 7px;
+  }
+  .design-tennis .header-actions {
+    gap: 9px;
+  }
+  .design-tennis .marketing-header .button.small {
+    font-size: 10px;
+    padding: 10px 12px;
+    min-height: 38px;
+    gap: 8px;
+  }
+  .design-tennis .hero {
+    padding: 40px 20px 35px;
+    gap: 34px;
+  }
+  .design-tennis .hero h1 {
+    font-size: clamp(36px, 9.5vw, 45px);
+    letter-spacing: -1.9px;
+    line-height: 1.18;
+  }
+  .design-tennis .headline-star {
+    font-size: 22px;
+    transform: translate(4px, -4px);
+  }
+  .design-tennis .hero .eyebrow {
+    font-size: 6.5px;
+    letter-spacing: 0.8px;
+    padding: 7px 9px;
+  }
+  .design-tennis .hero-description {
+    font-size: 10px;
+  }
+  .photo-board {
+    border-radius: 23px;
+  }
+  .board-heading {
+    padding: 15px;
+  }
+  .board-heading strong {
+    font-size: 10px;
+  }
+  .board-heading small {
+    font-size: 8px;
+  }
+  .board-feature {
+    height: 220px;
+    margin: 11px 11px 10px;
+    border-radius: 15px;
+  }
+  .board-feature-caption {
+    inset: auto 15px 17px;
+  }
+  .board-feature h2 {
+    font-size: 21px;
+  }
+  .board-arrow {
+    height: 33px;
+    width: 33px;
+  }
+  .board-bottom {
+    gap: 10px;
+    margin: 0 11px;
+  }
+  .board-mini .editorial-photo {
+    height: 90px;
+  }
+  .board-mini > span {
+    font-size: 7px;
+    padding: 10px 8px;
+  }
+  .board-note {
+    padding: 13px 15px;
+    font-size: 8px;
+  }
+  .design-tennis .topic-grid {
+    gap: 12px;
+  }
+  .design-tennis .topic-card {
+    padding: 0 13px 15px;
+    border-radius: 19px;
+  }
+  .design-tennis .topic-photo {
+    width: calc(100% + 26px);
+    margin: 0 -13px;
+    height: 115px;
+  }
+  .design-tennis .topic-card h3 {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .design-tennis .topic-card p {
+    font-size: 9px;
+    line-height: 1.8;
+  }
+  .design-tennis .topic-link {
+    font-size: 8px;
+  }
+  .design-tennis .topic-card .topic-symbol {
+    width: 37px;
+    height: 37px;
+    margin-top: -18px;
+    margin-bottom: 10px;
+  }
+  .design-tennis .topic-card .topic-symbol svg {
+    width: 20px;
+  }
+  .design-tennis .app-topbar {
+    padding: 0 17px;
+    height: 64px;
+  }
+  .design-tennis .app-search {
+    display: none;
+  }
+  .design-tennis .app-main {
+    padding: 20px 15px 100px;
+  }
+  .dashboard-welcome {
+    grid-template-columns: 1.35fr 1fr;
+    gap: 4px;
+    min-height: 228px;
+    border-radius: 21px;
+    margin-bottom: 24px;
+  }
+  .dashboard-welcome .page-heading {
+    padding: 22px 0 22px 17px;
+  }
+  .dashboard-welcome .eyebrow {
+    font-size: 6px;
+    letter-spacing: 0.9px;
+  }
+  .design-tennis .dashboard-welcome h1 {
+    font-size: 23px;
+    letter-spacing: -0.9px;
+    margin: 10px 0;
+  }
+  .dashboard-welcome p {
+    font-size: 8px;
+    padding-right: 3px;
+    line-height: 1.8;
+  }
+  .dashboard-welcome .button {
+    font-size: 8px;
+    padding: 9px 10px;
+    min-height: 35px;
+    gap: 6px;
+    margin-top: 15px;
+  }
+  .dashboard-welcome .button svg {
+    width: 13px;
+  }
+  .welcome-photo {
+    margin: 10px 10px 10px 0;
+    border-radius: 14px;
+  }
+  .welcome-photo .editorial-photo {
+    object-position: 62% 40%;
+  }
+  .welcome-photo > span {
+    font-size: 7px;
+    left: 8px;
+    right: 8px;
+    bottom: 12px;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .welcome-photo > span svg {
+    width: 12px;
+  }
+  .dashboard-section-heading h2 {
+    font-size: 16px;
+  }
+  .dashboard-section-heading .eyebrow {
+    font-size: 6px;
+    letter-spacing: 0.9px;
+  }
+  .dashboard-section-heading .text-link {
+    font-size: 9px;
+  }
+  .dashboard-spaces {
+    gap: 8px;
+    margin-bottom: 25px;
+  }
+  .dashboard-space {
+    border-radius: 15px;
+    padding-bottom: 11px;
+  }
+  .dashboard-space .editorial-photo {
+    height: 95px;
+  }
+  .space-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
+    margin: -15px 8px 6px;
+  }
+  .space-icon svg {
+    width: 14px;
+  }
+  .dashboard-space > strong {
+    font-size: 9px;
+    margin: 0 8px;
+    line-height: 1.6;
+    min-height: 29px;
+  }
+  .space-link {
+    margin: 6px 8px 0;
+    font-size: 6px;
+    line-height: 1.6;
+  }
+  .space-link svg {
+    width: 10px;
+  }
+  .design-tennis .feed-filter {
+    gap: 2px;
+  }
+  .design-tennis .feed-filter button {
+    padding: 8px 7px;
+    font-size: 8px;
+  }
+  .design-tennis .app-community-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .design-tennis .app-community-card {
+    border-radius: 22px;
+  }
+  .design-tennis .community-card-photo {
+    height: 185px;
+  }
+  .design-tennis .app-community-card h2 {
+    font-size: 21px;
+  }
+  .design-tennis .app-community-card p {
+    font-size: 11px;
+    min-height: 0;
+  }
+  .design-tennis .community-cover {
+    padding: 22px;
+    min-height: 360px;
+  }
+  .design-tennis .community-cover-photo {
+    width: 100%;
+    opacity: 0.45;
+  }
+  .community-cover-shade {
+    background:
+      linear-gradient(90deg, #181117eb, #18111777),
+      linear-gradient(0deg, #181117, transparent 75%);
+  }
+  .design-tennis .community-cover h1 {
+    font-size: 28px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .photo-board.ribbon-motion {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+  .board-feature .editorial-photo,
+  .dashboard-space {
+    transition: none;
+  }
+}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { topics, communityGuidelines } from "@/lib/topics";
 import { Icon, Button, Empty } from "@/components/ui";
+import { EditorialPhoto } from "@/components/editorial-photo";
 import { useApp } from "./app/provider";
 import { ContextRail } from "./app/home";
 import { Composer } from "./posts/composer";
@@ -71,6 +72,10 @@ export function Communities({ slug }: { slug?: string }) {
               return (
                 <article className="app-community-card" key={t.slug}>
                   <Link href={prefix + "/communities/" + t.slug}>
+                    <EditorialPhoto
+                      topic={t.slug}
+                      className="community-card-photo"
+                    />
                     <span className={"topic-symbol symbol-" + i}>
                       <Icon name={t.icon} size={29} />
                     </span>
@@ -141,7 +146,12 @@ export function Communities({ slug }: { slug?: string }) {
           <Icon name="left" size={14} /> All communities
         </Link>
         <div className="community-cover">
-          <span className="community-cover-orbit" />
+          <EditorialPhoto
+            topic={t.slug}
+            className="community-cover-photo"
+            eager
+          />
+          <span className="community-cover-shade" />
           <span className="topic-symbol">
             <Icon name={t.icon} size={36} />
           </span>

@@ -509,6 +509,7 @@ export function AppProvider({
       <MotionConfig reducedMotion={reduce ? "always" : "user"}>
         <div
           key={ready ? "restored" : "restoring"}
+          data-preview-ready={preview ? ready : undefined}
           data-reduce-motion={reduce ? "true" : undefined}
         >
           {children}

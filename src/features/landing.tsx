@@ -2,13 +2,14 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
-import { Logo, Icon, Avatar } from "@/components/ui";
+import { Logo, Icon } from "@/components/ui";
 import { topics } from "@/lib/topics";
+import { EditorialPhoto } from "@/components/editorial-photo";
 export function Landing() {
   const reduced = useReducedMotion();
   const [menu, setMenu] = useState(false);
   return (
-    <div className="landing">
+    <div className="landing design-tennis">
       <header
         className={`marketing-header${menu ? " menu-open" : ""}`}
         onKeyDown={(event) => {
@@ -107,167 +108,61 @@ export function Landing() {
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
           >
-            <div className="ambient-orb" />
-            <svg
-              className="ribbon"
-              viewBox="0 0 600 620"
-              fill="none"
-              aria-label="Two luminous pink glass ribbons coming together"
-              role="img"
-            >
-              <defs>
-                <linearGradient
-                  id="ribbon-color"
-                  x1="145"
-                  y1="110"
-                  x2="455"
-                  y2="510"
-                  gradientUnits="userSpaceOnUse"
-                >
-                  <stop stopColor="#FFF5F9" />
-                  <stop offset=".18" stopColor="#FF8FBE" />
-                  <stop offset=".48" stopColor="#C51E62" />
-                  <stop offset=".72" stopColor="#FF4F9A" />
-                  <stop offset="1" stopColor="#FFF5F9" />
-                </linearGradient>
-                <linearGradient id="ribbon-edge">
-                  <stop stopColor="#FF8FBE" stopOpacity=".8" />
-                  <stop offset=".5" stopColor="#080808" stopOpacity=".1" />
-                  <stop offset="1" stopColor="#FF4F9A" />
-                </linearGradient>
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="19" />
-                </filter>
-                <filter id="soft">
-                  <feGaussianBlur stdDeviation="2" />
-                </filter>
-              </defs>
-              <g className="ribbon-motion">
-                <ellipse
-                  cx="291"
-                  cy="317"
-                  rx="120"
-                  ry="222"
-                  transform="rotate(-32 291 317)"
-                  stroke="#C51E62"
-                  strokeWidth="30"
-                  opacity=".24"
-                  filter="url(#glow)"
-                />
-                <ellipse
-                  cx="291"
-                  cy="310"
-                  rx="117"
-                  ry="215"
-                  transform="rotate(-32 291 310)"
-                  stroke="url(#ribbon-color)"
-                  strokeWidth="41"
-                />
-                <ellipse
-                  cx="291"
-                  cy="310"
-                  rx="119"
-                  ry="215"
-                  transform="rotate(-32 291 310)"
-                  stroke="url(#ribbon-edge)"
-                  strokeWidth="36"
-                />
-                <ellipse
-                  cx="291"
-                  cy="310"
-                  rx="133"
-                  ry="228"
-                  transform="rotate(-32 291 310)"
-                  stroke="#FF8FBE"
-                  strokeWidth="1.3"
-                  opacity=".8"
-                />
-                <ellipse
-                  cx="291"
-                  cy="310"
-                  rx="99"
-                  ry="197"
-                  transform="rotate(-32 291 310)"
-                  stroke="#FFF5F9"
-                  strokeWidth="1"
-                  opacity=".55"
-                />
-                <ellipse
-                  cx="317"
-                  cy="325"
-                  rx="117"
-                  ry="215"
-                  transform="rotate(38 317 325)"
-                  stroke="url(#ribbon-color)"
-                  strokeWidth="39"
-                />
-                <ellipse
-                  cx="317"
-                  cy="325"
-                  rx="118"
-                  ry="215"
-                  transform="rotate(38 317 325)"
-                  stroke="url(#ribbon-edge)"
-                  strokeWidth="34"
-                />
-                <ellipse
-                  cx="317"
-                  cy="325"
-                  rx="134"
-                  ry="231"
-                  transform="rotate(38 317 325)"
-                  stroke="#FF8FBE"
-                  strokeWidth="1.2"
-                  opacity=".65"
-                />
-                <ellipse
-                  cx="317"
-                  cy="325"
-                  rx="100"
-                  ry="198"
-                  transform="rotate(38 317 325)"
-                  stroke="#FFF5F9"
-                  strokeWidth="1"
-                  opacity=".6"
-                />
-              </g>
-            </svg>
-            <div className="floating-tag tag-one">
-              <span className="tiny-dot" /> Room to be yourself
-            </div>
-            <div className="floating-tag tag-two">
-              <Icon name="heart-handshake" size={16} /> No judgement. Just
-              people.
-            </div>
-            <div className="glass-story">
-              <div className="story-top">
-                <Avatar
-                  person={{
-                    id: "hero",
-                    avatar: "orbit",
-                    display_name: "Illustrative member",
-                  }}
-                  size="sm"
-                />
+            <div className="photo-board ribbon-motion">
+              <div className="board-heading">
+                <span className="board-mark">
+                  <Icon name="heart-handshake" size={22} />
+                </span>
                 <div>
-                  <strong>A small step forward</strong>
-                  <small>Moving forward · Illustrative story</small>
+                  <strong>Your next chapter starts here.</strong>
+                  <small>A place to feel understood</small>
                 </div>
-                <Icon name="more" size={18} />
+                <span className="board-spark" aria-hidden="true">
+                  ✷
+                </span>
               </div>
-              <p>
-                “Today wasn’t perfect. But I went for a walk, called a friend,
-                and felt a little more like me.”
-              </p>
-              <div className="story-response">
-                <Icon name="heart" size={16} />
-                <span>I hear you. Little steps count.</span>
-                <span className="tiny-heart">♡</span>
+              <Link
+                href="/preview/communities/finding-connection"
+                className="board-feature"
+              >
+                <EditorialPhoto topic="finding-connection" eager />
+                <div className="board-feature-caption">
+                  <span className="photo-label">FIND YOUR PEOPLE</span>
+                  <h2>
+                    A small hello.
+                    <br />A little more connection.
+                  </h2>
+                  <span className="board-arrow">
+                    <Icon name="arrow" size={22} />
+                  </span>
+                </div>
+              </Link>
+              <div className="board-bottom">
+                <Link
+                  href="/preview/communities/moving-forward"
+                  className="board-mini"
+                >
+                  <EditorialPhoto topic="moving-forward" />
+                  <span>
+                    Moving forward <Icon name="arrow" size={15} />
+                  </span>
+                </Link>
+                <Link
+                  href="/preview/communities/financial-stress"
+                  className="board-mini"
+                >
+                  <EditorialPhoto topic="financial-stress" />
+                  <span>
+                    Money on your mind? <Icon name="arrow" size={15} />
+                  </span>
+                </Link>
+              </div>
+              <div className="board-note">
+                <Icon name="shield" size={16} />
+                <span>Your story. Your pace. Your space.</span>
+                <span aria-hidden="true">♡</span>
               </div>
             </div>
-            <span className="art-label">
-              DIFFERENT STORIES. SHARED HUMANITY.
-            </span>
           </motion.div>
         </section>
         <section className="values-strip section-wrap">
@@ -306,6 +201,7 @@ export function Landing() {
                 className="topic-card"
                 key={topic.slug}
               >
+                <EditorialPhoto topic={topic.slug} className="topic-photo" />
                 <span className={"topic-symbol symbol-" + i}>
                   <Icon name={topic.icon} size={25} />
                 </span>

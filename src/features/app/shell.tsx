@@ -66,7 +66,10 @@ export function AppShell({
     }
   }
   return (
-    <div className="app-layout" data-preview={preview ? "true" : undefined}>
+    <div
+      className="app-layout design-tennis"
+      data-preview={preview ? "true" : undefined}
+    >
       {preview && (
         <div className="preview-banner">
           <span>
