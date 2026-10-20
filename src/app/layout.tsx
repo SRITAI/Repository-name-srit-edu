@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import "./reference-design.css";
+import "./chapters-theme.css";
 const poppins = localFont({
   src: [
     {
@@ -41,7 +42,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#080808",
+  themeColor: "#eff1ff",
 };
 export default function RootLayout({
   children,

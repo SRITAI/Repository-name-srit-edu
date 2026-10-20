@@ -14,24 +14,24 @@
   font-weight: 500;
 }
 .design-tennis .button.primary {
-  background: linear-gradient(120deg, #ff8fbe, #ff4f9a 70%);
-  color: #220d17;
+  background: linear-gradient(120deg, #bd9bff, #bd9bff 70%);
+  color: #ffffff;
   box-shadow:
-    0 6px 22px #ff4f9a15,
+    0 6px 22px #8d65e515,
     inset 0 1px 0 #ffffff50;
 }
 .design-tennis .button.secondary {
-  background: #251a22;
-  border-color: #ff8fbe24;
+  background: #ffffff;
+  border-color: #7950bd24;
 }
 .landing.design-tennis {
   background:
-    radial-gradient(ellipse at 90% 12%, #ff4f9a0c, transparent 35%), #0b090b;
+    radial-gradient(ellipse at 90% 12%, #bd9bff0c, transparent 35%), #ffffff;
 }
 .design-tennis .marketing-header {
   border-radius: 23px;
   padding: 17px 24px;
-  background: #151115cc;
+  background: #ffffffcc;
 }
 .design-tennis .marketing-header nav,
 .design-tennis .signin-link {
@@ -85,13 +85,13 @@
 }
 .photo-board {
   width: 100%;
-  background: #181217;
-  border: 1px solid #ff8fbe2b;
+  background: #ffffff;
+  border: 1px solid #7950bd2b;
   border-radius: 27px;
   overflow: hidden;
   box-shadow:
-    0 30px 80px #0006,
-    0 0 70px #ff4f9a09;
+    0 30px 80px #47336c66,
+    0 0 70px #8d65e509;
 }
 .photo-board.ribbon-motion {
   animation: board-float 9s ease-in-out infinite;
@@ -110,12 +110,12 @@
   align-items: center;
   gap: 12px;
   padding: 20px;
-  background: linear-gradient(110deg, #fc78ad, #c93373);
-  color: #200c16;
+  background: linear-gradient(110deg, #bd9bff, #7a3cf1);
+  color: #ffffff;
 }
 .board-mark {
-  background: #ffffff24;
-  border: 1px solid #ffffff30;
+  background: #ece8f724;
+  border: 1px solid #7950bd30;
   display: grid;
   place-items: center;
   width: 43px;
@@ -150,7 +150,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, #160b14ed, transparent 85%);
+  background: linear-gradient(0deg, #ffffffed, transparent 85%);
 }
 .board-feature .editorial-photo {
   object-position: 50% 35%;
@@ -168,7 +168,7 @@
   display: block;
   font-size: 8px;
   letter-spacing: 1.8px;
-  color: #ffc0da;
+  color: #7034cf;
   margin-bottom: 8px;
 }
 .board-feature h2 {
@@ -186,8 +186,8 @@
   height: 39px;
   width: 39px;
   border-radius: 50%;
-  color: #210a16;
-  background: #ff8fbe;
+  color: #ffffff;
+  background: #bd9bff;
 }
 .board-bottom {
   display: grid;
@@ -198,9 +198,9 @@
 .board-mini {
   min-width: 0;
   overflow: hidden;
-  border: 1px solid #ffffff0c;
+  border: 1px solid #7950bd0c;
   border-radius: 16px;
-  background: #21181f;
+  background: #ffffff;
 }
 .board-mini .editorial-photo {
   height: 103px;
@@ -215,7 +215,7 @@
   font-size: 9px;
 }
 .board-mini svg {
-  color: #ff8fbe;
+  color: #7034cf;
   flex-shrink: 0;
 }
 .board-note {
@@ -224,21 +224,21 @@
   gap: 8px;
   padding: 16px 20px;
   font-size: 9px;
-  color: #c2aeb9;
+  color: #716885;
 }
 .board-note > svg {
-  color: #ff8fbe;
+  color: #7034cf;
 }
 .board-note > span:last-child {
   margin-left: auto;
   font-size: 23px;
   line-height: 1;
-  color: #ff8fbe;
+  color: #7034cf;
 }
 .design-tennis .values-strip {
   border-radius: 20px;
-  background: #151115;
-  border: 1px solid #ffffff0a;
+  background: #ffffff;
+  border: 1px solid #7950bd0a;
   padding-top: 19px;
   padding-bottom: 19px;
 }
@@ -255,7 +255,7 @@
 .design-tennis .topic-card {
   padding: 0 19px 20px;
   border-radius: 23px;
-  background: #151215;
+  background: #ffffff;
 }
 .design-tennis .topic-photo {
   width: calc(100% + 38px);
@@ -271,9 +271,9 @@
 .design-tennis .topic-card .topic-symbol {
   margin-top: -20px;
   z-index: 1;
-  background: linear-gradient(140deg, #ef88b3, #a93769);
-  color: #260f1b;
-  border: 3px solid #151215;
+  background: linear-gradient(140deg, #bd9bff, #7a3cf1);
+  color: #ffffff;
+  border: 3px solid #7950bd;
   border-radius: 15px;
   margin-bottom: 14px;
   width: 43px;
@@ -289,9 +289,9 @@
 }
 .design-tennis .topic-link {
   font-size: 9px;
-  color: #ff8fbe;
+  color: #7034cf;
   padding-top: 12px;
-  border-top: 1px solid #ffffff09;
+  border-top: 1px solid #7950bd09;
 }
 .design-tennis .care-section,
 .design-tennis .closing {
@@ -304,15 +304,15 @@
 /* The signed-in dashboard keeps the existing working feed and account controls. */
 .app-layout.design-tennis {
   --sidebar: 232px;
-  background: #0b090b;
+  background: #ffffff;
 }
 .design-tennis .sidebar {
-  background: #131013;
+  background: #ffffff;
   padding-left: 16px;
   padding-right: 16px;
 }
 .design-tennis .sidebar-caption {
-  color: #ac8d9d;
+  color: #716885;
   letter-spacing: 1.4px;
   font-size: 8px;
   margin-bottom: 28px;
@@ -323,10 +323,10 @@
   border-radius: 15px;
 }
 .design-tennis .nav-link.active {
-  color: #ffb1d1;
+  color: #7034cf;
 }
 .design-tennis .nav-active-bg {
-  background: linear-gradient(100deg, #ff4f9a27, #ff4f9a0d);
+  background: linear-gradient(100deg, #bd9bff27, #bd9bff0d);
   border-radius: 15px;
 }
 .design-tennis .sidebar-create {
@@ -337,12 +337,12 @@
 .design-tennis .sidebar-note {
   padding: 15px 10px;
   margin: 15px 0;
-  border: 1px solid #ff8fbe13;
+  border: 1px solid #7950bd13;
   border-radius: 15px;
-  background: #ff4f9a05;
+  background: #bd9bff05;
 }
 .design-tennis .app-topbar {
-  background: #0e0b0e;
+  background: #ffffff;
   padding-left: 30px;
   padding-right: 30px;
   height: 80px;
@@ -353,7 +353,7 @@
 .design-tennis .app-search {
   border-radius: 13px;
   padding: 10px 13px;
-  background: #191419;
+  background: #ffffff;
   max-width: 290px;
 }
 .design-tennis .app-search input {
@@ -373,9 +373,9 @@
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   gap: 12px;
-  border: 1px solid #ff8fbe22;
+  border: 1px solid #7950bd22;
   border-radius: 25px;
-  background: linear-gradient(120deg, #3b1b2e, #25131f 60%, #171116);
+  background: linear-gradient(120deg, #ffffff, #ffffff 60%, #ffffff);
   overflow: hidden;
   min-height: 238px;
   margin-bottom: 26px;
@@ -388,7 +388,7 @@
   z-index: 1;
 }
 .dashboard-welcome .eyebrow {
-  color: #f5a6c9;
+  color: #7034cf;
   font-size: 8px;
   letter-spacing: 1.5px;
 }
@@ -420,7 +420,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, #190d18ab, transparent 70%);
+  background: linear-gradient(0deg, #ffffffab, transparent 70%);
 }
 .welcome-photo .editorial-photo {
   object-position: 58% 40%;
@@ -437,7 +437,7 @@
   font-size: 10px;
 }
 .welcome-photo > span svg {
-  color: #ff8fbe;
+  color: #7034cf;
 }
 .dashboard-section-heading {
   display: flex;
@@ -467,10 +467,10 @@
   margin-bottom: 30px;
 }
 .dashboard-space {
-  border: 1px solid #ffffff0b;
+  border: 1px solid #7950bd0b;
   border-radius: 20px;
   overflow: hidden;
-  background: #181318;
+  background: #ffffff;
   position: relative;
   padding-bottom: 14px;
   transition:
@@ -480,7 +480,7 @@
 }
 .dashboard-space:hover {
   transform: translateY(-3px);
-  border-color: #ff8fbe44;
+  border-color: #7950bd44;
 }
 .dashboard-space .editorial-photo {
   height: 113px;
@@ -494,9 +494,9 @@
   height: 33px;
   margin: -17px 13px 8px;
   border-radius: 11px;
-  background: linear-gradient(130deg, #fca1c8, #e34f93);
-  border: 3px solid #181318;
-  color: #291020;
+  background: linear-gradient(130deg, #bd9bff, #7a3cf1);
+  border: 3px solid #7950bd;
+  color: #ffffff;
 }
 .dashboard-space > strong {
   display: block;
@@ -509,7 +509,7 @@
   align-items: center;
   justify-content: space-between;
   font-size: 8px;
-  color: #c49aae;
+  color: #716885;
   margin: 9px 13px 0;
   gap: 4px;
 }
@@ -517,17 +517,17 @@
   flex-shrink: 0;
 }
 .stories-heading > svg {
-  color: #ff8fbe;
+  color: #7034cf;
 }
 .design-tennis .feed-composer {
   border-radius: 21px;
-  background: #171317;
-  border-color: #ffffff0e;
+  background: #ffffff;
+  border-color: #7950bd0e;
 }
 .design-tennis .post-card {
   border-radius: 23px;
-  background: #151215;
-  border-color: #ffffff0d;
+  background: #ffffff;
+  border-color: #7950bd0d;
 }
 .design-tennis .post-body {
   font-size: 13px;
@@ -549,19 +549,19 @@
   margin-top: 20px;
 }
 .design-tennis .rail-community small {
-  color: #b196a4;
+  color: #716885;
 }
 .dashboard-profile {
-  border: 1px solid #ffffff0d;
+  border: 1px solid #7950bd0d;
   border-radius: 24px;
-  background: #171217;
+  background: #ffffff;
   overflow: hidden;
   text-align: center;
   padding-bottom: 16px;
 }
 .dashboard-profile-cover {
-  background: linear-gradient(120deg, #ff9ac4, #bd3975);
-  color: #381326;
+  background: linear-gradient(120deg, #bd9bff, #7a3cf1);
+  color: #ffffff;
   min-height: 94px;
   padding: 15px 18px;
   display: flex;
@@ -577,7 +577,7 @@
   width: 72px;
   height: 72px;
   margin: -35px auto 10px;
-  border: 5px solid #171217;
+  border: 5px solid #7950bd;
   position: relative;
 }
 .dashboard-profile h2 {
@@ -587,12 +587,12 @@
 }
 .profile-handle {
   font-size: 9px;
-  color: #aa8c9c;
+  color: #716885;
 }
 .dashboard-profile > p {
   font-size: 10px;
   line-height: 1.9;
-  color: #c5aeba;
+  color: #716885;
   padding: 12px 23px 15px;
   overflow-wrap: anywhere;
 }
@@ -603,24 +603,24 @@
 }
 .private-summary {
   margin: 21px 18px 9px;
-  border-top: 1px solid #ffffff0a;
+  border-top: 1px solid #7950bd0a;
   padding-top: 15px;
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
 .private-summary > span {
   font-size: 8px;
-  color: #b399a7;
+  color: #716885;
 }
 .private-summary > span + span {
-  border-left: 1px solid #ffffff0a;
+  border-left: 1px solid #7950bd0a;
 }
 .private-summary strong {
   display: block;
   font-size: 22px;
   line-height: 1.3;
   font-weight: 500;
-  color: #ffb1d1;
+  color: #7034cf;
   margin-bottom: 4px;
 }
 .summary-privacy {
@@ -629,12 +629,12 @@
   justify-content: center;
   gap: 4px;
   font-size: 7px;
-  color: #9e8190;
+  color: #716885;
 }
 .design-tennis .gentle-reminder {
   border-radius: 23px;
   padding: 24px;
-  background: linear-gradient(145deg, #57253f, #24151f);
+  background: linear-gradient(145deg, #ffffff, #ffffff);
 }
 .design-tennis .gentle-reminder h3 {
   font-size: 23px;
@@ -644,8 +644,8 @@
 }
 .design-tennis .rail-section {
   padding: 20px 15px;
-  background: #141114;
-  border: 1px solid #ffffff09;
+  background: #ffffff;
+  border: 1px solid #7950bd09;
   border-radius: 20px;
 }
 .design-tennis .rail-heading h3 {
@@ -660,7 +660,7 @@
 .design-tennis .app-community-card {
   padding: 0 21px 20px;
   border-radius: 24px;
-  background: #171317;
+  background: #ffffff;
   overflow: hidden;
 }
 .design-tennis .app-community-card > a {
@@ -679,9 +679,9 @@
   margin-top: -23px;
   margin-bottom: 15px;
   border-radius: 16px;
-  border: 4px solid #171317;
-  background: linear-gradient(140deg, #ffb1d1, #de4b8c);
-  color: #29101e;
+  border: 4px solid #7950bd;
+  background: linear-gradient(140deg, #f0eaff, #7a3cf1);
+  color: #ffffff;
   width: 48px;
   height: 48px;
 }
@@ -695,10 +695,10 @@
   height: 31px;
   display: grid;
   place-items: center;
-  background: #18101599;
-  border: 1px solid #ffffff20;
+  background: #ffffff99;
+  border: 1px solid #7950bd20;
   border-radius: 10px;
-  color: #fff5f9;
+  color: #2c2645;
   backdrop-filter: blur(10px);
 }
 .design-tennis .app-community-card h2 {
@@ -724,7 +724,7 @@
   border-radius: 25px;
   padding: 28px;
   min-height: 350px;
-  background: #181117;
+  background: #ffffff;
 }
 .design-tennis .community-cover-photo {
   position: absolute;
@@ -736,8 +736,8 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, #181117 25%, #181117e8 48%, #18111735),
-    linear-gradient(0deg, #181117c9, transparent 55%);
+    linear-gradient(90deg, #ffffff 25%, #ffffffe8 48%, #ffffff35),
+    linear-gradient(0deg, #ffffffc9, transparent 55%);
 }
 .design-tennis .community-cover h1 {
   font-weight: 500;
@@ -748,14 +748,14 @@
 .design-tennis .community-cover > p {
   max-width: 330px;
   font-size: 11px;
-  color: #dcc1ce;
+  color: #716885;
 }
 .design-tennis .community-cover > .topic-symbol {
   height: 48px;
   width: 48px;
   margin-bottom: 20px;
   border-radius: 15px;
-  background: #ff8fbe20;
+  background: #bd9bff20;
 }
 .design-tennis .community-cover .topic-symbol svg {
   width: 27px;
@@ -1251,8 +1251,8 @@
   }
   .community-cover-shade {
     background:
-      linear-gradient(90deg, #181117eb, #18111777),
-      linear-gradient(0deg, #181117, transparent 75%);
+      linear-gradient(90deg, #ffffffeb, #ffffff77),
+      linear-gradient(0deg, #ffffff, transparent 75%);
   }
   .design-tennis .community-cover h1 {
     font-size: 28px;

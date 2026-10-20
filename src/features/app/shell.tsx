@@ -67,7 +67,8 @@ export function AppShell({
   }
   return (
     <div
-      className="app-layout design-tennis"
+      className="app-layout design-tennis theme-chapters"
+      data-theme-version="reference-light-3"
       data-preview={preview ? "true" : undefined}
     >
       {preview && (

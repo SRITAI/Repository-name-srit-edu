@@ -1,10 +1,10 @@
 # sritedu
 
-A black-and-pink peer-support community for adults 18+. Built in this workspace with Next.js App Router, TypeScript, Tailwind tokens, Motion, Radix Dialog, Lucide, Zod, and Supabase Auth/PostgreSQL/Storage/Realtime.
+A lavender, white and purple peer-support community for adults 18+. Built in this workspace with Next.js App Router, TypeScript, Tailwind tokens, Motion, Radix Dialog, Lucide, Zod, and Supabase Auth/PostgreSQL/Storage/Realtime.
 
-The black-and-pink interface is deployed at [sritedu.online](https://sritedu.online/). The [dashboard preview](https://sritedu.online/preview/home) is visibly labelled as fictional. Live Supabase account and media verification remains pending; deploying the interface does not complete backend setup.
+The lavender, white and purple interface is deployed at [sritedu.online](https://sritedu.online/). The [dashboard preview](https://sritedu.online/preview/home) is visibly labelled as fictional. Live Supabase account and media verification remains pending; deploying the interface does not complete backend setup.
 
-Latest visual review: [desktop/mobile screenshots and design checks](docs/design-review/README.md). The refresh includes rounded dashboard panels, locally hosted Poppins and downloaded editorial photography; see [design references and photo credits](docs/design-assets.md). Historical backend verification: [2026-10-20 report](docs/review-2026-10-20/README.md). Follow the [Supabase setup guide](docs/SUPABASE_SETUP.md) for secure configuration, migration order, bucket policies, Realtime and email callback URLs.
+Latest visual review: [desktop/mobile screenshots and theme checks](docs/theme-correction/README.md). The current theme follows the reference’s lavender canvas, white sidebar/cards, violet gradient headers and blue buttons in a dashboard homepage. It includes locally hosted Poppins and downloaded editorial photography; see [design references and photo credits](docs/design-assets.md). Historical backend verification: [2026-10-20 report](docs/review-2026-10-20/README.md). Follow the [Supabase setup guide](docs/SUPABASE_SETUP.md) for secure configuration, migration order, bucket policies, Realtime and email callback URLs.
 
 Repository replacement: [validation and remaining setup](docs/REPOSITORY_REPLACEMENT.md). This community application replaces the former education website. Use a fresh Supabase project for its schema; the former education database is not migrated by a source-code push.
 

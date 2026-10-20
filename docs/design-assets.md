@@ -4,8 +4,10 @@ The October 2026 refresh takes its rounded cards, gradient card headers, profile
 panel and grouped dashboard layout from [Dashboard Tennis by Ceptari Tyas](https://www.figma.com/community/file/882171933811828307/dashboard-tennis).
 The public preview was inspected via [TitanUI](https://www.titanui.com/116736-modern-tennis-dashboard-figma-template/)
 and the matching [Figma Elements listing](https://figmaelements.com/dashboard-tennis-app/).
-The implementation uses sritedu's black and pink palette and original peer-support
-copy. It does not include the tennis template's illustrations or sports statistics.
+The implementation follows the reference’s light lavender canvas, white cards,
+violet gradient headers and blue action buttons, with sritedu peer-support copy.
+The public homepage uses a dashboard composition instead of the former dark
+marketing hero. This palette supersedes the earlier black/pink direction. It does not include the tennis template's illustrations or sports statistics.
 
 Editable Figma layers were unavailable during implementation. The reference's
 exact font and measurements have **not** been verified. Poppins is the selected

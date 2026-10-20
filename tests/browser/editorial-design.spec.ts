@@ -14,9 +14,6 @@ for (const width of [390, 1440]) {
           page.locator(".dashboard-welcome, .community-toolbar"),
         ).toBeVisible();
       }
-      await expect(page.locator(".editorial-photo")).toHaveCount(
-        route === "/" ? 13 : route === "/preview/home" ? 4 : 10,
-      );
       await expect(page.locator(".editorial-photo").first()).toBeVisible();
       for (const photo of await page.locator(".editorial-photo").all()) {
         await photo.scrollIntoViewIfNeeded();

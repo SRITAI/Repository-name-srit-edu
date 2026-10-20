@@ -16,7 +16,7 @@ test("public landing and real routes remain separate from the labelled preview",
 }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    /You don’t have to.*alone/,
+    /Your story.*Your people.*Your next chapter/,
   );
   await expect(
     page
@@ -295,6 +295,7 @@ for (const width of [360, 390, 768, 1440])
 test("important public and private preview screens pass automated accessibility checks", async ({
   page,
 }) => {
+  const issues: { path: string; violations: unknown[] }[] = [];
   for (const path of [
     "/",
     "/preview/home",
@@ -302,23 +303,31 @@ test("important public and private preview screens pass automated accessibility 
     "/help",
     "/preview/settings",
     "/preview/messages",
+    "/preview/messages/00000000-0000-4000-8000-000000000040",
+    "/preview/communities",
+    "/preview/u/alex_here",
+    "/preview/discover",
+    "/preview/onboarding",
+    "/preview/admin",
   ]) {
     await page.goto(path);
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
       .analyze();
-    expect(
-      results.violations.map((v) => ({
-        id: v.id,
-        help: v.help,
-        nodes: v.nodes.map((n) => ({
-          target: n.target,
-          summary: n.failureSummary,
+    if (results.violations.length)
+      issues.push({
+        path,
+        violations: results.violations.map((v) => ({
+          id: v.id,
+          help: v.help,
+          nodes: v.nodes.map((n) => ({
+            target: n.target,
+            summary: n.failureSummary,
+          })),
         })),
-      })),
-      path,
-    ).toEqual([]);
+      });
   }
+  expect(issues).toEqual([]);
 });
 
 test("profile onboarding edits crop a photo, keep topics private, and follow username changes", async ({
@@ -336,13 +345,11 @@ test("profile onboarding edits crop a photo, keep topics private, and follow use
   })
     .png()
     .toBuffer();
-  await dialog
-    .locator(".upload-avatar input")
-    .setInputFiles({
-      name: "portrait.png",
-      mimeType: "image/png",
-      buffer: photo,
-    });
+  await dialog.locator(".upload-avatar input").setInputFiles({
+    name: "portrait.png",
+    mimeType: "image/png",
+    buffer: photo,
+  });
   await expect(dialog.locator(".avatar-picker>.avatar img")).toBeVisible();
   await dialog.getByRole("button", { name: "Continue", exact: true }).click();
   await dialog
