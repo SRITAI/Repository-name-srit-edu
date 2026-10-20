@@ -108,6 +108,7 @@ export const icons: Record<string, LucideIcon> = {
   loader: LoaderCircle,
   download: Download,
   menu: Menu,
+  close: X,
   sun: Sun,
   moon: Moon,
   link: LinkIcon,

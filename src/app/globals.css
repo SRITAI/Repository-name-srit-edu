@@ -394,13 +394,13 @@ small {
   border: 1px solid var(--border);
   padding: 20px;
   border-radius: 18px;
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 14px;
 }
 .hero {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   min-height: 720px;
   position: relative;
   align-items: center;
@@ -409,6 +409,7 @@ small {
 }
 .hero-copy {
   position: relative;
+  min-width: 0;
   z-index: 2;
   padding-bottom: 5px;
 }
@@ -4491,7 +4492,7 @@ small {
   }
   .hero {
     min-height: 650px;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .hero-art {
     transform: scale(0.78);
@@ -4742,6 +4743,22 @@ small {
   .marketing-header {
     margin: 16px 18px 0;
     padding: 14px 19px;
+    flex-wrap: wrap;
+    column-gap: 10px;
+  }
+  .marketing-header.menu-open {
+    border-radius: 28px;
+  }
+  .marketing-header .mobile-menu {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .mobile-menu-panel {
+    position: static;
+    display: flex;
+    flex-basis: 100%;
+    margin-top: 14px;
   }
   .marketing-header .logo {
     font-size: 25px;
@@ -4751,7 +4768,7 @@ small {
     height: 30px;
   }
   .marketing-header nav {
-    gap: 18px;
+    display: none;
   }
   .marketing-header nav a {
     font-size: 10px;
@@ -4768,7 +4785,7 @@ small {
     min-height: 33px;
   }
   .hero {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     min-height: auto;
     padding-top: 60px;
     padding-bottom: 20px;
@@ -5546,17 +5563,21 @@ small {
     letter-spacing: 0;
   }
   .hero-actions {
-    gap: 20px;
+    flex-direction: column;
+    gap: 12px;
     margin-top: 25px;
   }
   .hero-actions .button {
-    font-size: 10px;
+    width: 100%;
+    max-width: 320px;
+    font-size: 12px;
     padding: 13px 17px;
-    min-height: 46px;
+    min-height: 48px;
     gap: 8px;
   }
   .explore-link {
-    font-size: 10px;
+    min-height: 44px;
+    font-size: 12px;
     gap: 8px;
   }
   .round-arrow {
@@ -6757,16 +6778,6 @@ small {
   .hero h1 {
     font-size: 49px;
     letter-spacing: -2.8px;
-  }
-  .hero-actions {
-    gap: 14px;
-  }
-  .hero-actions .button {
-    padding: 13px 15px;
-    font-size: 9px;
-  }
-  .explore-link {
-    font-size: 9px;
   }
   .hero-description {
     font-size: 10px;

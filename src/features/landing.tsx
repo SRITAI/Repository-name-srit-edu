@@ -9,7 +9,17 @@ export function Landing() {
   const [menu, setMenu] = useState(false);
   return (
     <div className="landing">
-      <header className="marketing-header">
+      <header
+        className={`marketing-header${menu ? " menu-open" : ""}`}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            setMenu(false);
+            event.currentTarget
+              .querySelector<HTMLButtonElement>(".mobile-menu")
+              ?.focus();
+          }
+        }}
+      >
         <Logo />
         <nav aria-label="Main navigation">
           <a href="#communities">Communities</a>
@@ -24,16 +34,23 @@ export function Landing() {
             Join sritedu <Icon name="arrow" size={16} />
           </Link>
           <button
+            type="button"
             className="icon-button mobile-menu"
-            aria-label="Open navigation"
+            aria-label={menu ? "Close navigation" : "Open navigation"}
             aria-expanded={menu}
+            aria-controls="mobile-navigation"
             onClick={() => setMenu(!menu)}
           >
-            <Icon name="menu" />
+            <Icon name={menu ? "close" : "menu"} />
           </button>
         </div>
         {menu && (
-          <div className="mobile-menu-panel">
+          <div
+            id="mobile-navigation"
+            className="mobile-menu-panel"
+            role="navigation"
+            aria-label="Mobile navigation"
+          >
             <a href="#communities" onClick={() => setMenu(false)}>
               Communities
             </a>
