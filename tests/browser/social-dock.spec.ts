@@ -98,3 +98,20 @@ test("public shortcuts use real routes and reduced motion removes dock animation
   await dock.getByRole("link", { name: "Feed", exact: true }).click();
   await expect(page).toHaveURL(/sign-in/);
 });
+
+test("saved app motion preference also applies to the posting sheet", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/preview/settings");
+  await expect(page.locator('[data-preview-ready="true"]')).toBeVisible();
+  await page.getByRole("switch", { name: /Reduce motion/ }).check();
+  await page.getByRole("button", { name: "Save my preferences", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("Your boundaries have been saved.");
+  const dock = page.getByRole("navigation", { name: "Social navigation" });
+  await dock.getByRole("link", { name: "Feed", exact: true }).click();
+  expect(await dock.evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+  await dock.getByRole("button", { name: "Share post", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Create a post", exact: true });
+  await expect(dialog).toBeVisible();
+  expect(await dialog.evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+});

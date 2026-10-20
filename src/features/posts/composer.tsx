@@ -123,7 +123,7 @@ export function Composer({
   }
   return (
     <Modal
-      className="post-composer-sheet"
+      className={"post-composer-sheet" + (data.settings.reduce_motion ? " reduce-motion" : "")}
       open={open}
       onClose={() => {
         if (!busy) onClose();

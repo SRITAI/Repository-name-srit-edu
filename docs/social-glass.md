@@ -15,3 +15,7 @@ This update keeps the current lavender canvas, white cards, violet gradients, bl
 The local execution environment was unavailable during implementation. The UI checks workflow runs lint, unit tests, a production build, type checking and the browser suite using an installed Playwright Chromium. The social dock suite covers 320, 390, 768 and 1440 px layouts, all six actions, chat input clearance, category filtering, request creation, preview post persistence, public auth routes and reduced motion. Browser screenshots and failure diagnostics are retained as workflow artifacts.
 
 The workflow result is the source of truth for executed checks. Adding tests is not evidence that they passed. Supabase signup, private Storage and Realtime remain outside this preview verification and require configured live infrastructure.
+
+### Recorded run
+
+[UI checks, run 39465231359](https://github.com/SRITAI/Repository-name-srit-edu/actions/runs/39465231359) on commit f672262 passed lint, all six media unit tests, production build, type checking and all 27 browser tests (including twelve-screen accessibility checks). Eight feed/chat screenshots are in that run's browser-report artifact. A follow-up extends the saved app motion preference to the portal-mounted composer and adds a regression case; check its own workflow result before treating it as verified.

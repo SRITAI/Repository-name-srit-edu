@@ -508,3 +508,5 @@
 [data-reduce-motion="true"] .dock-item,
 [data-reduce-motion="true"] .dock-create-icon::after,
 [data-reduce-motion="true"] .orbit-image { transition: none; }
+
+.modal.post-composer-sheet.reduce-motion { animation: none; }
