@@ -28,13 +28,15 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - name: Install media test dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
       - run: npm test
       - run: npm run build
       - run: npm run typecheck
-      - name: Install browser and media test dependencies
-        run: |
-          npx playwright install --with-deps chromium
-          sudo apt-get install -y ffmpeg
+      - name: Install browser test dependency
+        run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
       - name: Preserve browser diagnostics
         if: always()

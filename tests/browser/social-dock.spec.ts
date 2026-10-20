@@ -58,8 +58,10 @@ test("bottom share opens a mobile sheet and publishes a persistent preview post"
     .getByRole("button", { name: "Share post", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Create a post", exact: true });
   await expect(dialog).toBeVisible();
-  const box = await dialog.boundingBox();
-  expect(Math.abs(box!.y + box!.height - 844)).toBeLessThan(2);
+  await expect.poll(async () => {
+    const box = await dialog.boundingBox();
+    return Math.abs(box!.y + box!.height - 844);
+  }).toBeLessThan(2);
   await dialog.getByLabel("Your story").fill("A fictional new chapter shared from the bottom panel.");
   await dialog.getByLabel("Community", { exact: true }).selectOption("moving-forward");
   await dialog.getByRole("button", { name: "Share your story", exact: true }).click();
