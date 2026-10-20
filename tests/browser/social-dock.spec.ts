@@ -109,9 +109,11 @@ test("saved app motion preference also applies to the posting sheet", async ({ p
   await expect(page.getByRole("status")).toContainText("Your boundaries have been saved.");
   const dock = page.getByRole("navigation", { name: "Social navigation" });
   await dock.getByRole("link", { name: "Feed", exact: true }).click();
-  expect(await dock.evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+  await expect(page).toHaveURL(/\/preview\/home$/);
+  await expect(page.locator('[data-preview-ready="true"]')).toBeVisible();
+  await expect(dock).toHaveCSS("animation-name", "none");
   await dock.getByRole("button", { name: "Share post", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Create a post", exact: true });
   await expect(dialog).toBeVisible();
-  expect(await dialog.evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+  await expect(dialog).toHaveCSS("animation-name", "none");
 });
