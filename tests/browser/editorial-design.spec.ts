@@ -11,7 +11,7 @@ for (const width of [390, 1440]) {
       if (route.startsWith("/preview")) {
         await expect(page.locator('[data-preview-ready="true"]')).toBeVisible();
         await expect(
-          page.locator(".dashboard-welcome, .community-toolbar"),
+          page.locator(".social-feed-header, .community-toolbar"),
         ).toBeVisible();
       }
       await expect(page.locator(".editorial-photo").first()).toBeVisible();
@@ -44,16 +44,16 @@ for (const width of [390, 1440]) {
     }
     await page.goto("/preview/home");
     await page
-      .getByRole("button", { name: "Start a new chapter", exact: true })
+      .getByRole("button", { name: "New post", exact: true })
       .click();
     await expect(
       page.getByRole("dialog").getByLabel("Your story"),
     ).toBeVisible();
     await page.keyboard.press("Escape");
-    const finance = page
-      .locator(".dashboard-space")
-      .filter({ hasText: "Financial stress" });
-    await finance.click();
+    await page.getByRole("navigation", { name: "Social navigation" })
+      .getByRole("link", { name: "Categories", exact: true }).click();
+    await page.locator(".app-community-card").filter({ hasText: "Financial Stress" })
+      .getByRole("link").first().click();
     await expect(page).toHaveURL(/communities\/financial-stress$/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       "Financial Stress",

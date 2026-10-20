@@ -151,73 +151,48 @@ export function Home() {
   return (
     <div className="feed-layout">
       <section className="feed-column">
-        <section className="dashboard-welcome">
-          <div className="page-heading">
-            <span className="eyebrow">YOUR SPACE TO EXHALE</span>
-            <h1>
-              A little less alone,
-              <br />
-              <span>{data.me.display_name.split(" ")[0]}.</span>
-            </h1>
-            <p>Whatever today looks like, you’re welcome here.</p>
-            <button
-              className="button primary small"
-              onClick={() => setCreate(true)}
-            >
-              Start a new chapter <Icon name="edit" size={16} />
-            </button>
-          </div>
-          <div className="welcome-photo">
-            <EditorialPhoto topic="finding-connection" eager />
-            <span>
-              <Icon name="heart" size={15} /> You belong here.
-            </span>
-          </div>
-        </section>
-        <div className="dashboard-section-heading">
+        <header className="social-feed-header">
           <div>
-            <span className="eyebrow muted">A FAMILIAR FEELING</span>
-            <h2>Find your kind of space</h2>
+            <span className="eyebrow">LITTLE MOMENTS. SHARED JOURNEYS.</span>
+            <h1>Your feed<span>.</span></h1>
+            <p>Hey {data.me.display_name.split(" ")[0]}, there’s room for your story.</p>
           </div>
-          <Link
-            className="text-link"
-            href={(preview ? "/preview" : "") + "/communities"}
-          >
-            View all <Icon name="arrow" size={14} />
-          </Link>
-        </div>
-        <div className="dashboard-spaces">
-          {["moving-forward", "financial-stress", "emotional-wellbeing"].map(
-            (slug) => {
-              const topic = topics.find((t) => t.slug === slug)!;
-              return (
+          <Button onClick={() => setCreate(true)} className="new-post-button">
+            <Icon name="plus" size={18} /> New post
+          </Button>
+        </header>
+        <section className="community-circles" aria-label="Your communities">
+          <div className="community-circles-heading">
+            <h2>Your communities</h2>
+            <Link href={(preview ? "/preview" : "") + "/communities"}>
+              All categories <Icon name="arrow" size={13} />
+            </Link>
+          </div>
+          <div className="community-orbits">
+            <button className="community-orbit create-orbit" onClick={() => setCreate(true)}>
+              <span className="orbit-image"><Avatar person={data.me} /><i><Icon name="plus" size={13} /></i></span>
+              <span>Your post</span>
+            </button>
+            {data.memberships.map((slug) => {
+              const topic = topics.find((t) => t.slug === slug);
+              return topic ? (
                 <Link
                   key={slug}
+                  className="community-orbit"
                   href={(preview ? "/preview" : "") + "/communities/" + slug}
-                  className="dashboard-space"
+                  aria-label={topic.name}
                 >
-                  <EditorialPhoto topic={slug} />
-                  <span className="space-icon">
-                    <Icon name={topic.icon} size={17} />
-                  </span>
-                  <strong>{topic.short}</strong>
-                  <span className="space-link">
-                    Find understanding <Icon name="arrow" size={13} />
-                  </span>
+                  <span className="orbit-image"><EditorialPhoto topic={slug} eager /></span>
+                  <span>{topic.short}</span>
                 </Link>
-              );
-            },
-          )}
-        </div>
-        <div className="dashboard-section-heading stories-heading">
-          <div>
-            <span className="eyebrow muted">
-              LITTLE MOMENTS. REAL FEELINGS.
-            </span>
-            <h2>Stories & shared journeys</h2>
+              ) : null;
+            })}
+            <Link className="community-orbit browse-orbit" href={(preview ? "/preview" : "") + "/communities"}>
+              <span className="orbit-image"><Icon name="compass" size={25} /></span>
+              <span>Find your circle</span>
+            </Link>
           </div>
-          <Icon name="sprout" size={22} />
-        </div>
+        </section>
         <div className="feed-composer">
           <div>
             <Avatar person={data.me} />

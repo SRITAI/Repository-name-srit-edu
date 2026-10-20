@@ -6,10 +6,11 @@ import { motion } from "motion/react";
 import { Logo, Icon, Avatar, Button } from "@/components/ui";
 import { useApp } from "./provider";
 import { Composer } from "../posts/composer";
+import { SocialDock } from "@/components/social-dock";
 const navigation = [
-  { path: "/home", label: "Home", icon: "home" },
+  { path: "/home", label: "Feed", icon: "home" },
   { path: "/communities", label: "Communities", icon: "users" },
-  { path: "/discover", label: "Discover people", icon: "compass" },
+  { path: "/discover", label: "Add friends", icon: "compass" },
   { path: "/messages", label: "Messages", icon: "message" },
   { path: "/notifications", label: "Notifications", icon: "bell" },
   { path: "/profile", label: "My profile", icon: "user" },
@@ -40,7 +41,7 @@ export function AppShell({
               {
                 home: "Your space",
                 communities: "Communities",
-                discover: "Discover people",
+                discover: "Add friends",
                 notifications: "Notifications",
                 settings: "Settings",
                 admin: "Community care",
@@ -67,8 +68,8 @@ export function AppShell({
   }
   return (
     <div
-      className="app-layout design-tennis theme-chapters"
-      data-theme-version="reference-light-3"
+      className="app-layout design-tennis theme-chapters social-app"
+      data-theme-version="social-glass-4"
       data-preview={preview ? "true" : undefined}
     >
       {preview && (
@@ -218,38 +219,21 @@ export function AppShell({
           {children}
         </main>
       </div>
-      <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
-        {[
-          { path: "/home", icon: "home", label: "Home" },
-          { path: "/communities", icon: "users", label: "Spaces" },
-          { path: "create", icon: "plus", label: "Share" },
-          { path: "/messages", icon: "message", label: "Messages" },
-          { path: "/u/" + data.me.username, icon: "user", label: "Profile" },
-        ].map((n) =>
-          n.path === "create" ? (
-            <button
-              key={n.path}
-              className="mobile-create"
-              onClick={() => setCreate(true)}
-              aria-label="Create a story"
-            >
-              <span>
-                <Icon name="plus" size={23} />
-              </span>
-              <small>Share</small>
-            </button>
-          ) : (
-            <Link
-              href={prefix + n.path}
-              key={n.path}
-              className={("/" + path).startsWith(n.path) ? "active" : ""}
-            >
-              <Icon name={n.icon} size={21} />
-              <small>{n.label}</small>
-            </Link>
-          ),
-        )}
-      </nav>
+      <SocialDock
+        path={path}
+        prefix={prefix}
+        username={data.me.username}
+        onCreate={() => setCreate(true)}
+        friendRequests={data.connections.filter(
+          (c) => c.status === "pending" && c.recipient_id === data.me.id,
+        ).length}
+        unreadMessages={data.conversations
+          .filter((c) => !c.ended && !c.archived)
+          .reduce((sum, c) => sum + (c.unread_count ?? c.messages.filter(
+            (m) => m.sender_id !== data.me.id && (!c.last_read_at || m.created_at > c.last_read_at),
+          ).length), 0)}
+        reduceMotion={data.settings.reduce_motion}
+      />
       {create && <Composer open onClose={() => setCreate(false)} />}
     </div>
   );

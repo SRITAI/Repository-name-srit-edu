@@ -32,7 +32,7 @@ export function Discovery() {
       <div className="page-heading">
         <span className="eyebrow muted">A SHARED FEELING IS A START</span>
         <h1>
-          People who <span>get it.</span>
+          Add friends<span>.</span>
         </h1>
         <p>
           Say a small hello. A conversation opens only when you both say yes.
@@ -170,7 +170,7 @@ export function Discovery() {
                           setNote("");
                         }}
                       >
-                        <Icon name="plus" size={16} /> Send a connection request
+                        <Icon name="plus" size={16} /> Add friend
                       </Button>
                     )}
                   </article>

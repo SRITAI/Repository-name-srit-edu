@@ -123,6 +123,7 @@ export function Composer({
   }
   return (
     <Modal
+      className="post-composer-sheet"
       open={open}
       onClose={() => {
         if (!busy) onClose();
@@ -132,7 +133,7 @@ export function Composer({
           ? "Edit your story"
           : journey
             ? "A new chapter in your journey"
-            : "A little of your world"
+            : "Create a post"
       }
     >
       <div className="composer-person">

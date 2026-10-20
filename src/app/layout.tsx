@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import "./reference-design.css";
 import "./chapters-theme.css";
+import "./social-glass.css";
 const poppins = localFont({
   src: [
     {

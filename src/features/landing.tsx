@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Logo, Icon } from "@/components/ui";
 import { EditorialPhoto } from "@/components/editorial-photo";
 import { topics } from "@/lib/topics";
+import { SocialDock } from "@/components/social-dock";
 
 const steps = [
   {
@@ -32,8 +33,8 @@ export function Landing() {
   const reduced = useReducedMotion();
   return (
     <div
-      className="landing design-tennis theme-chapters"
-      data-theme-version="reference-light-3"
+      className="landing design-tennis theme-chapters social-public"
+      data-theme-version="social-glass-4"
     >
       <aside className="public-sidebar">
         <Logo />
@@ -372,6 +373,7 @@ export function Landing() {
           <p>Peer support. Not clinical care or an emergency service.</p>
         </footer>
       </div>
+      <SocialDock />
     </div>
   );
 }

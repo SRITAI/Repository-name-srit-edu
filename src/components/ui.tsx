@@ -247,19 +247,21 @@ export function Modal({
   title,
   children,
   wide = false,
+  className,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
   wide?: boolean;
+  className?: string;
 }) {
   return (
     <Dialog.Root open={open} onOpenChange={(v) => !v && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="modal-overlay" />
         <Dialog.Content
-          className={clsx("modal", wide && "wide")}
+          className={clsx("modal", wide && "wide", className)}
           aria-describedby={undefined}
         >
           <div className="modal-header">
