@@ -27,6 +27,7 @@ export function SocialDock({
   const reduced = reduceMotion || !!systemReducedMotion;
   const items = [
     { path: "/home", icon: "home", label: "Feed", count: 0 },
+    { path: "/communities", icon: "compass", label: "Categories", count: 0 },
     { path: "create", icon: "plus", label: "Share post", count: 0 },
     {
       path: "/messages",

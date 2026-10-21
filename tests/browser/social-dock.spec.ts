@@ -21,16 +21,20 @@ for (const width of [320, 390, 768, 1440]) {
     expect(bounds).not.toBeNull();
     expect(bounds!.x).toBeGreaterThanOrEqual(0);
     expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
+    const plus = await dock.locator(".dock-create-icon").boundingBox();
+    expect(
+      Math.abs(plus!.x + plus!.width / 2 - (bounds!.x + bounds!.width / 2)),
+    ).toBeLessThan(1);
     for (const control of await dock.locator("a,button").all()) {
       const box = await control.boundingBox();
       expect(box!.width).toBeGreaterThanOrEqual(44);
       expect(box!.height).toBeGreaterThanOrEqual(44);
       await expect(control).toBeInViewport();
     }
-    await expect(dock.locator("a,button")).toHaveCount(4);
-    await expect(
-      dock.getByRole("link", { name: /Add friends|Categories/ }),
-    ).toHaveCount(0);
+    await expect(dock.locator("a,button")).toHaveCount(5);
+    await expect(dock.getByRole("link", { name: /Add friends/ })).toHaveCount(
+      0,
+    );
     const friends = page
       .locator(".app-topbar")
       .getByRole("link", { name: /^Add friends/ });
@@ -46,10 +50,10 @@ for (const width of [320, 390, 768, 1440]) {
       "Add friends.",
     );
     await expect(friends).toHaveAttribute("aria-current", "page");
-    await dock.getByRole("link", { name: "Feed", exact: true }).click();
-    await page
-      .getByRole("link", { name: "All categories", exact: true })
-      .click();
+    await dock.getByRole("link", { name: "Categories", exact: true }).click();
+    await expect(
+      dock.getByRole("link", { name: "Categories", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
     await expect(
       page.getByRole("textbox", { name: "Search communities" }),
     ).toBeVisible();
@@ -129,19 +133,15 @@ test("bottom share opens a mobile sheet and publishes a persistent preview post"
     .click();
   await expect(dialog).not.toBeVisible();
   await expect(
-    page
-      .locator(".post-card")
-      .filter({
-        hasText: "A fictional new chapter shared from the bottom panel.",
-      }),
+    page.locator(".post-card").filter({
+      hasText: "A fictional new chapter shared from the bottom panel.",
+    }),
   ).toBeVisible();
   await page.reload();
   await expect(
-    page
-      .locator(".post-card")
-      .filter({
-        hasText: "A fictional new chapter shared from the bottom panel.",
-      }),
+    page.locator(".post-card").filter({
+      hasText: "A fictional new chapter shared from the bottom panel.",
+    }),
   ).toBeVisible();
 });
 
@@ -177,7 +177,10 @@ test("public shortcuts use real routes and reduced motion removes dock animation
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const dock = page.getByRole("navigation", { name: "Community shortcuts" });
-  await expect(dock.locator("a,button")).toHaveCount(4);
+  await expect(dock.locator("a,button")).toHaveCount(5);
+  await expect(
+    dock.getByRole("link", { name: "Categories", exact: true }),
+  ).toHaveAttribute("href", "/communities");
   await expect(
     page
       .locator(".marketing-header")

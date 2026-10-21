@@ -18,7 +18,7 @@
   z-index: 70;
   isolation: isolate;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 2px;
   width: min(460px, calc(100% - 28px));
   padding: 7px;
@@ -641,7 +641,7 @@
   animation: none;
 }
 
-/* Four focused dock actions; friend discovery lives in the header. */
+/* Five balanced dock actions; friend discovery lives in the header. */
 .header-friends {
   position: relative;
   display: inline-flex;

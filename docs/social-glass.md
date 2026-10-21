@@ -2,7 +2,7 @@
 
 This update keeps the current lavender canvas, white cards, violet gradients, blue actions and self-hosted Poppins font.
 
-- The bottom dock is available on desktop and mobile: Feed, Share post, Messages and Profile. Friend discovery is available in the header; categories remain accessible through the feed’s All categories link and desktop community navigation.
+- The bottom dock is available on desktop and mobile: Feed, Categories, Share post, Messages and Profile. Share post occupies the middle of five equal-width columns. Friend discovery is available in the header; categories remain accessible through the feed’s All categories link and desktop community navigation.
 - Share post opens the existing audience-controlled composer. On mobile it appears as a glass bottom sheet; photos, videos, captions, drafts and community selection retain their existing behavior.
 - The feed starts with a compact heading, private membership shortcuts, composer and posts. Category circles link to communities; they do not represent unread user stories.
 - Friends retain shared-topic/language filtering and mutual connection acceptance before chat.
@@ -12,7 +12,7 @@ This update keeps the current lavender canvas, white cards, violet gradients, bl
 
 ## Verification
 
-The local execution environment was unavailable during implementation. The UI checks workflow runs lint, unit tests, a production build, type checking and the browser suite using an installed Playwright Chromium. The social dock suite covers 320, 390, 768 and 1440 px layouts, all four dock actions plus header friend discovery and feed category navigation, chat input clearance, category filtering, request creation, preview post persistence, public auth routes and reduced motion. Browser screenshots and failure diagnostics are retained as workflow artifacts.
+The local execution environment was unavailable during implementation. The UI checks workflow runs lint, unit tests, a production build, type checking and the browser suite using an installed Playwright Chromium. The social dock suite covers 320, 390, 768 and 1440 px layouts, all five dock actions, centered posting, header friend discovery and category navigation, chat input clearance, category filtering, request creation, preview post persistence, public auth routes and reduced motion. Browser screenshots and failure diagnostics are retained as workflow artifacts.
 
 The workflow result is the source of truth for executed checks. Adding tests is not evidence that they passed. Supabase signup, private Storage and Realtime remain outside this preview verification and require configured live infrastructure.
 
@@ -28,3 +28,9 @@ account route on the public homepage. Category artwork is unique across all ten
 category cards, with a separate homepage feature image. Square category crops stay
 inside their round thumbnail frames. Member avatars remain the same identity
 wherever that member appears.
+
+### Centered posting revision
+
+Restored Categories as the second dock action. The order is Feed, Categories,
+Share post, Messages, Profile, placing the plus icon at the exact horizontal
+center on phone and desktop. Add friends remains in the header.
