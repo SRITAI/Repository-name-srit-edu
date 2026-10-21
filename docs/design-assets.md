@@ -18,17 +18,27 @@ is included in the installed font package.
 
 ## Photography
 
-These Pexels photographs were downloaded on 2026-10-20, resized to 1200 pixels
+These Pexels photographs were downloaded on 2026-10-20 and 2026-10-21, resized to 1200 pixels
 wide and converted to WebP. They are served locally from
 `public/images/editorial`, without tracking or third-party image requests.
 
-| File                  | Photographer    | Source                                                                                                                   |
-| --------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `connection.webp`     | Ketut Subiyanto | [Women talking over coffee](https://www.pexels.com/photo/beautiful-women-friends-drinking-coffee-together-5047021/)      |
-| `moving-forward.webp` | Maria Tsegelnik | [A person looking out at the sea](https://www.pexels.com/photo/back-view-of-a-woman-sitting-by-the-seaside-10845595/)    |
-| `finance.webp`        | Kaboompics      | [Calculator and notebook](https://www.pexels.com/photo/calculator-and-notepad-placed-over-stack-of-paper-bills-4386373/) |
-| `studying.webp`       | Katerina Holmes | [Taking notes beside a laptop](https://www.pexels.com/photo/crop-student-with-laptop-and-notebook-5905875/)              |
-| `wellbeing.webp`      | Shashwat Goyar  | [Forest path in morning light](https://www.pexels.com/photo/serene-forest-path-at-sunrise-34565583/)                     |
+| File                     | Photographer      | Source                                                                                                                                                     |
+| ------------------------ | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `connection.webp`        | Ketut Subiyanto   | [Women talking over coffee](https://www.pexels.com/photo/beautiful-women-friends-drinking-coffee-together-5047021/)                                        |
+| `moving-forward.webp`    | Maria Tsegelnik   | [A person looking out at the sea](https://www.pexels.com/photo/back-view-of-a-woman-sitting-by-the-seaside-10845595/)                                      |
+| `finance.webp`           | Kaboompics        | [Calculator and notebook](https://www.pexels.com/photo/calculator-and-notepad-placed-over-stack-of-paper-bills-4386373/)                                   |
+| `studying.webp`          | Katerina Holmes   | [Taking notes beside a laptop](https://www.pexels.com/photo/crop-student-with-laptop-and-notebook-5905875/)                                                |
+| `wellbeing.webp`         | Shashwat Goyar    | [Forest path in morning light](https://www.pexels.com/photo/serene-forest-path-at-sunrise-34565583/)                                                       |
+| `relationships.webp`     | Ravi Roshan       | [Hands at sunset](https://www.pexels.com/photo/couple-holding-hands-at-sunset-20183377/)                                                                   |
+| `founder.webp`           | Andrea Piacquadio | [Coworkers discussing a laptop project](https://www.pexels.com/photo/focused-multiracial-coworkers-of-different-age-using-laptop-during-teamwork-3865844/) |
+| `career.webp`            | Sora Shimazaki    | [Completing a job application](https://www.pexels.com/photo/woman-filling-job-application-form-in-office-with-boss-5668858/)                               |
+| `family.webp`            | Pavel Danilyuk    | [Family conversation](https://www.pexels.com/photo/a-daughter-and-her-mother-talking-7055095/)                                                             |
+| `everything.webp`        | Atlantic Ambience | [Balanced stones on the beach](https://www.pexels.com/photo/stones-balanced-and-stacked-8026591/)                                                          |
+| `community-feature.webp` | MART PRODUCTION   | [Friends walking in a park](https://www.pexels.com/photo/group-of-friends-walking-in-the-park-8121667/)                                                    |
+
+Each of the ten categories now maps to a distinct photograph. The landing feature
+has its own separate image, so no category photograph repeats on the homepage.
+Category thumbnails and their destination community use consistent category artwork.
 
 [Pexels license](https://www.pexels.com/license/): free use and modification are
 permitted, subject to its restrictions. These are editorial illustrations of

@@ -28,6 +28,23 @@ for (const width of [390, 1440]) {
         );
         await expect(photo).toHaveAttribute("alt", /\S+/);
       }
+      const sources = await page
+        .locator(".editorial-photo")
+        .evaluateAll((nodes) =>
+          nodes.map((node) => (node as HTMLImageElement).getAttribute("src")),
+        );
+      expect(
+        new Set(sources).size,
+        route + " should have distinct editorial photos",
+      ).toBe(sources.length);
+      if (route === "/preview/home") {
+        for (const photo of await page
+          .locator(".orbit-image .editorial-photo")
+          .all()) {
+          const bounds = await photo.boundingBox();
+          expect(Math.abs(bounds!.width - bounds!.height)).toBeLessThan(1);
+        }
+      }
       await page.evaluate(() => document.fonts.ready);
       expect(
         await page.evaluate(() =>
@@ -43,17 +60,20 @@ for (const width of [390, 1440]) {
       ).toBe(true);
     }
     await page.goto("/preview/home");
-    await page
-      .getByRole("button", { name: "New post", exact: true })
-      .click();
+    await page.getByRole("button", { name: "New post", exact: true }).click();
     await expect(
       page.getByRole("dialog").getByLabel("Your story"),
     ).toBeVisible();
     await page.keyboard.press("Escape");
-    await page.getByRole("navigation", { name: "Social navigation" })
-      .getByRole("link", { name: "Categories", exact: true }).click();
-    await page.locator(".app-community-card").filter({ hasText: "Financial Stress" })
-      .getByRole("link").first().click();
+    await page
+      .getByRole("link", { name: "All categories", exact: true })
+      .click();
+    await page
+      .locator(".app-community-card")
+      .filter({ hasText: "Financial Stress" })
+      .getByRole("link")
+      .first()
+      .click();
     await expect(page).toHaveURL(/communities\/financial-stress$/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       "Financial Stress",

@@ -29,6 +29,9 @@ export function AppShell({
   const [search, setSearch] = useState(params.get("q") || "");
   const prefix = preview ? "/preview" : "";
   const unread = data.notifications.filter((n) => !n.read).length;
+  const friendRequests = data.connections.filter(
+    (c) => c.status === "pending" && c.recipient_id === data.me.id,
+  ).length;
   const title = path.startsWith("communities/")
     ? "Your community"
     : path.startsWith("messages")
@@ -69,7 +72,7 @@ export function AppShell({
   return (
     <div
       className="app-layout design-tennis theme-chapters social-app"
-      data-theme-version="social-glass-4"
+      data-theme-version="social-glass-5"
       data-preview={preview ? "true" : undefined}
     >
       {preview && (
@@ -193,6 +196,28 @@ export function AppShell({
           </form>
           <div className="topbar-actions">
             <Link
+              href={prefix + "/discover"}
+              className={
+                "header-friends" + (path === "discover" ? " active" : "")
+              }
+              aria-label={
+                "Add friends" +
+                (friendRequests
+                  ? ", " + friendRequests + " pending requests"
+                  : "")
+              }
+              aria-current={path === "discover" ? "page" : undefined}
+              title="Add friends"
+            >
+              <Icon name="user-plus" size={20} />
+              <span className="header-friend-label">Add friends</span>
+              {friendRequests > 0 && (
+                <b className="header-friends-badge" aria-hidden="true">
+                  {friendRequests > 9 ? "9+" : friendRequests}
+                </b>
+              )}
+            </Link>
+            <Link
               href={prefix + "/notifications"}
               className="icon-button notification-bell"
               aria-label={
@@ -224,14 +249,19 @@ export function AppShell({
         prefix={prefix}
         username={data.me.username}
         onCreate={() => setCreate(true)}
-        friendRequests={data.connections.filter(
-          (c) => c.status === "pending" && c.recipient_id === data.me.id,
-        ).length}
         unreadMessages={data.conversations
           .filter((c) => !c.ended && !c.archived)
-          .reduce((sum, c) => sum + (c.unread_count ?? c.messages.filter(
-            (m) => m.sender_id !== data.me.id && (!c.last_read_at || m.created_at > c.last_read_at),
-          ).length), 0)}
+          .reduce(
+            (sum, c) =>
+              sum +
+              (c.unread_count ??
+                c.messages.filter(
+                  (m) =>
+                    m.sender_id !== data.me.id &&
+                    (!c.last_read_at || m.created_at > c.last_read_at),
+                ).length),
+            0,
+          )}
         reduceMotion={data.settings.reduce_motion}
       />
       {create && <Composer open onClose={() => setCreate(false)} />}

@@ -34,7 +34,7 @@ export function Landing() {
   return (
     <div
       className="landing design-tennis theme-chapters social-public"
-      data-theme-version="social-glass-4"
+      data-theme-version="social-glass-5"
     >
       <aside className="public-sidebar">
         <Logo />
@@ -90,6 +90,15 @@ export function Landing() {
             <strong>Your space, your pace.</strong>
           </div>
           <div className="header-actions">
+            <Link
+              href="/discover"
+              className="header-friends"
+              aria-label="Add friends"
+              title="Add friends"
+            >
+              <Icon name="user-plus" size={20} />
+              <span className="header-friend-label">Add friends</span>
+            </Link>
             <Link href="/sign-in" className="signin-link">
               Sign in
             </Link>
@@ -193,7 +202,11 @@ export function Landing() {
                 className="connection-card"
               >
                 <div className="connection-card-photo">
-                  <EditorialPhoto topic="finding-connection" eager />
+                  <EditorialPhoto
+                    topic="finding-connection"
+                    variant="feature"
+                    eager
+                  />
                   <span
                     className="connection-sticker ribbon-motion"
                     aria-hidden="true"
