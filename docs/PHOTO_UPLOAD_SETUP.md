@@ -25,9 +25,12 @@ it does not prove that your Supabase project itself was not created or connected
 
 ## 2. Verify the application migrations and Storage bucket
 
-Apply the five tracked migrations in their recorded order through `supabase db push`,
+For a new installation, apply the five tracked migrations in their recorded order through `supabase db push`,
 as described in [the complete setup guide](SUPABASE_SETUP.md). A bucket alone does
-not create the post tables or the upload authorization functions.
+not create the post tables or the upload authorization functions. Community profiles
+use `public.community_profiles`, so the existing education `public.profiles` and
+shared Auth accounts are preserved. Do not replay an installation already recorded
+in migration history.
 
 In **Supabase → Storage**, the bucket should have these settings:
 

@@ -12,7 +12,7 @@
     "format": "prettier --write src scripts tests *.ts *.mjs *.json README.md",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "test:security": "tsx tests/security.ts",
+    "test:security": "node --import tsx tests/security.ts",
     "db:start": "supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor",
     "db:reset": "supabase db reset",
     "admin": "tsx scripts/admin.ts",

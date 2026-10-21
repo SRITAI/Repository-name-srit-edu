@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { serverClient, adminClient } from "@/lib/supabase/server";
-import { sameOrigin } from "../action/route";
+import { sameOrigin } from "@/lib/request-origin";
 export async function GET() {
   try {
     const db = await serverClient();
@@ -10,7 +10,7 @@ export async function GET() {
     if (!user) throw new Error("Sign in to export your data.");
     const admin = adminClient();
     const tables = [
-      "profiles",
+      "community_profiles",
       "private_profile_settings",
       "discovery_preferences",
       "memberships",
@@ -32,7 +32,7 @@ export async function GET() {
     };
     for (const table of tables) {
       const column =
-        table === "profiles"
+        table === "community_profiles"
           ? "id"
           : ["posts", "comments"].includes(table)
             ? "author_id"
@@ -100,9 +100,9 @@ export async function DELETE(req: NextRequest) {
       Date.now() - new Date(user.last_sign_in_at).getTime() > 5 * 60000
     )
       throw new Error("Sign in again before deleting your account.");
-    const { error } = await adminClient().auth.admin.deleteUser(user.id);
+    const { error } = await db.rpc("delete_community_account");
     if (error) throw error;
-    await db.auth.signOut();
+    await db.auth.signOut({ scope: "local" });
     return NextResponse.json({ deleted: true });
   } catch (e) {
     return NextResponse.json(

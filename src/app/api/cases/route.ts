@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { serverClient } from "@/lib/supabase/server";
-import { sameOrigin } from "../action/route";
+import { sameOrigin } from "@/lib/request-origin";
 export async function GET() {
   try {
     const db = await serverClient();

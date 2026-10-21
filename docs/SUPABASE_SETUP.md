@@ -1,6 +1,6 @@
 # Supabase setup for this exact checkout
 
-This guide was checked against the application routes, RPCs, five migration files and the official Supabase documentation on 2026-10-20. No remote project was modified and nothing was deployed publicly.
+This guide describes the community app and its shared-project installation. See [the deployment report](EXISTING_PROJECT_SETUP.md) for the actual live verification and remaining operator actions.
 
 ## Configure values privately
 
@@ -41,7 +41,19 @@ For `next dev`, restart after environment changes. Keep the configured values ou
 
 ## Apply migrations to the intended project
 
-This repository now contains the community application in place of the former education application. The five migrations below are a **fresh-install schema**, not an upgrade for the old education database. Use a new, empty Supabase project for this setup. Reusing existing education data requires a separately reviewed migration and data-transfer plan because table names and auth triggers overlap. Replacing the GitHub source does not change, reset or migrate that database; no live database migration was run for this replacement.
+The community application can share the existing education Supabase project. Its
+profiles live in `public.community_profiles`; `public.profiles`, education tables,
+existing Auth users, their roles, the signup trigger, and legacy RPC grants remain
+in place. Existing users sign in with the same credentials and complete community
+onboarding and consent before they become visible. Education roles never grant a
+community moderation role.
+
+The five baseline migrations below install the community schema once. They also
+work on an empty project. They are **not** a schema reset and must not be replayed
+if the community tables already exist. Review name collisions before installing
+on any other shared database. Use migration history to track each application.
+Community account deletion removes the community profile/content and signs the
+current session out; it keeps shared Supabase Auth and education records.
 
 From your own trusted terminal, authenticate with the Supabase CLI and select the project reference. Supply CLI authentication/database credentials through its private login prompt or secret manager, never chat or an inline `--password` argument.
 
@@ -57,11 +69,11 @@ Apply these **unchanged files in this order**, which the CLI derives from their 
 
 | Order | File                                                    | Contents                                                                                                              |
 | ----- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| 1     | `supabase/migrations/202610200001_core.sql`             | Tables, constraints/indexes, RLS, ownership/consent/write RPCs, private bucket, messages/notifications publication    |
-| 2     | `supabase/migrations/202610200002_communities.sql`      | Ten editable community definitions; no fake production members or posts                                               |
-| 3     | `supabase/migrations/202610200003_media_operations.sql` | Upload tickets, finalization/rechecks, private media/avatar access, audited reported evidence, cleanup and role setup |
-| 4     | `supabase/migrations/202610200004_evidence_grants.sql`  | Direct evidence-column access removed; audited case RPC required                                                      |
-| 5     | `supabase/migrations/202610200005_operations.sql`       | Aggregate metrics, appeals/restoration, reported-item removal, resolution timestamps, unread counts                   |
+| 1     | `supabase/migrations/20261021025058_core.sql`             | Tables, constraints/indexes, RLS, ownership/consent/write RPCs, private bucket, messages/notifications publication    |
+| 2     | `supabase/migrations/20261021025118_communities.sql`      | Ten editable community definitions; no fake production members or posts                                               |
+| 3     | `supabase/migrations/20261021025155_media_operations.sql` | Upload tickets, finalization/rechecks, private media/avatar access, audited reported evidence, cleanup and role setup |
+| 4     | `supabase/migrations/20261021025203_evidence_grants.sql`  | Direct evidence-column access removed; audited case RPC required                                                      |
+| 5     | `supabase/migrations/20261021030132_operations.sql`       | Aggregate metrics, appeals/restoration, reported-item removal, resolution timestamps, unread counts                   |
 
 Use migration history, rather than pasting files repeatedly. `supabase db reset` is for the **disposable local database only**; do not use it against hosted data. These migrations expect the standard Supabase `auth`, `storage`, `anon`, `authenticated`, `service_role` and `supabase_realtime` infrastructure, not a bare hosted PostgreSQL database. Expose the `public` API schema; do not expose `private`.
 
@@ -202,8 +214,19 @@ For a manual two-person UI run, use two separate browser profiles: both sign up 
 
 ## Current verification boundary
 
-Verified locally: the app is serving on port 3000, `/preview/home` returns 200, desktop/mobile visual review, black/pink styling, screenshots and no horizontal overflow/browser exceptions. Existing preview tests, real local media processing and PostgreSQL RLS tests are documented separately.
+The five community migrations are applied to the existing hosted project, with
+legacy education profiles, courses, orders, payments, policies and RPC grants
+preserved by checksum comparison. The private bucket and messages/notifications
+publication are present. Live SQL authorization checks pass inside a rolled-back
+transaction; no QA accounts or stories remain.
 
-Blocked: a phone-accessible environment preview URL is not exposed to this session; real Supabase Auth/SMTP/Storage/Realtime remain unconfigured. No public deployment or external tunnel was used. A local Supabase startup from the earlier session failed during the full Postgres image extraction for Docker disk capacity; that does not count as a working live stack.
+The interface is publicly deployed at `https://sritedu.online`. Current local
+checks and the remaining production verification limits are recorded in
+[EXISTING_PROJECT_SETUP.md](EXISTING_PROJECT_SETUP.md). Full real-account HTTP
+signup/upload/email/Realtime transport verification remains pending. The Vercel
+connection returns a missing-team-access 403 for `srit4`, so Production secrets
+and Auth redirects/SMTP have not been inspected or changed. Public Auth settings
+currently report signup enabled and email auto-confirmation enabled. The live
+verifier refuses to label auto-confirmation as verified email delivery.
 
 Primary references checked: [Supabase API keys](https://supabase.com/docs/guides/getting-started/api-keys), [Supabase SSR clients](https://supabase.com/docs/guides/auth/server-side/creating-a-client), [redirect URL configuration](https://supabase.com/docs/guides/auth/redirect-urls), [Storage access control](https://supabase.com/docs/guides/storage/security/access-control), and [Postgres Changes](https://supabase.com/docs/guides/realtime/postgres-changes).

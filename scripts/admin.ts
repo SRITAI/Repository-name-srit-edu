@@ -33,7 +33,7 @@ if (!target)
     "Account not found. The person must sign up, confirm their email, and finish onboarding first.",
   );
 const { data: profile, error: profileError } = await db
-  .from("profiles")
+  .from("community_profiles")
   .select("id")
   .eq("id", target)
   .maybeSingle();

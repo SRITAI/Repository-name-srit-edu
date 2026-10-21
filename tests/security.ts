@@ -6,6 +6,7 @@ import assert from "node:assert/strict";
 const dir = await mkdtemp(join(tmpdir(), "sritedu-security-"));
 let db = new PGlite(dir);
 let checks = 0;
+const legacy = process.env.SECURITY_EMPTY_PROJECT !== "1";
 async function check(name: string, fn: () => Promise<void>) {
   await fn();
   checks++;
@@ -53,6 +54,27 @@ try {
   await db.exec(
     "create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create schema storage;create table auth.users(id uuid primary key);create function auth.uid()returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to authenticated,service_role;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);create publication supabase_realtime;",
   );
+  if (legacy)
+    await db.exec(`
+      create table public.profiles(id uuid primary key references auth.users on delete cascade, full_name text not null default '', email text, role text not null default 'student');
+      create table public.courses(id int primary key, title text);
+      create table public.orders(id int primary key, user_id uuid references public.profiles on delete cascade);
+      create table public.payments(id int primary key, order_id int references public.orders on delete cascade);
+      alter table public.profiles enable row level security;
+      alter table public.courses enable row level security;
+      alter table public.orders enable row level security;
+      alter table public.payments enable row level security;
+      create policy legacy_profile_owner on public.profiles for select to authenticated using(id=auth.uid());
+      grant select on public.profiles to authenticated;
+      create function public.handle_new_user() returns trigger language plpgsql security definer set search_path='' as $$begin insert into public.profiles(id) values(new.id);return new;end$$;
+      create trigger on_auth_user_created after insert on auth.users for each row execute function public.handle_new_user();
+      create function public.legacy_access_probe() returns boolean language sql as $$select true$$;
+      grant execute on function public.legacy_access_probe() to authenticated;
+      insert into auth.users values('10000000-0000-4000-8000-000000000099');
+      insert into public.courses values(1,'Legacy fixture');
+      insert into public.orders values(1,'10000000-0000-4000-8000-000000000099');
+      insert into public.payments values(1,1);
+    `);
   const files = (await readdir("supabase/migrations"))
     .filter((n) => n.endsWith(".sql"))
     .sort();
@@ -61,7 +83,34 @@ try {
   await check("all migrations apply in lexical order", async () =>
     assert.ok(files.length === 5),
   );
+  if (legacy)
+    await check(
+      "legacy education rows, trigger and privileges survive installation",
+      async () => {
+        assert.equal(await count("profiles"), 1);
+        assert.equal(await count("courses"), 1);
+        assert.equal(await count("orders"), 1);
+        assert.equal(await count("payments"), 1);
+        const result = await db.query<{
+          old_grant: boolean;
+          old_table_grant: boolean;
+        }>(
+          "select has_function_privilege('authenticated','public.legacy_access_probe()','execute') as old_grant, has_table_privilege('service_role','public.profiles','select') as old_table_grant",
+        );
+        assert.equal(result.rows[0].old_grant, true);
+        assert.equal(result.rows[0].old_table_grant, false);
+      },
+    );
   await db.query("insert into auth.users values($1),($2),($3)", [a, b, c]);
+  if (legacy)
+    await check(
+      "shared Auth signup still creates only the legacy profile until consent",
+      async () => {
+        assert.equal(await count("profiles"), 4);
+        assert.equal(await count("community_profiles"), 0);
+        await db.query("insert into public.orders values(2,$1)", [b]);
+      },
+    );
   const profile = (name: string, topics = ["moving-forward"]) => ({
     display_name: name,
     username: name.toLowerCase(),
@@ -675,6 +724,41 @@ try {
     assert.ok(rows.length >= 23);
     assert.ok(rows.every((r) => r.relrowsecurity));
   });
+  await check(
+    "community deletion removes only the authenticated community identity",
+    async () => {
+      await db.exec("set role anon");
+      await denied(() => db.exec("select public.delete_community_account()"));
+      await db.exec("reset role");
+      await as(b, async () => {
+        await db.exec("select public.delete_community_account()");
+        assert.equal(await count("community_profiles", "where id=$1", [b]), 0);
+        assert.equal(await count("posts"), 0);
+        await denied(() =>
+          act("post", {
+            body: "After deletion",
+            community_slug: "moving-forward",
+            audience: "community",
+          }),
+        );
+      });
+      assert.equal(await count("community_profiles", "where id=$1", [a]), 1);
+      assert.equal(
+        (
+          await db.query<{ n: number }>(
+            "select count(*)::int as n from auth.users where id=$1",
+            [b],
+          )
+        ).rows[0].n,
+        1,
+      );
+      if (legacy) {
+        assert.equal(await count("profiles", "where id=$1", [b]), 1);
+        assert.equal(await count("orders", "where user_id=$1", [b]), 1);
+        assert.equal(await count("payments"), 1);
+      }
+    },
+  );
   console.log(
     `\n${checks} PostgreSQL integration/security checks passed. Supabase Auth, Storage transport, email and Realtime transport require a live stack.`,
   );

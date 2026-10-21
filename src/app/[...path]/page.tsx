@@ -76,7 +76,7 @@ export default async function Page({
   } = await db.auth.getUser();
   if (!user) redirect("/sign-in");
   const { data: profile } = await db
-    .from("profiles")
+    .from("community_profiles")
     .select("*")
     .eq("id", user.id)
     .maybeSingle();
@@ -109,7 +109,7 @@ export default async function Page({
   }
   if (root === "u" && segments[1]) {
     const { data: p } = await db
-      .from("profiles")
+      .from("community_profiles")
       .select("*")
       .eq("username", segments[1])
       .maybeSingle();
@@ -118,7 +118,7 @@ export default async function Page({
       const { data: posts } = await db
         .from("posts")
         .select(
-          "*,author:profiles!posts_author_id_fkey(*),media:post_media(id,kind,caption),reactions(user_id,kind),comments(*,author:profiles!comments_author_id_fkey(*))",
+          "*,author:community_profiles!posts_author_id_fkey(*),media:post_media(id,kind,caption),reactions(user_id,kind),comments(*,author:community_profiles!comments_author_id_fkey(*))",
         )
         .eq("author_id", p.id)
         .order("created_at", { ascending: false })

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { serverClient, adminClient } from "@/lib/supabase/server";
 import { inspectType, validateMedia } from "@/lib/media";
-import { sameOrigin } from "../action/route";
+import { sameOrigin } from "@/lib/request-origin";
 export const runtime = "nodejs";
 export const maxDuration = 120;
 export async function POST(req: NextRequest) {

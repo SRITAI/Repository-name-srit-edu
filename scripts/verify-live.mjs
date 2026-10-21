@@ -194,6 +194,24 @@ async function until(fn, timeout = 15000) {
 
 try {
   await stage("configuration, migrations and private bucket", async () => {
+    const settingsResponse = await fetch(`${backend}/auth/v1/settings`, {
+      headers: { apikey: key },
+      signal: AbortSignal.timeout(15000),
+    });
+    assert(
+      settingsResponse.ok,
+      "Unable to inspect email confirmation settings.",
+    );
+    const authSettings = await settingsResponse.json();
+    if (
+      authSettings.mailer_autoconfirm &&
+      process.env.SRITEDU_TEST_CONFIRMATION !== "admin"
+    ) {
+      report.blockers.push(
+        "Email confirmation is disabled. Enable Confirm email for the email-delivery test, or explicitly use the administrator diagnostic mode.",
+      );
+      throw new Error("Automatic confirmation cannot prove email delivery.");
+    }
     const { data, error } = await admin.from("communities").select("slug");
     assert(
       !error && data.length === 10,

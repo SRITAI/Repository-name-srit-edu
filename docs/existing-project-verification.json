@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-21",
+  "project_ref": "phjtyfqmswarbeuuybnl",
+  "installation": "existing education project; additive community schema",
+  "migrations": [
+    {
+      "version": "20261021025058",
+      "name": "core"
+    },
+    {
+      "version": "20261021025118",
+      "name": "communities"
+    },
+    {
+      "version": "20261021025155",
+      "name": "media_operations"
+    },
+    {
+      "version": "20261021025203",
+      "name": "evidence_grants"
+    },
+    {
+      "version": "20261021030132",
+      "name": "operations"
+    }
+  ],
+  "live_database": {
+    "bucket": {
+      "id": "private-media",
+      "public": false,
+      "file_size_limit": 52428800,
+      "allowed_mime_types": [
+        "image/webp",
+        "video/mp4",
+        "video/webm"
+      ]
+    },
+    "orders_count": 37,
+    "courses_count": 8,
+    "new_tables_rls": true,
+    "payments_count": 15,
+    "profiles_count": 52,
+    "community_count": 10,
+    "realtime_tables": [
+      "messages",
+      "notifications"
+    ],
+    "orders_unchanged": true,
+    "courses_unchanged": true,
+    "payments_unchanged": true,
+    "profiles_unchanged": true,
+    "legacy_rls_unchanged": true,
+    "legacy_functions_and_grants_unchanged": true
+  },
+  "rolled_back_qa": {
+    "passed": true,
+    "checks": [
+      "onboarding and consent",
+      "community audiences",
+      "mutually accepted chat",
+      "third-account chat/media denial",
+      "private media authorization",
+      "blocking in both directions",
+      "community-only deletion keeps Auth and legacy profile"
+    ],
+    "remaining_qa_accounts": 0,
+    "remaining_qa_posts": 0,
+    "remaining_qa_messages": 0
+  },
+  "local_checks": {
+    "production_build": "passed (webpack)",
+    "typescript": "passed",
+    "lint": "passed",
+    "unit_tests": 9,
+    "browser_tests": 36,
+    "security_shared_project": 25,
+    "security_empty_project": 23
+  },
+  "live_auth_settings": {
+    "email_signup_enabled": true,
+    "auto_confirm_email": true,
+    "google_enabled": false
+  },
+  "limits": {
+    "smtp_verified": false,
+    "auth_redirects_verified": false,
+    "http_account_photo_upload_verified": false,
+    "realtime_websocket_verified": false,
+    "vercel_team_scope": "403 missing grant for srit4",
+    "no_legacy_data_deletion": true
+  }
+}

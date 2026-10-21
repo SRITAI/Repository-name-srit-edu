@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { configured, serverClient } from "@/lib/supabase/server";
 import { authSchema } from "@/lib/schema";
-import { sameOrigin } from "../action/route";
+import { sameOrigin } from "@/lib/request-origin";
 export async function POST(req: NextRequest) {
   if (!sameOrigin(req))
     return NextResponse.json(

@@ -1,9 +1,9 @@
 alter table public.post_media add column poster_path text;
 alter table public.message_media add column poster_path text;
 alter table private.upload_tickets add column kind text not null check(kind in('image','video')) default 'image';
-create table private.avatar_media(id uuid primary key,user_id uuid not null references public.profiles on delete cascade,path text not null unique);
+create table private.avatar_media(id uuid primary key,user_id uuid not null references public.community_profiles on delete cascade,path text not null unique);
 create function private.avatar_changed() returns trigger language plpgsql security definer set search_path='' as $$begin if old.avatar like 'media:%'and new.avatar<>old.avatar then delete from private.avatar_media where user_id=new.id and id=substring(old.avatar from 7)::uuid;end if;return new;end$$;
-create trigger avatar_replacement_cleanup after update of avatar on public.profiles for each row execute function private.avatar_changed();
+create trigger avatar_replacement_cleanup after update of avatar on public.community_profiles for each row execute function private.avatar_changed();
 revoke all on function private.avatar_changed() from public,anon,authenticated;
 create trigger avatar_media_cleanup after delete on private.avatar_media for each row execute function private.media_deleted();
 create or replace function private.media_deleted() returns trigger language plpgsql security definer set search_path='' as $$begin insert into private.cleanup_jobs(path)values(old.path);if to_jsonb(old)->>'poster_path' is not null then insert into private.cleanup_jobs(path)values(to_jsonb(old)->>'poster_path');end if;return old;end$$;
@@ -36,7 +36,7 @@ elsif t.target_type='message' then
 else
  delete from private.avatar_media where user_id=owner_id;
  insert into private.avatar_media values(t.id,owner_id,t.path);
- update public.profiles set avatar='media:'||t.id where id=owner_id;
+ update public.community_profiles set avatar='media:'||t.id where id=owner_id;
 end if;
 delete from private.upload_tickets where id=t.id;end$$;
 -- Return paths only after checking current authorization; server proxies bytes with no caching.

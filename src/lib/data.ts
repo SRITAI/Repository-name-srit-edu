@@ -13,14 +13,14 @@ export async function loadData(
   let postQuery = db
     .from("posts")
     .select(
-      "*,author:profiles!posts_author_id_fkey(*),media:post_media(id,kind,caption),reactions(user_id,kind),comments(*,author:profiles!comments_author_id_fkey(*))",
+      "*,author:community_profiles!posts_author_id_fkey(*),media:post_media(id,kind,caption),reactions(user_id,kind),comments(*,author:community_profiles!comments_author_id_fkey(*))",
     )
     .order("created_at", { ascending: false })
     .order("id", { ascending: false })
     .limit(limit);
   if (before) postQuery = postQuery.or(cursorFilter(before));
   const requests = await Promise.all([
-    db.from("profiles").select("*").eq("id", user.id).single(),
+    db.from("community_profiles").select("*").eq("id", user.id).single(),
     db
       .from("private_profile_settings")
       .select("*")
@@ -84,7 +84,7 @@ export async function loadData(
     c.requester_id === user.id ? c.recipient_id : c.requester_id,
   );
   const { data: others, error } = await db
-    .from("profiles")
+    .from("community_profiles")
     .select("*")
     .in("id", otherIds.length ? otherIds : [user.id]);
   if (error) throw error;
@@ -148,7 +148,7 @@ export async function loadPost(db: SupabaseClient, id: string) {
   const { data, error } = await db
     .from("posts")
     .select(
-      "*,author:profiles!posts_author_id_fkey(*),media:post_media(id,kind,caption),reactions(user_id,kind),comments(*,author:profiles!comments_author_id_fkey(*))",
+      "*,author:community_profiles!posts_author_id_fkey(*),media:post_media(id,kind,caption),reactions(user_id,kind),comments(*,author:community_profiles!comments_author_id_fkey(*))",
     )
     .eq("id", id)
     .maybeSingle();

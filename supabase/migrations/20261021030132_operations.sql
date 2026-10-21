@@ -1,9 +1,9 @@
 create function public.service_metrics() returns jsonb language plpgsql stable security definer set search_path='' as $$begin
 if not private.staff() then raise exception 'Restricted to community care';end if;
-return jsonb_build_object('accounts',(select count(*)from public.profiles),'stories',(select count(*)from public.posts where not removed and audience<>'draft'),'open_reports',(select count(*)from public.reports where status in('open','reviewing')),'media_objects',(select count(*)from public.post_media)+(select count(*)from public.message_media),'pending_cleanup',(select count(*)from private.cleanup_jobs));end$$;
+return jsonb_build_object('accounts',(select count(*)from public.community_profiles),'stories',(select count(*)from public.posts where not removed and audience<>'draft'),'open_reports',(select count(*)from public.reports where status in('open','reviewing')),'media_objects',(select count(*)from public.post_media)+(select count(*)from public.message_media),'pending_cleanup',(select count(*)from private.cleanup_jobs));end$$;
 -- An appeal remains available to a suspended/deactivated authenticated owner.
 create function public.submit_appeal(target_id uuid,reason text) returns void language plpgsql security definer set search_path='' as $$begin
-if auth.uid() is null or not exists(select 1 from public.profiles where id=auth.uid()) then raise exception 'Sign in to appeal';end if;
+if auth.uid() is null or not exists(select 1 from public.community_profiles where id=auth.uid()) then raise exception 'Sign in to appeal';end if;
 perform private.consume('appeal',3);
 if length(reason)not between 5 and 2000 then raise exception 'Use 5–2000 characters';end if;
 if target_id<>auth.uid() and not exists(select 1 from public.posts where id=target_id and author_id=auth.uid())then raise exception 'This item is not yours to appeal';end if;
@@ -38,7 +38,16 @@ grant execute on function public.remove_reported_item(uuid,text) to authenticate
 create function private.report_status_changed() returns trigger language plpgsql set search_path='' as $$begin if new.status in('resolved','dismissed')and new.status<>old.status then new.resolved_at=now();elsif new.status in('open','reviewing')then new.resolved_at=null;end if;return new;end$$;
 create trigger report_resolution_time before update of status on public.reports for each row execute function private.report_status_changed();
 revoke all on function private.report_status_changed() from public,anon,authenticated;
-grant select on all tables in schema public to service_role;
+grant select on public.community_profiles,public.private_profile_settings,public.communities,public.memberships,public.discovery_preferences,public.blocks,public.discovery_dismissals,public.connections,public.posts,public.journey_entries,public.comments,public.reactions,public.bookmarks,public.conversations,public.conversation_members,public.messages,public.message_reactions,public.post_media,public.message_media,public.notifications,public.reports,public.moderation_actions,public.resource_entries to service_role;
 create function public.conversation_unread() returns jsonb language sql stable security definer set search_path='' as $$select coalesce(jsonb_object_agg(x.id,x.unread),'{}')from(select c.id,count(m.id)as unread from public.conversations c join public.conversation_members cm on cm.conversation_id=c.id and cm.user_id=auth.uid()left join public.messages m on m.conversation_id=c.id and m.sender_id<>auth.uid()and(cm.last_read_at is null or m.created_at>cm.last_read_at)where private.read_conversation(c.id)group by c.id)x$$;
 revoke all on function public.conversation_unread() from public,anon,authenticated;
 grant execute on function public.conversation_unread() to authenticated;
+
+-- Shared-project account removal must never cascade into legacy education data.
+create function public.delete_community_account() returns void language plpgsql security definer set search_path='' as $$begin
+if auth.uid() is null then raise exception 'Sign in to continue';end if;
+delete from public.community_profiles where id=auth.uid();
+delete from private.rate_limits where user_id=auth.uid();
+end$$;
+revoke all on function public.delete_community_account() from public,anon,authenticated;
+grant execute on function public.delete_community_account() to authenticated;

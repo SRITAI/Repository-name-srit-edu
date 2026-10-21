@@ -6,7 +6,7 @@ The lavender, white and purple interface is deployed at [sritedu.online](https:/
 
 Latest visual review: [desktop/mobile screenshots and theme checks](docs/theme-correction/README.md). The current theme follows the reference’s lavender canvas, white sidebar/cards, violet gradient headers and blue buttons in a dashboard homepage. It includes locally hosted Poppins and downloaded editorial photography; see [design references and photo credits](docs/design-assets.md). Historical backend verification: [2026-10-20 report](docs/review-2026-10-20/README.md). Follow the [Supabase setup guide](docs/SUPABASE_SETUP.md) for secure configuration, migration order, bucket policies, Realtime and email callback URLs.
 
-Repository replacement: [validation and remaining setup](docs/REPOSITORY_REPLACEMENT.md). This community application replaces the former education website. Use a fresh Supabase project for its schema; the former education database is not migrated by a source-code push.
+Repository replacement: [validation and remaining setup](docs/REPOSITORY_REPLACEMENT.md). This community application replaces the former education website. The community schema now coexists with the education database in the same Supabase project; see the [installation report](docs/EXISTING_PROJECT_SETUP.md). A source-code push alone does not apply future migrations.
 
 ## Run the isolated preview
 
@@ -45,13 +45,13 @@ npx supabase db push
 
 Migrations:
 
-1. `202610200001_core.sql`: tables, checks, indexes, RLS, write RPCs, initial private bucket, realtime publication.
-2. `202610200002_communities.sql`: the ten editable communities. No fabricated members or activity.
-3. `202610200003_media_operations.sql`: upload tickets, finalization, media access, audited evidence, cleanup and role RPCs.
-4. `202610200004_evidence_grants.sql`: evidence column access restricted to audited review RPC.
-5. `202610200005_operations.sql`: aggregate metrics, appeals, account restoration, reported-content removal.
+1. `20261021025058_core.sql`: tables, checks, indexes, RLS, write RPCs, initial private bucket, realtime publication.
+2. `20261021025118_communities.sql`: the ten editable communities. No fabricated members or activity.
+3. `20261021025155_media_operations.sql`: upload tickets, finalization, media access, audited evidence, cleanup and role RPCs.
+4. `20261021025203_evidence_grants.sql`: evidence column access restricted to audited review RPC.
+5. `20261021030132_operations.sql`: aggregate metrics, appeals, account restoration, reported-content removal.
 
-These are fresh-install migrations. Do not re-run individual files against an existing installation. CLI migration history owns upgrades.
+These are one-time community installation migrations, compatible with the existing education schema. Do not re-run individual files against an existing installation. CLI migration history owns upgrades.
 
 ### Local Supabase
 
@@ -155,3 +155,12 @@ NODE_ENV=production npm run start
 Alternatively use the Dockerfile on an appropriately configured build host. It includes FFmpeg. Public Supabase values are build arguments; the service-role key and scan token must be supplied only as runtime secrets. Follow your build environment’s proxy and CA guidance for networked Docker builds. A successful build does not establish production readiness; provider setup, live three-user acceptance, operator review, and staffed moderation remain required.
 
 Official implementation references: [Next.js authentication](https://nextjs.org/docs/app/guides/authentication), [Supabase SSR clients](https://supabase.com/docs/guides/auth/server-side/creating-a-client?queryGroups=framework&framework=nextjs), [authorized Postgres Changes](https://supabase.com/docs/guides/realtime/postgres-changes). Support directory sources: [Worldwide](https://findahelpline.com/) and [India](https://findahelpline.com/countries/in).
+
+## Existing education project compatibility
+
+The community app uses `public.community_profiles` for public directory profiles.
+Existing `public.profiles`, education data, Auth users, signup triggers and legacy
+RPC grants are preserved. Existing users complete community onboarding/consent;
+their education role does not grant community staff access. Community account
+removal deletes community data and keeps shared Auth/education records.
+See [existing-project deployment verification](docs/EXISTING_PROJECT_SETUP.md).

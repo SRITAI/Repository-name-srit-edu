@@ -99,7 +99,7 @@ const policies: Record<
       },
       {
         title: "Leaving and contacting the operator.",
-        body: "You can export your authored data, deactivate, or delete your account in Settings. Media cleanup is asynchronous and previously downloaded copies cannot be recalled. This prelaunch build has no configured external support inbox. Public launch requires a real operator contact and owner-reviewed terms.",
+        body: "You can export your authored data, deactivate, or delete your community profile and content in Settings. Your shared sign-in and education records remain. Media cleanup is asynchronous and previously downloaded copies cannot be recalled. This prelaunch build has no configured external support inbox. Public launch requires a real operator contact and owner-reviewed terms.",
       },
     ],
   },

@@ -1,3 +1,4 @@
+import { sameOrigin } from "@/lib/request-origin";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { serverClient } from "@/lib/supabase/server";
@@ -75,14 +76,6 @@ const schemas: Record<string, z.ZodType> = {
     last_checked: z.iso.date(),
   }),
 };
-export function sameOrigin(req: NextRequest) {
-  return (
-    req.headers.get("origin") ===
-    (process.env.NEXT_PUBLIC_APP_URL
-      ? new URL(process.env.NEXT_PUBLIC_APP_URL).origin
-      : req.nextUrl.origin)
-  );
-}
 export async function POST(req: NextRequest) {
   if (!sameOrigin(req))
     return NextResponse.json(

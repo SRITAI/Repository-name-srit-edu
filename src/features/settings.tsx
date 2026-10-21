@@ -261,9 +261,9 @@ export function Settings() {
           }}
         >
           <span>
-            Delete your account
+            Delete your community account
             <small>
-              Remove your account, authored content, and memberships.
+              Remove your community profile, authored content, and memberships.
             </small>
           </span>
           <Icon name="trash" size={18} />
@@ -310,9 +310,10 @@ export function Settings() {
           }}
         >
           <p>
-            Deletion removes your account and authored content from member
-            access. Media is queued for deletion. Limited reported evidence may
-            remain for moderation review under the retention policy.
+            Deletion removes your community profile and authored content from
+            member access. Media is queued for deletion. Your shared sign-in and
+            any education records remain. Limited reported evidence may remain
+            for moderation review under the retention policy.
           </p>
           <Field label="Confirm your password">
             <input
@@ -337,7 +338,7 @@ export function Settings() {
             </p>
           )}
           <Button variant="danger" disabled={busy}>
-            Delete my account
+            Delete my community account
           </Button>
         </form>
       </Modal>
