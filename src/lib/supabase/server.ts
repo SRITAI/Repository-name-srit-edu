@@ -1,11 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { publicSupabaseKey } from "./public-config";
 export const configured = () =>
-  Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-  );
+  Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && publicSupabaseKey());
 export async function serverClient() {
   if (!configured())
     throw new Error(
@@ -14,7 +12,7 @@ export async function serverClient() {
   const jar = await cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    publicSupabaseKey()!,
     {
       cookies: {
         getAll: () => jar.getAll(),

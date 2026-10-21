@@ -1,15 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { publicSupabaseKey } from "@/lib/supabase/public-config";
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-  )
-    return response;
+  const key = publicSupabaseKey();
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !key) return response;
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    key,
     {
       cookies: {
         getAll: () => request.cookies.getAll(),

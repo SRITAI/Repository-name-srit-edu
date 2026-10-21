@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error:
-          "Live accounts aren’t configured yet. Explore the fictional preview, or connect Supabase using the README.",
+          "Account sign-in is temporarily unavailable. Please try again later.",
       },
       { status: 503 },
     );
@@ -56,7 +56,13 @@ export async function POST(req: NextRequest) {
       if (error) throw error;
       return NextResponse.json({ next: data.url });
     }
-    const fields = authSchema.parse(p);
+    const fields = (
+      p.kind === "sign-in"
+        ? authSchema.extend({
+            password: z.string().min(1, "Enter your password.").max(128),
+          })
+        : authSchema
+    ).parse(p);
     if (p.kind === "sign-up") {
       if (!fields.adult) throw new Error("sritedu is for adults 18 and older.");
       const { data, error } = await db.auth.signUp({

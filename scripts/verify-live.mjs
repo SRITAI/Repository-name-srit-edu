@@ -25,15 +25,21 @@ const report = {
       ? "explicit administrator confirmation; SMTP not verified"
       : "operator clicks the real verification emails",
 };
+const key =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const required = [
   "NEXT_PUBLIC_SUPABASE_URL",
-  "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
   "SUPABASE_SERVICE_ROLE_KEY",
   "NEXT_PUBLIC_APP_URL",
   "SRITEDU_TEST_EMAIL_A",
   "SRITEDU_TEST_EMAIL_B",
 ];
 const missing = required.filter((name) => !process.env[name]);
+if (!key)
+  missing.push(
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  );
 async function save() {
   await mkdir(dirname(reportPath), { recursive: true });
   await writeFile(reportPath, JSON.stringify(report, null, 2));
@@ -56,7 +62,6 @@ if (new URL(base).pathname !== "/")
     "Use the application origin, without /preview or another path.",
   );
 const backend = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 const admin = createClient(backend, process.env.SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },
 });

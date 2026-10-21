@@ -23,6 +23,8 @@ Get the API URL and publishable key from your intended Supabase project's Connec
 | `MEDIA_SCAN_URL`                       | Optional                                | HTTPS endpoint of a scanner you actually configured; leave unset otherwise                                                                                              |
 | `MEDIA_SCAN_TOKEN`                     | Optional secret                         | Server-only scanner credential; never expose it to the browser                                                                                                          |
 
+Legacy integrations may use `NEXT_PUBLIC_SUPABASE_ANON_KEY` instead of `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. The app accepts that alias consistently in browser, server and session refresh; the publishable-key value takes precedence when both are set.
+
 The app checks mutation request origins against `NEXT_PUBLIC_APP_URL`. Set it to the **actual origin from which you are using the app**, including an environment preview hostname when applicable. Merely binding the server to `0.0.0.0` does not create a phone-accessible URL. `localhost` on your phone refers to the phone.
 
 For live testing from a phone, use the hosted project's HTTPS Supabase URL. A local `127.0.0.1:54321` backend is not reachable by the phone's browser client or its Realtime WebSocket; sharing only the Next.js port does not forward that backend.
@@ -76,7 +78,9 @@ The migration creates **one bucket** for avatars, post media, message media and 
 | File size limit    | `52428800` bytes (50 MiB)               |
 | Allowed MIME types | `image/webp`, `video/mp4`, `video/webm` |
 
-Raw uploads accept JPEG/PNG/WebP images and MP4/WebM clips; the server re-encodes images to WebP, videos to MP4 and posters to WebP **before storing them**. Therefore the bucket does not need to accept raw JPEG or PNG files. Images default to a 10 MiB input cap, clips to 50 MiB and 90 seconds. Install FFmpeg and FFprobe on the Node host.
+Raw uploads accept JPEG/PNG/WebP images and MP4/WebM clips; the server re-encodes images to WebP, videos to MP4 and posters to WebP **before storing them**. Therefore the bucket does not need to accept raw JPEG or PNG files. Images default to a 10 MiB input cap, clips to 50 MiB and 90 seconds. Before transfer, the browser prepares photos as WebP at a maximum 2048-pixel edge and targets at most 3 MiB; the server independently validates and re-encodes the received image. Install FFmpeg and FFprobe on the Node host.
+
+**Vercel hosting:** Function request/response bodies have a 4.5 MB platform limit. Photo preparation keeps normal image requests below it. The 50 MiB video limit describes the application/storage cap, not a claim that Vercel accepts 50 MiB multipart bodies. Large clips need a separately deployed processing/upload service or a validated private staging flow before production support can be claimed.
 
 **Do not add** an `authenticated`/`anon` INSERT/SELECT/UPDATE/DELETE policy for this bucket on `storage.objects`. Browser clients do not access Storage directly. The actual path is:
 

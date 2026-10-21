@@ -4,6 +4,7 @@ import "./globals.css";
 import "./reference-design.css";
 import "./chapters-theme.css";
 import "./social-glass.css";
+import "./auth-simple.css";
 const poppins = localFont({
   src: [
     {

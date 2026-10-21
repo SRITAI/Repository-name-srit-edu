@@ -13,6 +13,7 @@ import { previewData } from "@/lib/preview";
 import type { AppData, Post, Connection, Settings, Profile } from "@/lib/types";
 import { Icon } from "@/components/ui";
 import { cursor } from "@/lib/pagination";
+import { prepareImageUpload } from "@/lib/prepare-image";
 type Payload = Record<string, unknown>;
 type Result = { id?: string };
 type AppContextValue = {
@@ -398,6 +399,7 @@ export function AppProvider({
     caption = "",
     onProgress?: (n: number) => void,
   ) {
+    file = await prepareImageUpload(file);
     if (preview) {
       if (!/^image\/(jpeg|png|webp)$|^video\/(mp4|webm)$/.test(file.type))
         throw new Error("Choose a JPEG, PNG, WebP, MP4, or WebM.");
@@ -447,6 +449,14 @@ export function AppProvider({
           e.lengthComputable ? Math.round((e.loaded / e.total) * 90) : 20,
         );
       xhr.onload = () => {
+        if (xhr.status === 413) {
+          reject(
+            new Error(
+              "This file is too large for the upload server. Choose a smaller file or a shorter video.",
+            ),
+          );
+          return;
+        }
         try {
           const body = JSON.parse(xhr.responseText);
           if (xhr.status >= 200 && xhr.status < 300) {
