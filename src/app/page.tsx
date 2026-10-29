@@ -1,4 +1,3 @@
-import { Landing } from "@/features/landing";
-export default function Page() {
-  return <Landing />;
-}
+import Studio from "@/components/studio";
+
+export default function Home() { return <Studio />; }
