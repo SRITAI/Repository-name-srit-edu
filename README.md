@@ -9,6 +9,7 @@ A cinematic demo studio for creating illustrative image and video previews. This
 - The library and saved inspiration use browser local storage. They are specific to each browser and can be cleared by its user.
 - Image and video preview cards use CSS illustration. The library can download an SVG demo poster, not generated media.
 - Old application routes redirect to the new studio. The former backend is not included in this version.
+- Pricing page currently displays proposed monthly tiers: Creator ₹1,950 / 2,000 credits and Max ₹10,000 / 20,000 credits. Checkout is deliberately unavailable until Cashfree credentials, authenticated accounts, verified payment webhooks, and a server-side credit ledger are connected. The pricing UI must not be treated as a working subscription service.
 
 ## Run locally
 
