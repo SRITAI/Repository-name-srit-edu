@@ -380,6 +380,7 @@ body {
   width: 100%;
   display: flex;
   justify-content: center;
+  position: relative;
 }
 
 .center-man-image {
@@ -390,45 +391,65 @@ body {
   object-fit: contain;
   user-select: none;
   pointer-events: none;
+  position: relative;
+  z-index: 12;
   /* Seamless blend into background */
   mix-blend-mode: multiply;
   filter: contrast(1.02);
   margin-bottom: 0;
 }
 
-/* Orbiting Glass Halo Chips (Floating Glassmorphism Pills) */
+/* --------------------------------------------------------------------------
+   Dynamic 3D Orbiting Halo Container & Cards
+   -------------------------------------------------------------------------- */
 .orbiting-halo-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  perspective: 1000px;
+}
+.orbiting-halo-container:active {
+  cursor: grabbing;
 }
 
 .halo-chip {
   position: absolute;
-  background: rgba(255, 255, 255, 0.68);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-glass);
+  top: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
   border-radius: var(--radius-chip);
-  box-shadow: var(--shadow-halo-chip);
+  box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
   padding: 8px 14px;
   display: flex;
   align-items: center;
   gap: 10px;
-  opacity: 0;
+  opacity: 1;
   pointer-events: auto;
-  cursor: default;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  transform-origin: center center;
+  will-change: transform, opacity, z-index;
+  transition: box-shadow 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
 }
 
-/* Subtle interactive hover */
 .halo-chip:hover {
-  transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.12);
-  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 22px 42px -6px rgba(0, 0, 0, 0.16);
+  background: rgba(255, 255, 255, 0.94);
+  border-color: rgba(255, 255, 255, 1);
+}
+
+.halo-chip:focus-visible {
+  outline: 2px solid var(--text-main);
+  outline-offset: 2px;
 }
 
 .chip-icon {
@@ -438,6 +459,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 .chip-icon.lime {
   background-color: var(--accent-lime);
@@ -449,6 +471,14 @@ body {
 }
 .chip-icon.orange {
   background-color: var(--accent-orange);
+  color: #FFFFFF;
+}
+.chip-icon.teal {
+  background-color: #10B981;
+  color: #FFFFFF;
+}
+.chip-icon.rose {
+  background-color: #F43F5E;
   color: #FFFFFF;
 }
 
@@ -470,23 +500,138 @@ body {
   color: var(--text-sub);
 }
 
-/* Exact positioning for interactive chips */
-.chip-focus {
-  top: 14%;
-  left: 24%;
-  transform: rotate(-3deg);
+/* Image Cards (Mountain Peak & Cosmos Moon) */
+.halo-chip.chip-image {
+  padding: 4px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
-.chip-ideas {
-  top: 48%;
-  left: 36%;
-  transform: rotate(2deg);
+.chip-image-inner {
+  position: relative;
+  width: 96px;
+  height: 68px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #18181B;
 }
 
-.chip-plan {
-  top: 26%;
-  right: 18%;
-  transform: rotate(4deg);
+.chip-image-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  transition: transform 0.3s ease;
+}
+
+.halo-chip.chip-image:hover .chip-image-inner img {
+  transform: scale(1.05);
+}
+
+.chip-image-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 5px;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #FFFFFF;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: 1px 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  pointer-events: none;
+}
+
+.chip-image-badge::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #34D399;
+}
+
+/* Specific styling for Moon card (Dark Cosmos theme) */
+.halo-chip.chip-moon {
+  background: rgba(24, 24, 27, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.35);
+}
+.halo-chip.chip-moon .chip-image-badge::before {
+  background: #A78BFA;
+}
+
+/* Translucent Curved Glass Spacer Panel */
+.halo-chip.chip-panel {
+  width: 76px;
+  height: 52px;
+  padding: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.panel-glimmer {
+  width: 24px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  border-radius: 2px;
+}
+
+/* Notification Toast */
+.orbit-toast {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(18, 18, 18, 0.9);
+  color: #FFFFFF;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+.orbit-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+.toast-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #34D399;
+  animation: pulseDot 1.5s infinite ease-in-out;
+}
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.6; }
 }
 
 /* --------------------------------------------------------------------------
@@ -900,5 +1045,41 @@ body {
   .btn-video-cta {
     width: 100%;
     justify-content: center;
+  }
+  .halo-chip {
+    padding: 6px 10px;
+    gap: 7px;
+  }
+  .chip-title {
+    font-size: 0.70rem;
+  }
+  .chip-desc {
+    font-size: 0.58rem;
+  }
+  .chip-icon {
+    width: 18px;
+    height: 18px;
+  }
+  .chip-image-inner {
+    width: 78px;
+    height: 54px;
+  }
+  .halo-chip.chip-panel {
+    width: 58px;
+    height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .rotating-text-svg {
+    animation: none !important;
   }
 }

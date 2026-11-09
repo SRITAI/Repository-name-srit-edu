@@ -2,14 +2,93 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
+interface OrbitItemData {
+  id: string;
+  type: "chip" | "image" | "panel";
+  title?: string;
+  desc?: string;
+  icon?: string;
+  iconClass?: string;
+  imageSrc?: string;
+  imageAlt?: string;
+  badge?: string;
+}
+
+const ORBIT_ITEMS: OrbitItemData[] = [
+  {
+    id: "ideas",
+    type: "chip",
+    title: "Ideas",
+    desc: "Capture everything",
+    iconClass: "purple",
+    icon: "spark",
+  },
+  {
+    id: "plan",
+    type: "chip",
+    title: "Plan",
+    desc: "Turn ideas into action",
+    iconClass: "orange",
+    icon: "calendar",
+  },
+  {
+    id: "moon",
+    type: "image",
+    imageSrc: "/assets/moon_card.png",
+    imageAlt: "Cosmos and crescent moon in deep space",
+    badge: "Deep Orbit",
+  },
+  {
+    id: "reflect",
+    type: "chip",
+    title: "Reflect",
+    desc: "Evening review",
+    iconClass: "rose",
+    icon: "sun",
+  },
+  {
+    id: "panel",
+    type: "panel",
+  },
+  {
+    id: "habits",
+    type: "chip",
+    title: "Habits",
+    desc: "14-day flow streak",
+    iconClass: "teal",
+    icon: "flame",
+  },
+  {
+    id: "mountain",
+    type: "image",
+    imageSrc: "/assets/mountain_card.png",
+    imageAlt: "Dramatic black and white mountain ridge",
+    badge: "Peak Focus",
+  },
+  {
+    id: "focus",
+    type: "chip",
+    title: "Focus",
+    desc: "Deep work, bigger results",
+    iconClass: "lime",
+    icon: "target",
+  },
+];
+
 export default function MindlyPage() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [activeToast, setActiveToast] = useState<string | null>(null);
+  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const leftCardRef = useRef<HTMLDivElement>(null);
   const rightCardRef = useRef<HTMLDivElement>(null);
   const centerPieceRef = useRef<HTMLDivElement>(null);
+  const haloContainerRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const pathLeftRef = useRef<SVGPathElement>(null);
   const pathRightRef = useRef<SVGPathElement>(null);
 
+  // Connecting Splines update
   useEffect(() => {
     function updateSplines() {
       if (typeof window === "undefined" || window.innerWidth <= 860) return;
@@ -35,10 +114,10 @@ export default function MindlyPage() {
       const startRightY = rightRect.top + rightRect.height * 0.45 - stageRect.top;
 
       const targetLeftX = centerRect.left + centerRect.width * 0.28 - stageRect.left;
-      const targetLeftY = centerRect.top + centerRect.height * 0.28 - stageRect.top;
+      const targetLeftY = centerRect.top + centerRect.height * 0.38 - stageRect.top;
 
       const targetRightX = centerRect.left + centerRect.width * 0.72 - stageRect.left;
-      const targetRightY = centerRect.top + centerRect.height * 0.32 - stageRect.top;
+      const targetRightY = centerRect.top + centerRect.height * 0.38 - stageRect.top;
 
       const cp1LeftX = startLeftX;
       const cp1LeftY = startLeftY + (targetLeftY - startLeftY) * 0.65;
@@ -68,6 +147,168 @@ export default function MindlyPage() {
       window.removeEventListener("load", updateSplines);
     };
   }, []);
+
+  // 3D Orbital Carousel Animation Loop
+  useEffect(() => {
+    let rafId: number;
+    let rotation = 0;
+    let velocity = 0;
+    let isHovered = false;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartRotation = 0;
+    let lastDragX = 0;
+    let lastDragTime = 0;
+
+    const container = haloContainerRef.current;
+    if (!container) return;
+
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const updateTransforms = () => {
+      if (!container) return;
+      const width = container.offsetWidth || 500;
+      const height = container.offsetHeight || 500;
+      const isMobile = window.innerWidth <= 640;
+
+      // Orbit radii
+      const rx = isMobile ? Math.min(160, width * 0.42) : Math.min(240, width * 0.45);
+      const ry = rx * 0.32;
+      const cx = width / 2;
+      const cy = height * 0.38;
+      const tiltAngle = -0.11; // -6.3 degrees tilt matching reference
+
+      const total = ORBIT_ITEMS.length;
+
+      for (let i = 0; i < total; i++) {
+        const el = itemRefs.current[i];
+        if (!el) continue;
+
+        const baseAngle = (i * 2 * Math.PI) / total;
+        const angle = baseAngle + rotation;
+
+        const cosA = Math.cos(angle);
+        const sinA = Math.sin(angle);
+
+        const x = cosA * rx;
+        const y = sinA * ry + x * Math.sin(tiltAngle);
+        const z = sinA; // -1 to +1
+
+        const rotY = -cosA * 32;
+        const rotZ = rotY * 0.12;
+
+        if (z >= -0.15) {
+          // FRONT HALF: Passes in front of the man's head (z-index 20-35)
+          const scale = isMobile ? 0.88 + z * 0.14 : 0.96 + z * 0.16;
+          const zIndex = Math.round(20 + z * 15);
+          el.style.transform = `translate3d(${cx + x}px, ${cy + y}px, 0px) translate(-50%, -50%) rotateY(${rotY.toFixed(1)}deg) rotateZ(${rotZ.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+          el.style.zIndex = String(zIndex);
+          el.style.opacity = "1";
+          el.style.filter = "none";
+        } else {
+          // BACK HALF: Passes behind the man's head (z-index 4-8, man is at 12)
+          const scale = isMobile ? 0.72 + (z + 1) * 0.16 : 0.82 + (z + 1) * 0.14;
+          const opacity = 0.52 + (z + 1) * 0.38;
+          const zIndex = Math.round(4 + (z + 1) * 4);
+          el.style.transform = `translate3d(${cx + x}px, ${cy + y}px, 0px) translate(-50%, -50%) rotateY(${rotY.toFixed(1)}deg) rotateZ(${rotZ.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+          el.style.zIndex = String(zIndex);
+          el.style.opacity = opacity.toFixed(3);
+          el.style.filter = "blur(0.8px)";
+        }
+      }
+    };
+
+    const animate = () => {
+      if (!isDragging && !prefersReducedMotion) {
+        const baseSpeed = isHovered ? 0.0008 : 0.0032;
+        rotation += baseSpeed + velocity;
+        velocity *= 0.94; // friction damping
+      }
+      updateTransforms();
+      rafId = requestAnimationFrame(animate);
+    };
+
+    rafId = requestAnimationFrame(animate);
+
+    // Pointer event listeners for dragging & hovering
+    const handlePointerDown = (e: PointerEvent) => {
+      isDragging = true;
+      dragStartX = e.clientX;
+      dragStartRotation = rotation;
+      lastDragX = e.clientX;
+      lastDragTime = performance.now();
+      velocity = 0;
+      try {
+        container.setPointerCapture(e.pointerId);
+      } catch {}
+    };
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - dragStartX;
+      rotation = dragStartRotation + deltaX * 0.006;
+
+      const now = performance.now();
+      const dt = Math.max(1, now - lastDragTime);
+      const dx = e.clientX - lastDragX;
+      velocity = (dx / dt) * 0.04;
+      lastDragX = e.clientX;
+      lastDragTime = now;
+    };
+
+    const handlePointerUp = (e: PointerEvent) => {
+      isDragging = false;
+      try {
+        container.releasePointerCapture(e.pointerId);
+      } catch {}
+    };
+
+    const handlePointerEnter = () => {
+      isHovered = true;
+    };
+
+    const handlePointerLeave = () => {
+      isHovered = false;
+      isDragging = false;
+    };
+
+    container.addEventListener("pointerdown", handlePointerDown);
+    container.addEventListener("pointermove", handlePointerMove);
+    container.addEventListener("pointerup", handlePointerUp);
+    container.addEventListener("pointercancel", handlePointerUp);
+    container.addEventListener("pointerenter", handlePointerEnter);
+    container.addEventListener("pointerleave", handlePointerLeave);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      container.removeEventListener("pointerdown", handlePointerDown);
+      container.removeEventListener("pointermove", handlePointerMove);
+      container.removeEventListener("pointerup", handlePointerUp);
+      container.removeEventListener("pointercancel", handlePointerUp);
+      container.removeEventListener("pointerenter", handlePointerEnter);
+      container.removeEventListener("pointerleave", handlePointerLeave);
+    };
+  }, []);
+
+  const triggerToast = (msg: string) => {
+    setActiveToast(msg);
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    toastTimeoutRef.current = setTimeout(() => {
+      setActiveToast(null);
+    }, 2800);
+  };
+
+  const handleCardClick = (item: OrbitItemData) => {
+    if (item.type === "chip") {
+      triggerToast(`${item.title}: ${item.desc}`);
+    } else if (item.type === "image") {
+      triggerToast(`${item.badge} view activated`);
+    } else {
+      triggerToast("Mindly 3D Focus Orbit");
+    }
+  };
 
   return (
     <div className="presentation-wrapper">
@@ -192,53 +433,121 @@ export default function MindlyPage() {
             </div>
           </div>
 
-          {/* Centerpiece Visual */}
+          {/* Centerpiece Visual with Dynamic 3D Rotating Orbit */}
           <div className="hero-centerpiece" id="hero-centerpiece" ref={centerPieceRef}>
             <div className="centerpiece-canvas">
-              <img src="/assets/hero_center_hd.png" alt="A focused mind surrounded by orbiting ideas, focus, and plan cards" className="center-man-image" />
-              <div className="orbiting-halo-container" aria-hidden="true">
-                <div className="halo-chip chip-focus">
-                  <span className="chip-icon lime">
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
-                    </svg>
-                  </span>
-                  <div className="chip-text">
-                    <span className="chip-title">Focus</span>
-                    <span className="chip-desc">Deep work, bigger results</span>
-                  </div>
-                </div>
+              {/* Clean Portrait of the Man */}
+              <img
+                src="/assets/hero_man_clean.png"
+                alt="A focused mind surrounded by orbiting ideas, focus, and plan cards"
+                className="center-man-image"
+              />
 
-                <div className="halo-chip chip-ideas">
-                  <span className="chip-icon purple">
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M9 18h6"></path>
-                      <path d="M10 22h4"></path>
-                      <path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6v1a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-1c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"></path>
-                    </svg>
-                  </span>
-                  <div className="chip-text">
-                    <span className="chip-title">Ideas</span>
-                    <span className="chip-desc">Capture everything</span>
-                  </div>
-                </div>
+              {/* 3D Orbiting Carousel Ribbon */}
+              <div
+                className="orbiting-halo-container"
+                ref={haloContainerRef}
+                title="Drag or swipe to rotate the halo"
+                aria-label="Orbiting productivity tools. Drag horizontally to rotate."
+              >
+                {ORBIT_ITEMS.map((item, index) => {
+                  if (item.type === "chip") {
+                    return (
+                      <div
+                        key={item.id}
+                        ref={(el) => { itemRefs.current[index] = el; }}
+                        className={`halo-chip chip-${item.id}`}
+                        onClick={() => handleCardClick(item)}
+                        tabIndex={0}
+                        role="button"
+                        aria-label={`${item.title}: ${item.desc}`}
+                      >
+                        <span className={`chip-icon ${item.iconClass || ""}`}>
+                          {item.icon === "spark" && (
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <path d="M9 18h6"></path>
+                              <path d="M10 22h4"></path>
+                              <path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6v1a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-1c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"></path>
+                            </svg>
+                          )}
+                          {item.icon === "calendar" && (
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                              <line x1="16" y1="2" x2="16" y2="6"></line>
+                              <line x1="8" y1="2" x2="8" y2="6"></line>
+                              <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                          )}
+                          {item.icon === "target" && (
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
+                            </svg>
+                          )}
+                          {item.icon === "flame" && (
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <path d="M12 2c0 4-5 6-5 10a7 7 0 0 0 14 0c0-4-5-6-5-10z"></path>
+                            </svg>
+                          )}
+                          {item.icon === "sun" && (
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <circle cx="12" cy="12" r="4"></circle>
+                              <line x1="12" y1="2" x2="12" y2="4"></line>
+                              <line x1="12" y1="20" x2="12" y2="22"></line>
+                              <line x1="2" y1="12" x2="4" y2="12"></line>
+                              <line x1="20" y1="12" x2="22" y2="12"></line>
+                            </svg>
+                          )}
+                        </span>
+                        <div className="chip-text">
+                          <span className="chip-title">{item.title}</span>
+                          <span className="chip-desc">{item.desc}</span>
+                        </div>
+                      </div>
+                    );
+                  }
 
-                <div className="halo-chip chip-plan">
-                  <span className="chip-icon orange">
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                      <line x1="16" y1="2" x2="16" y2="6"></line>
-                      <line x1="8" y1="2" x2="8" y2="6"></line>
-                      <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                  </span>
-                  <div className="chip-text">
-                    <span className="chip-title">Plan</span>
-                    <span className="chip-desc">Turn ideas into action</span>
-                  </div>
-                </div>
+                  if (item.type === "image") {
+                    return (
+                      <div
+                        key={item.id}
+                        ref={(el) => { itemRefs.current[index] = el; }}
+                        className={`halo-chip chip-image chip-${item.id}`}
+                        onClick={() => handleCardClick(item)}
+                        tabIndex={0}
+                        role="button"
+                        aria-label={item.badge}
+                      >
+                        <div className="chip-image-inner">
+                          <img src={item.imageSrc} alt={item.imageAlt} />
+                          {item.badge && <span className="chip-image-badge">{item.badge}</span>}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Translucent Curved Glass Spacer Panel
+                  return (
+                    <div
+                      key={item.id}
+                      ref={(el) => { itemRefs.current[index] = el; }}
+                      className="halo-chip chip-panel"
+                      onClick={() => handleCardClick(item)}
+                      aria-hidden="true"
+                    >
+                      <div className="panel-glimmer"></div>
+                    </div>
+                  );
+                })}
               </div>
+
+              {/* Interactive notification toast on click */}
+              {activeToast && (
+                <div className="orbit-toast show" role="status" aria-live="polite">
+                  <span className="toast-dot"></span>
+                  <span>{activeToast}</span>
+                </div>
+              )}
             </div>
           </div>
 

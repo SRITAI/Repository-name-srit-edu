@@ -16,6 +16,7 @@
     initParallax();
     initNavPills();
     initVideoModal();
+    initOrbitCarousel();
   });
 
   /* ==========================================================================
@@ -152,6 +153,140 @@
         modal.close();
       }
     });
+  }
+
+  /* ==========================================================================
+     5. DYNAMIC 3D ORBIT CAROUSEL
+     ========================================================================== */
+  function initOrbitCarousel() {
+    const container = document.getElementById('orbiting-halo');
+    if (!container) return;
+
+    const chips = Array.from(container.querySelectorAll('.halo-chip'));
+    if (!chips.length) return;
+
+    const toast = document.getElementById('orbit-toast');
+    const toastMsg = document.getElementById('toast-msg');
+    let toastTimeout = null;
+
+    function showToast(text) {
+      if (!toast || !toastMsg) return;
+      toastMsg.textContent = text;
+      toast.classList.add('show');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2600);
+    }
+
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const title = chip.getAttribute('data-title');
+        if (title) showToast(title);
+      });
+    });
+
+    let rotation = 0;
+    let velocity = 0;
+    let isHovered = false;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartRotation = 0;
+    let lastDragX = 0;
+    let lastDragTime = 0;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function updateTransforms() {
+      const width = container.offsetWidth || 500;
+      const height = container.offsetHeight || 500;
+      const isMobile = window.innerWidth <= 640;
+
+      const rx = isMobile ? Math.min(160, width * 0.42) : Math.min(240, width * 0.45);
+      const ry = rx * 0.32;
+      const cx = width / 2;
+      const cy = height * 0.38;
+      const tiltAngle = -0.11;
+
+      const total = chips.length;
+
+      for (let i = 0; i < total; i++) {
+        const el = chips[i];
+        const baseAngle = (i * 2 * Math.PI) / total;
+        const angle = baseAngle + rotation;
+
+        const cosA = Math.cos(angle);
+        const sinA = Math.sin(angle);
+
+        const x = cosA * rx;
+        const y = sinA * ry + x * Math.sin(tiltAngle);
+        const z = sinA;
+
+        const rotY = -cosA * 32;
+        const rotZ = rotY * 0.12;
+
+        if (z >= -0.15) {
+          const scale = isMobile ? 0.88 + z * 0.14 : 0.96 + z * 0.16;
+          const zIndex = Math.round(20 + z * 15);
+          el.style.transform = `translate3d(${cx + x}px, ${cy + y}px, 0px) translate(-50%, -50%) rotateY(${rotY.toFixed(1)}deg) rotateZ(${rotZ.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+          el.style.zIndex = String(zIndex);
+          el.style.opacity = '1';
+          el.style.filter = 'none';
+        } else {
+          const scale = isMobile ? 0.72 + (z + 1) * 0.16 : 0.82 + (z + 1) * 0.14;
+          const opacity = 0.52 + (z + 1) * 0.38;
+          const zIndex = Math.round(4 + (z + 1) * 4);
+          el.style.transform = `translate3d(${cx + x}px, ${cy + y}px, 0px) translate(-50%, -50%) rotateY(${rotY.toFixed(1)}deg) rotateZ(${rotZ.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+          el.style.zIndex = String(zIndex);
+          el.style.opacity = opacity.toFixed(3);
+          el.style.filter = 'blur(0.8px)';
+        }
+      }
+    }
+
+    function animate() {
+      if (!isDragging && !prefersReducedMotion) {
+        const baseSpeed = isHovered ? 0.0008 : 0.0032;
+        rotation += baseSpeed + velocity;
+        velocity *= 0.94;
+      }
+      updateTransforms();
+      requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+
+    container.addEventListener('pointerdown', (e) => {
+      isDragging = true;
+      dragStartX = e.clientX;
+      dragStartRotation = rotation;
+      lastDragX = e.clientX;
+      lastDragTime = performance.now();
+      velocity = 0;
+      try { container.setPointerCapture(e.pointerId); } catch {}
+    });
+
+    container.addEventListener('pointermove', (e) => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - dragStartX;
+      rotation = dragStartRotation + deltaX * 0.006;
+      const now = performance.now();
+      const dt = Math.max(1, now - lastDragTime);
+      const dx = e.clientX - lastDragX;
+      velocity = (dx / dt) * 0.04;
+      lastDragX = e.clientX;
+      lastDragTime = now;
+    });
+
+    function endDrag(e) {
+      isDragging = false;
+      try { container.releasePointerCapture(e.pointerId); } catch {}
+    }
+
+    container.addEventListener('pointerup', endDrag);
+    container.addEventListener('pointercancel', endDrag);
+    container.addEventListener('pointerenter', () => { isHovered = true; });
+    container.addEventListener('pointerleave', () => { isHovered = false; isDragging = false; });
   }
 
 })();

@@ -153,26 +153,12 @@
         <!-- Centerpiece Visual: The Contemplative Man with 3D Orbiting Halo -->
         <div class="hero-centerpiece" id="hero-centerpiece">
           <div class="centerpiece-canvas">
-            <img src="assets/hero_center_hd.png" alt="A focused mind surrounded by orbiting ideas, focus, and plan cards" class="center-man-image" id="center-man-img">
+            <img src="assets/hero_man_clean.png" alt="A focused mind surrounded by orbiting ideas, focus, and plan cards" class="center-man-image" id="center-man-img">
             
-            <!-- Interactive 3D Orbiting Halo Cards Layer -->
-            <div class="orbiting-halo-container" aria-hidden="true">
-              <!-- Focus Pill (Lime) -->
-              <div class="halo-chip chip-focus">
-                <span class="chip-icon lime">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
-                  </svg>
-                </span>
-                <div class="chip-text">
-                  <span class="chip-title">Focus</span>
-                  <span class="chip-desc">Deep work, bigger results</span>
-                </div>
-              </div>
-
-              <!-- Ideas Pill (Purple) -->
-              <div class="halo-chip chip-ideas">
+            <!-- Interactive 3D Orbiting Halo Ribbon -->
+            <div class="orbiting-halo-container" id="orbiting-halo" aria-label="Orbiting productivity tools. Drag horizontally to rotate.">
+              <!-- Ideas Chip -->
+              <div class="halo-chip chip-ideas" data-title="Ideas: Capture everything">
                 <span class="chip-icon purple">
                   <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
                     <path d="M9 18h6"></path>
@@ -186,8 +172,8 @@
                 </div>
               </div>
 
-              <!-- Plan Pill (Orange) -->
-              <div class="halo-chip chip-plan">
+              <!-- Plan Chip -->
+              <div class="halo-chip chip-plan" data-title="Plan: Turn ideas into action">
                 <span class="chip-icon orange">
                   <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -201,6 +187,77 @@
                   <span class="chip-desc">Turn ideas into action</span>
                 </div>
               </div>
+
+              <!-- Moon / Cosmos Image Card -->
+              <div class="halo-chip chip-image chip-moon" data-title="Deep Orbit: Night reflections">
+                <div class="chip-image-inner">
+                  <img src="assets/moon_card.png" alt="Cosmos and crescent moon in deep space">
+                  <span class="chip-image-badge">Deep Orbit</span>
+                </div>
+              </div>
+
+              <!-- Reflect Chip -->
+              <div class="halo-chip chip-reflect" data-title="Reflect: Evening mindfulness">
+                <span class="chip-icon rose">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <line x1="12" y1="2" x2="12" y2="4"></line>
+                    <line x1="12" y1="20" x2="12" y2="22"></line>
+                    <line x1="2" y1="12" x2="4" y2="12"></line>
+                    <line x1="20" y1="12" x2="22" y2="12"></line>
+                  </svg>
+                </span>
+                <div class="chip-text">
+                  <span class="chip-title">Reflect</span>
+                  <span class="chip-desc">Evening review</span>
+                </div>
+              </div>
+
+              <!-- Translucent Curved Glass Spacer Panel -->
+              <div class="halo-chip chip-panel" aria-hidden="true">
+                <div class="panel-glimmer"></div>
+              </div>
+
+              <!-- Habits Chip -->
+              <div class="halo-chip chip-habits" data-title="Habits: 14-day flow streak">
+                <span class="chip-icon teal">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 2c0 4-5 6-5 10a7 7 0 0 0 14 0c0-4-5-6-5-10z"></path>
+                  </svg>
+                </span>
+                <div class="chip-text">
+                  <span class="chip-title">Habits</span>
+                  <span class="chip-desc">14-day flow streak</span>
+                </div>
+              </div>
+
+              <!-- Mountain Landscape Image Card -->
+              <div class="halo-chip chip-image chip-mountain" data-title="Peak Focus: Mindscape loaded">
+                <div class="chip-image-inner">
+                  <img src="assets/mountain_card.png" alt="Dramatic black and white mountain ridge">
+                  <span class="chip-image-badge">Peak Focus</span>
+                </div>
+              </div>
+
+              <!-- Focus Chip -->
+              <div class="halo-chip chip-focus" data-title="Focus: Deep work, bigger results">
+                <span class="chip-icon lime">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
+                  </svg>
+                </span>
+                <div class="chip-text">
+                  <span class="chip-title">Focus</span>
+                  <span class="chip-desc">Deep work, bigger results</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Toast notification -->
+            <div class="orbit-toast" id="orbit-toast" role="status" aria-live="polite">
+              <span class="toast-dot"></span>
+              <span id="toast-msg">Mindly 3D Focus Orbit</span>
             </div>
           </div>
         </div>
