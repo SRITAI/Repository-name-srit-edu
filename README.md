@@ -1,7 +1,7 @@
-# Mindly°
+# infimindss°
 > "A clearer mind for a brighter you."
 
-A pixel-perfect, high-fidelity landing page for **Mindly°**, replicating the exact design, typography, layout, glassmorphism, and micro-interactions from the uploaded design mockup.
+A pixel-perfect, high-fidelity landing page for **infimindss°**, replicating the exact design, typography, layout, glassmorphism, 3D rotating halo orbit, and micro-interactions.
 
 ---
 
@@ -11,12 +11,12 @@ A pixel-perfect, high-fidelity landing page for **Mindly°**, replicating the ex
   - Regular 400 for `"A clearer mind"`
   - Italic 400 for `"*for a brighter you.*"` (characterized by calligraphic single-story *g*, graceful descenders, teardrop terminals)
 - **UI & Body Font**: `Plus Jakarta Sans` (Google Fonts)
-  - Geometric, clean weights from 400 to 800 for the `Mindly°` logo, pill navigation, cards, and buttons.
+  - Geometric, clean weights from 400 to 800 for the `infimindss°` logo, pill navigation, cards, and buttons.
 - **Color Palette**:
   - Warm serene canvas: `#FAF8F5`
   - Deep obsidian text: `#111111` / `#18181B`
   - Muted zinc subtext: `#71717A` / `#8E8E93`
-  - Halo accents: Lime Green (`#84CC16`), Purple (`#A855F7`), Vibrant Orange (`#F97316`)
+  - Halo accents: Lime Green (`#84CC16`), Purple (`#A855F7`), Vibrant Orange (`#F97316`), Teal (`#10B981`), Rose (`#F43F5E`)
   - Ambient glow presentation container: `box-shadow: 0 0 65px -10px rgba(168, 192, 255, 0.42)`
 
 ---
@@ -24,12 +24,15 @@ A pixel-perfect, high-fidelity landing page for **Mindly°**, replicating the ex
 ## 🧩 Key Components
 
 1. **Header Navigation**:
-   - Brand logo: `Mindly°`
+   - Brand logo: `infimindss°`
    - Floating frosted pill navigation (`Features`, `How it works`, active `Integrations`, `Pricing`)
    - Black pill action button: `Get the app ↗`
-2. **Hero Centerpiece**:
+2. **Hero Centerpiece & 3D Rotating Orbit**:
    - Contemplative portrait with upward gaze
-   - 3D orbiting cylindrical halo of frosted glass cards (`Focus`, `Ideas`, `Plan`, mountain peak landscape, and celestial moon sphere)
+   - 3D orbiting halo of interactive frosted glass cards (`Focus`, `Ideas`, `Plan`, `Habits`, `Reflect`, mountain peak landscape, and celestial cosmos moon sphere)
+   - Real 3D depth occlusion (cards pass in front of and behind the head)
+   - Drag & swipe gestures to spin the orbit
+   - Smart hover slowdown for seamless reading
 3. **Floating Connected Cards**:
    - Left card: Voice equalizer soundwave icon, `"Turn thoughts into progress."`, `"Capture, organise and do more."`
    - Right card: Team avatar stack + `+` badge, `"Ideas, anytime, anywhere."`, `"Sync across all your devices."`

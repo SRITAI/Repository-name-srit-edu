@@ -306,7 +306,7 @@ export default function MindlyPage() {
     } else if (item.type === "image") {
       triggerToast(`${item.badge} view activated`);
     } else {
-      triggerToast("Mindly 3D Focus Orbit");
+      triggerToast("infimindss 3D Focus Orbit");
     }
   };
 
@@ -315,8 +315,8 @@ export default function MindlyPage() {
       <div className="window-frame">
         {/* Header */}
         <header className="header">
-          <a href="#" className="brand-logo" aria-label="Mindly Home">
-            Mindly<span className="logo-degree">°</span>
+          <a href="#" className="brand-logo" aria-label="infimindss Home">
+            infimindss<span className="logo-degree">°</span>
           </a>
 
           <nav className="nav-pill" aria-label="Main Navigation">
@@ -409,7 +409,7 @@ export default function MindlyPage() {
             </h1>
 
             <p className="hero-subheading">
-              Mindly helps you capture ideas, organize your thoughts,<br />
+              infimindss helps you capture ideas, organize your thoughts,<br />
               and stay focused — all in one beautiful space.
             </p>
 
@@ -582,13 +582,13 @@ export default function MindlyPage() {
 
       {/* Video Modal */}
       {isVideoModalOpen && (
-        <dialog className="video-modal" open aria-label="Mindly Product Overview">
+        <dialog className="video-modal" open aria-label="infimindss Product Overview">
           <div className="modal-card">
             <button type="button" className="modal-close" onClick={() => setIsVideoModalOpen(false)} aria-label="Close modal">
               ✕
             </button>
             <div className="video-preview-header">
-              <h3>Experience Mindly</h3>
+              <h3>Experience infimindss</h3>
               <p>See how 50,000+ thinkers turn abstract thoughts into focused execution.</p>
             </div>
             <div className="video-embed-container">

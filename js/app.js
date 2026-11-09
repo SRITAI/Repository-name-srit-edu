@@ -1,5 +1,5 @@
 /**
- * MINDLY° — Application Interaction Engine
+ * infimindss° — Application Interaction Engine
  * 
  * Handles:
  * - Dynamic SVG spline wire calculation connecting cards to the central halo
