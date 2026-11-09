@@ -1,20 +1,56 @@
-# Veyra AI
+# Mindly°
+> "A clearer mind for a brighter you."
 
-A cinematic demo studio for creating illustrative image and video previews. This replaces the former community site interface with a single creative workspace.
+A pixel-perfect, high-fidelity landing page for **Mindly°**, replicating the exact design, typography, layout, glassmorphism, and micro-interactions from the uploaded design mockup.
 
-## Demo behavior
+---
 
-- Image and video creation screens accept prompts, style, aspect ratio, and video duration.
-- Generate creates a **simulated preview** in the browser; no AI service or video renderer is connected.
-- The library and saved inspiration use browser local storage. They are specific to each browser and can be cleared by its user.
-- Image and video preview cards use CSS illustration. The library can download an SVG demo poster, not generated media.
-- Old application routes redirect to the new studio. The former backend is not included in this version.
+## 🎨 Visual & Typography Stack
 
-## Run locally
+- **Headline Font**: `Instrument Serif` (Google Fonts)
+  - Regular 400 for `"A clearer mind"`
+  - Italic 400 for `"*for a brighter you.*"` (characterized by calligraphic single-story *g*, graceful descenders, teardrop terminals)
+- **UI & Body Font**: `Plus Jakarta Sans` (Google Fonts)
+  - Geometric, clean weights from 400 to 800 for the `Mindly°` logo, pill navigation, cards, and buttons.
+- **Color Palette**:
+  - Warm serene canvas: `#FAF8F5`
+  - Deep obsidian text: `#111111` / `#18181B`
+  - Muted zinc subtext: `#71717A` / `#8E8E93`
+  - Halo accents: Lime Green (`#84CC16`), Purple (`#A855F7`), Vibrant Orange (`#F97316`)
+  - Ambient glow presentation container: `box-shadow: 0 0 65px -10px rgba(168, 192, 255, 0.42)`
 
-```sh
-pnpm install
-pnpm dev
+---
+
+## 🧩 Key Components
+
+1. **Header Navigation**:
+   - Brand logo: `Mindly°`
+   - Floating frosted pill navigation (`Features`, `How it works`, active `Integrations`, `Pricing`)
+   - Black pill action button: `Get the app ↗`
+2. **Hero Centerpiece**:
+   - Contemplative portrait with upward gaze
+   - 3D orbiting cylindrical halo of frosted glass cards (`Focus`, `Ideas`, `Plan`, mountain peak landscape, and celestial moon sphere)
+3. **Floating Connected Cards**:
+   - Left card: Voice equalizer soundwave icon, `"Turn thoughts into progress."`, `"Capture, organise and do more."`
+   - Right card: Team avatar stack + `+` badge, `"Ideas, anytime, anywhere."`, `"Sync across all your devices."`
+   - Smooth SVG spline curves dynamically connecting the cards to the central halo, complete with traveling pulse energy dots.
+4. **Rotating Stamp**:
+   - SVG text path continuously rotating: `"A MORE FOCUSED YOU • EVERYDAY •"` around a central 4-pointed star.
+5. **Bottom Badges**:
+   - Bottom-left: `"Trusted by 50,000+ creators worldwide."` with 4 creator avatars + `+`.
+   - Bottom-right: 4-pointed star divider with `"Less chaos. / More clarity."`
+6. **Interactive Features**:
+   - Subtle 3D mouse parallax on cards and centerpiece.
+   - Interactive watch video modal dialog.
+   - Fluid responsive layout down to 360px mobile view with zero layout overflow.
+
+---
+
+## 🚀 Running Locally
+
+```bash
+# Start the local server
+python3 -m http.server 8080
 ```
 
-Checks: `pnpm lint`, `pnpm typecheck`, and `pnpm build`.
+Open [http://localhost:8080](http://localhost:8080) in your browser.

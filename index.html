@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mindly° — A clearer mind for a brighter you.</title>
+  <meta name="description" content="Mindly helps you capture ideas, organize your thoughts, and stay focused — all in one beautiful space.">
+
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Exact Fonts: Instrument Serif (Editorial Headline & Italic) + Plus Jakarta Sans (Modern Geometric UI) -->
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Outer Glow Presentation Frame (Exactly as in the uploaded image) -->
+  <div class="presentation-wrapper">
+    <div class="window-frame">
+
+      <!-- Navigation Bar -->
+      <header class="header">
+        <!-- Logo -->
+        <a href="#" class="brand-logo" aria-label="Mindly Home">
+          Mindly<span class="logo-degree">°</span>
+        </a>
+
+        <!-- Center Nav Pill -->
+        <nav class="nav-pill" aria-label="Main Navigation">
+          <a href="#features" class="nav-item">Features</a>
+          <a href="#how-it-works" class="nav-item">How it works</a>
+          <a href="#integrations" class="nav-item active">Integrations</a>
+          <a href="#pricing" class="nav-item">Pricing</a>
+        </nav>
+
+        <!-- Right CTA Button -->
+        <div class="header-right">
+          <a href="#download" class="btn-get-app">
+            <span>Get the app</span>
+            <svg class="arrow-up-right" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="7" y1="17" x2="17" y2="7"></line>
+              <polyline points="7 7 17 7 17 17"></polyline>
+            </svg>
+          </a>
+        </div>
+      </header>
+
+      <!-- Hero Section -->
+      <main class="hero-stage">
+
+        <!-- Connecting Curved Spline Lines (SVG) -->
+        <svg class="connecting-splines" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden="true">
+          <!-- Left spline: from bottom of 'Turn thoughts into progress' card to center halo -->
+          <path id="spline-left" class="spline-path" d="M 235 300 C 235 365, 340 410, 440 430" />
+          <!-- Right spline: from left of 'Ideas, anytime, anywhere' card to center halo -->
+          <path id="spline-right" class="spline-path" d="M 945 325 C 870 360, 780 410, 730 425" />
+          
+          <!-- Animated pulse dots traveling along wires -->
+          <circle class="pulse-dot-wire" r="2.5">
+            <animateMotion dur="4s" repeatCount="indefinite">
+              <mpath href="#spline-left"/>
+            </animateMotion>
+          </circle>
+          <circle class="pulse-dot-wire" r="2.5">
+            <animateMotion dur="4.5s" repeatCount="indefinite">
+              <mpath href="#spline-right"/>
+            </animateMotion>
+          </circle>
+        </svg>
+
+        <!-- Top Right Rotating Circular Stamp -->
+        <div class="circular-stamp" aria-label="A more focused you, everyday">
+          <svg class="rotating-text-svg" viewBox="0 0 120 120" width="88" height="88">
+            <defs>
+              <path id="stampCircle" d="M 60,60 m -42,0 a 42,42 0 1,1 84,0 a 42,42 0 1,1 -84,0" />
+            </defs>
+            <text class="stamp-text">
+              <textPath href="#stampCircle" startOffset="0%">
+                A MORE FOCUSED YOU • EVERYDAY •
+              </textPath>
+            </text>
+          </svg>
+          <div class="stamp-star-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M12 0 L14 9 L23 12 L14 15 L12 24 L10 15 L1 12 L10 9 Z"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Left Floating Card: "Turn thoughts into progress" -->
+        <div class="floating-card left-card" tabindex="0">
+          <div class="card-icon-box">
+            <!-- Soundwave equalizer icon -->
+            <div class="soundwave-icon" aria-hidden="true">
+              <span class="bar bar-1"></span>
+              <span class="bar bar-2"></span>
+              <span class="bar bar-3"></span>
+              <span class="bar bar-4"></span>
+              <span class="bar bar-5"></span>
+            </div>
+          </div>
+          <h3 class="card-title">Turn thoughts<br>into progress.</h3>
+          <p class="card-subtitle">Capture, organise and<br>do more.</p>
+        </div>
+
+        <!-- Right Floating Card: "Ideas, anytime, anywhere" -->
+        <div class="floating-card right-card" tabindex="0">
+          <div class="card-avatar-stack" aria-label="Collaborators">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="Team member" class="avatar-img">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80" alt="Team member" class="avatar-img">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=80&q=80" alt="Team member" class="avatar-img">
+            <span class="avatar-plus-badge">+</span>
+          </div>
+          <h3 class="card-title">Ideas, anytime,<br>anywhere.</h3>
+          <p class="card-subtitle">Sync across all<br>your devices.</p>
+        </div>
+
+        <!-- Hero Typography & CTAs -->
+        <div class="hero-content">
+          <h1 class="hero-headline">
+            <span class="headline-regular">A clearer mind</span>
+            <span class="headline-italic">for a brighter you.</span>
+          </h1>
+
+          <p class="hero-subheading">
+            Mindly helps you capture ideas, organize your thoughts,<br>
+            and stay focused — all in one beautiful space.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#get-started" class="btn-primary-cta">
+              <span>Get started free</span>
+              <svg class="arrow-right" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+
+            <button type="button" class="btn-video-cta" id="btn-watch-video">
+              <span class="video-play-disc" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+                  <polygon points="6 4 20 12 6 20 6 4"></polygon>
+                </svg>
+              </span>
+              <span>Watch video</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Centerpiece Visual: The Contemplative Man with 3D Orbiting Halo -->
+        <div class="hero-centerpiece" id="hero-centerpiece">
+          <div class="centerpiece-canvas">
+            <img src="assets/hero_center_hd.png" alt="A focused mind surrounded by orbiting ideas, focus, and plan cards" class="center-man-image" id="center-man-img">
+            
+            <!-- Interactive 3D Orbiting Halo Cards Layer -->
+            <div class="orbiting-halo-container" aria-hidden="true">
+              <!-- Focus Pill (Lime) -->
+              <div class="halo-chip chip-focus">
+                <span class="chip-icon lime">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
+                  </svg>
+                </span>
+                <div class="chip-text">
+                  <span class="chip-title">Focus</span>
+                  <span class="chip-desc">Deep work, bigger results</span>
+                </div>
+              </div>
+
+              <!-- Ideas Pill (Purple) -->
+              <div class="halo-chip chip-ideas">
+                <span class="chip-icon purple">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M9 18h6"></path>
+                    <path d="M10 22h4"></path>
+                    <path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6v1a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-1c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"></path>
+                  </svg>
+                </span>
+                <div class="chip-text">
+                  <span class="chip-title">Ideas</span>
+                  <span class="chip-desc">Capture everything</span>
+                </div>
+              </div>
+
+              <!-- Plan Pill (Orange) -->
+              <div class="halo-chip chip-plan">
+                <span class="chip-icon orange">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                </span>
+                <div class="chip-text">
+                  <span class="chip-title">Plan</span>
+                  <span class="chip-desc">Turn ideas into action</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Left Social Proof -->
+        <div class="bottom-badge bottom-left-proof">
+          <div class="proof-bar" aria-hidden="true"></div>
+          <p class="proof-text">Trusted by 50,000+<br>creators worldwide.</p>
+          <div class="proof-avatars" aria-label="Creator avatars">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="Creator" class="proof-avatar">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80" alt="Creator" class="proof-avatar">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=80&q=80" alt="Creator" class="proof-avatar">
+            <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=80&q=80" alt="Creator" class="proof-avatar">
+            <span class="proof-avatar-plus">+</span>
+          </div>
+        </div>
+
+        <!-- Bottom Right Philosophy -->
+        <div class="bottom-badge bottom-right-credo">
+          <div class="credo-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M12 0 L14 9 L23 12 L14 15 L12 24 L10 15 L1 12 L10 9 Z"></path>
+            </svg>
+          </div>
+          <div class="credo-line" aria-hidden="true"></div>
+          <div class="credo-text">
+            <span>Less chaos.</span>
+            <span>More clarity.</span>
+          </div>
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Video Modal (Accessible Dialog) -->
+  <dialog id="video-modal" class="video-modal" aria-label="Mindly Product Overview">
+    <div class="modal-card">
+      <button type="button" class="modal-close" id="modal-close" aria-label="Close modal">✕</button>
+      <div class="video-preview-header">
+        <h3>Experience Mindly</h3>
+        <p>See how 50,000+ thinkers turn abstract thoughts into focused execution.</p>
+      </div>
+      <div class="video-embed-container">
+        <div class="video-mock-screen">
+          <div class="mock-play-btn">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
+              <polygon points="6 4 20 12 6 20 6 4"></polygon>
+            </svg>
+          </div>
+          <span class="mock-duration">2:14 Product Walkthrough</span>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Interactive Script -->
+  <script src="js/app.js"></script>
+</body>
+</html>

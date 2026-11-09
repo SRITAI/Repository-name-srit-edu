@@ -1,0 +1,904 @@
+/* ==========================================================================
+   MINDLY° — PIXEL-PERFECT STYLESHEET
+   Replicating the exact typography, spatial layout, glassmorphism,
+   connecting splines, and serene luxury SaaS aesthetic.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Design Tokens & Variables
+   -------------------------------------------------------------------------- */
+:root {
+  /* Color Palette */
+  --bg-presentation: #F2F4F8;
+  --bg-canvas: #FAF8F5;          /* Warm, serene oyster/cream background */
+  --bg-card: #FFFFFF;
+  --bg-card-glass: rgba(255, 255, 255, 0.65);
+  
+  --text-main: #111111;          /* Deepest obsidian charcoal */
+  --text-body: #18181B;
+  --text-sub: #71717A;           /* Refined muted zinc */
+  --text-muted: #8E8E93;
+  --text-faint: #A1A1AA;
+
+  /* Accent Tones */
+  --accent-lime: #84CC16;
+  --accent-lime-bg: #F7FEE7;
+  --accent-purple: #A855F7;
+  --accent-purple-bg: #FAF5FF;
+  --accent-orange: #F97316;
+  --accent-orange-bg: #FFF7ED;
+
+  /* Typography */
+  --font-serif: 'Instrument Serif', 'Newsreader', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Shadows & Elevation */
+  --shadow-window: 0 0 65px -10px rgba(168, 192, 255, 0.42), 0 20px 40px -15px rgba(0, 0, 0, 0.06);
+  --shadow-floating-card: 0 24px 48px -12px rgba(0, 0, 0, 0.07), 0 2px 6px rgba(0, 0, 0, 0.02);
+  --shadow-halo-chip: 0 12px 28px -6px rgba(0, 0, 0, 0.08);
+
+  /* Borders */
+  --border-light: rgba(0, 0, 0, 0.05);
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-glass: rgba(255, 255, 255, 0.85);
+
+  /* Geometry */
+  --radius-pill: 9999px;
+  --radius-card: 22px;
+  --radius-chip: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   2. Reset & Core Structure
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-presentation);
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  overflow-x: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   3. Presentation Wrapper & Window Frame (Dribbble Showcase Style)
+   -------------------------------------------------------------------------- */
+.presentation-wrapper {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+.window-frame {
+  width: 100%;
+  background-color: var(--bg-canvas);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-window);
+  position: relative;
+  overflow: hidden;
+  padding: 18px 32px 0 32px;
+  display: flex;
+  flex-direction: column;
+  min-height: 780px;
+}
+
+/* --------------------------------------------------------------------------
+   4. Header & Navigation Bar
+   -------------------------------------------------------------------------- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 50;
+  padding: 6px 0 16px 0;
+}
+
+/* Brand Logo: Mindly° */
+.brand-logo {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: -0.04em;
+  color: var(--text-main);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: baseline;
+  transition: opacity 0.2s ease;
+}
+.brand-logo:hover {
+  opacity: 0.8;
+}
+.logo-degree {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-left: 1px;
+}
+
+/* Center Pill Nav Bar */
+.nav-pill {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  gap: 2px;
+}
+
+.nav-item {
+  color: var(--text-sub);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 7px 18px;
+  border-radius: var(--radius-pill);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+.nav-item:hover {
+  color: var(--text-main);
+}
+
+/* Active tab state (Integrations in reference) */
+.nav-item.active {
+  background-color: #FFFFFF;
+  color: var(--text-main);
+  font-weight: 600;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+/* Right Header CTA Button: Get the app ↗ */
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.btn-get-app {
+  background-color: var(--text-main);
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: 9px 20px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.btn-get-app:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+  background-color: #000000;
+}
+.arrow-up-right {
+  transition: transform 0.2s ease;
+}
+.btn-get-app:hover .arrow-up-right {
+  transform: translate(2px, -2px);
+}
+
+/* --------------------------------------------------------------------------
+   5. Hero Stage Layout
+   -------------------------------------------------------------------------- */
+.hero-stage {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-top: 14px;
+  min-height: 700px;
+}
+
+/* Connecting SVG Splines */
+.connecting-splines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.spline-path {
+  fill: none;
+  stroke: #D6D6DB;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+.pulse-dot-wire {
+  fill: #111111;
+  opacity: 0.45;
+}
+
+/* --------------------------------------------------------------------------
+   6. Hero Typography & Headings
+   -------------------------------------------------------------------------- */
+.hero-content {
+  text-align: center;
+  position: relative;
+  z-index: 30;
+  max-width: 780px;
+  margin-bottom: -15px; /* Sits naturally right above the floating halo */
+}
+
+.hero-headline {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.04;
+  margin-bottom: 14px;
+}
+
+.headline-regular {
+  font-size: clamp(3.0rem, 5.2vw, 4.8rem);
+  font-style: normal;
+}
+
+.headline-italic {
+  font-size: clamp(3.3rem, 5.8vw, 5.3rem);
+  font-style: italic;
+  font-weight: 400;
+  margin-top: -6px;
+  letter-spacing: -0.01em;
+}
+
+.hero-subheading {
+  font-size: clamp(0.88rem, 1.2vw, 0.98rem);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-sub);
+  max-width: 520px;
+  margin: 0 auto 20px auto;
+}
+
+/* CTA Buttons */
+.hero-cta-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+  z-index: 30;
+}
+
+.btn-primary-cta {
+  background-color: var(--text-main);
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 11px 22px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-primary-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  background-color: #000000;
+}
+.arrow-right {
+  transition: transform 0.2s ease;
+}
+.btn-primary-cta:hover .arrow-right {
+  transform: translateX(3px);
+}
+
+.btn-video-cta {
+  background-color: transparent;
+  color: var(--text-body);
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 9px 16px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+.btn-video-cta:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.video-play-disc {
+  width: 22px;
+  height: 22px;
+  background-color: var(--text-main);
+  color: #FFFFFF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+.video-play-disc svg {
+  margin-left: 2px;
+}
+.btn-video-cta:hover .video-play-disc {
+  transform: scale(1.1);
+}
+
+/* --------------------------------------------------------------------------
+   7. Centerpiece Imagery & 3D Halo
+   -------------------------------------------------------------------------- */
+.hero-centerpiece {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  display: flex;
+  justify-content: center;
+  z-index: 20;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.centerpiece-canvas {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.center-man-image {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+  /* Seamless blend into background */
+  mix-blend-mode: multiply;
+  filter: contrast(1.02);
+  margin-bottom: 0;
+}
+
+/* Orbiting Glass Halo Chips (Floating Glassmorphism Pills) */
+.orbiting-halo-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.halo-chip {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-chip);
+  box-shadow: var(--shadow-halo-chip);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: auto;
+  cursor: default;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+/* Subtle interactive hover */
+.halo-chip:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.chip-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.chip-icon.lime {
+  background-color: var(--accent-lime);
+  color: #FFFFFF;
+}
+.chip-icon.purple {
+  background-color: var(--accent-purple);
+  color: #FFFFFF;
+}
+.chip-icon.orange {
+  background-color: var(--accent-orange);
+  color: #FFFFFF;
+}
+
+.chip-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.chip-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.15;
+}
+
+.chip-desc {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-sub);
+}
+
+/* Exact positioning for interactive chips */
+.chip-focus {
+  top: 14%;
+  left: 24%;
+  transform: rotate(-3deg);
+}
+
+.chip-ideas {
+  top: 48%;
+  left: 36%;
+  transform: rotate(2deg);
+}
+
+.chip-plan {
+  top: 26%;
+  right: 18%;
+  transform: rotate(4deg);
+}
+
+/* --------------------------------------------------------------------------
+   8. Floating Cards (Left & Right Connected Cards)
+   -------------------------------------------------------------------------- */
+.floating-card {
+  position: absolute;
+  background-color: var(--bg-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-floating-card);
+  border: 1px solid var(--border-light);
+  padding: 22px 24px;
+  z-index: 25;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  outline: none;
+}
+
+.floating-card:hover,
+.floating-card:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 32px 56px -12px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-family: var(--font-sans);
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin-bottom: 7px;
+}
+
+.card-subtitle {
+  font-size: 0.76rem;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+/* Left Card: Turn thoughts into progress */
+.left-card {
+  top: 15%;
+  left: 6%;
+  width: 172px;
+}
+
+.card-icon-box {
+  margin-bottom: 12px;
+}
+
+/* Voice Equalizer Soundwave */
+.soundwave-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 3.5px;
+  height: 24px;
+}
+
+.soundwave-icon .bar {
+  width: 2px;
+  background-color: var(--text-main);
+  border-radius: 2px;
+  display: block;
+}
+.bar-1 { height: 8px; }
+.bar-2 { height: 16px; }
+.bar-3 { height: 22px; }
+.bar-4 { height: 14px; }
+.bar-5 { height: 8px; }
+
+/* Right Card: Ideas, anytime, anywhere */
+.right-card {
+  top: 25%;
+  right: 7%;
+  width: 172px;
+}
+
+.card-avatar-stack {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.avatar-img {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+  object-fit: cover;
+  margin-left: -6px;
+}
+.avatar-img:first-child {
+  margin-left: 0;
+}
+
+.avatar-plus-badge {
+  width: 22px;
+  height: 22px;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 50%;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* --------------------------------------------------------------------------
+   9. Circular Rotating Stamp (Top Right)
+   -------------------------------------------------------------------------- */
+.circular-stamp {
+  position: absolute;
+  top: 6%;
+  right: 7%;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  user-select: none;
+  pointer-events: none;
+}
+
+.rotating-text-svg {
+  position: absolute;
+  animation: rotate-stamp 28s linear infinite;
+}
+
+@keyframes rotate-stamp {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.stamp-text {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  fill: #8E8E93;
+}
+
+.stamp-star-icon {
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* --------------------------------------------------------------------------
+   10. Bottom Proof & Philosophy Badges
+   -------------------------------------------------------------------------- */
+/* Bottom Left: Trusted by 50,000+ creators */
+.bottom-left-proof {
+  position: absolute;
+  bottom: 28px;
+  left: 42px;
+  z-index: 25;
+}
+
+.proof-bar {
+  width: 30px;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.18);
+  margin-bottom: 10px;
+}
+
+.proof-text {
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-sub);
+  margin-bottom: 10px;
+}
+
+.proof-avatars {
+  display: flex;
+  align-items: center;
+}
+
+.proof-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-canvas);
+  object-fit: cover;
+  margin-left: -8px;
+}
+.proof-avatar:first-child {
+  margin-left: 0;
+}
+
+.proof-avatar-plus {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-canvas);
+  background-color: #FFFFFF;
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* Bottom Right: Less chaos. More clarity. */
+.bottom-right-credo {
+  position: absolute;
+  bottom: 34px;
+  right: 48px;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.credo-icon {
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+}
+
+.credo-line {
+  width: 24px;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.18);
+}
+
+.credo-text {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-sub);
+}
+
+/* --------------------------------------------------------------------------
+   11. Video Dialog Modal
+   -------------------------------------------------------------------------- */
+.video-modal {
+  border: none;
+  border-radius: 20px;
+  background: transparent;
+  padding: 0;
+  max-width: 640px;
+  width: 90%;
+  margin: auto;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3);
+}
+
+.video-modal::backdrop {
+  background: rgba(18, 18, 20, 0.6);
+  backdrop-filter: blur(8px);
+}
+
+.modal-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.modal-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.video-preview-header h3 {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+}
+.video-preview-header p {
+  color: var(--text-sub);
+  font-size: 0.88rem;
+  margin-bottom: 18px;
+}
+
+.video-embed-container {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #111111;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+}
+
+.video-mock-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.mock-play-btn {
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+.mock-play-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.25);
+}
+.mock-duration {
+  font-size: 0.82rem;
+  color: #A1A1AA;
+}
+
+/* --------------------------------------------------------------------------
+   12. Responsive Adjustments
+   -------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+  .left-card {
+    left: 1.5%;
+    width: 155px;
+    padding: 16px;
+  }
+  .right-card {
+    right: 2%;
+    width: 155px;
+    padding: 16px;
+  }
+  .circular-stamp {
+    right: 4%;
+  }
+}
+
+@media (max-width: 860px) {
+  .window-frame {
+    padding: 18px 20px 28px 20px;
+    border-radius: 20px;
+  }
+  .nav-pill {
+    display: none; /* Mobile navigation */
+  }
+  .connecting-splines {
+    display: none;
+  }
+  .left-card,
+  .right-card {
+    position: static;
+    width: 100%;
+    max-width: 280px;
+    margin: 12px 0;
+  }
+  .circular-stamp {
+    display: none;
+  }
+  .bottom-left-proof,
+  .bottom-right-credo {
+    position: static;
+    margin-top: 24px;
+  }
+  .hero-stage {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 8px;
+  }
+  .window-frame {
+    padding: 14px 14px 24px 14px;
+  }
+  .headline-regular {
+    font-size: 2.8rem;
+  }
+  .headline-italic {
+    font-size: 3.2rem;
+  }
+  .hero-cta-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-primary-cta,
+  .btn-video-cta {
+    width: 100%;
+    justify-content: center;
+  }
+}
