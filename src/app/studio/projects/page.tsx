@@ -4,14 +4,19 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, Plus, Film, Clock, CheckCircle2, ChevronRight } from "lucide-react";
 import { Project } from "@/lib/supabase/types";
+import Navbar from "@/components/Navbar";
+import CommandPalette from "@/components/CommandPalette";
 
 export default function MyProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
+  const [isCmdOpen, setIsCmdOpen] = useState(false);
 
   useEffect(() => {
     try {
-      const local = JSON.parse(localStorage.getItem("infimindss_my_projects") || "[]");
-      setProjects(local);
+      if (typeof window !== "undefined") {
+        const local = JSON.parse(localStorage.getItem("infimindss_my_projects") || "[]");
+        setProjects(local);
+      }
     } catch {}
   }, []);
 
@@ -35,25 +40,7 @@ export default function MyProjectsPage() {
     <div className="presentation-wrapper" style={{ minHeight: "100vh", padding: "20px" }}>
       <div className="window-frame" style={{ maxWidth: "1140px", margin: "0 auto", padding: "28px" }}>
         {/* Navigation Bar */}
-        <header className="header" style={{ marginBottom: "32px" }}>
-          <Link href="/" className="brand-logo" aria-label="infimindss Home">
-            infimindss<span className="logo-degree">°</span>
-          </Link>
-
-          <nav className="nav-pill" aria-label="Main Navigation">
-            <Link href="/" className="nav-item">Home</Link>
-            <Link href="/explore" className="nav-item">Explore</Link>
-            <Link href="/studio" className="nav-item">Studio</Link>
-            <Link href="/studio/projects" className="nav-item active">My Projects</Link>
-          </nav>
-
-          <div className="header-right">
-            <Link href="/studio" className="btn-get-app">
-              <span>Start new project</span>
-              <Plus size={14} />
-            </Link>
-          </div>
-        </header>
+        <Navbar activeRoute="projects" onOpenSearch={() => setIsCmdOpen(true)} />
 
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "32px", flexWrap: "wrap", gap: "16px" }}>
@@ -139,6 +126,8 @@ export default function MyProjectsPage() {
             </Link>
           </div>
         )}
+
+        <CommandPalette isOpen={isCmdOpen} onClose={() => setIsCmdOpen(false)} />
       </div>
     </div>
   );

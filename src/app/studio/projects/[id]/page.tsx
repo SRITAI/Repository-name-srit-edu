@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, use, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -19,6 +19,8 @@ import {
   Send,
   X,
 } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import CommandPalette from "@/components/CommandPalette";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -35,7 +37,7 @@ const TIMELINE_STEPS = [
   { key: "delivered", label: "Delivered", role: "infimindss Studio", desc: "Commercial deliverables ready for ad deployment." },
 ];
 
-export default function ProjectDetailPage({ params }: PageProps) {
+function ProjectDetailContent({ params }: PageProps) {
   const resolvedParams = use(params);
   const projectId = resolvedParams.id;
   const searchParams = useSearchParams();
@@ -45,28 +47,31 @@ export default function ProjectDetailPage({ params }: PageProps) {
   const [isRevisionModalOpen, setIsRevisionModalOpen] = useState(false);
   const [revisionNotes, setRevisionNotes] = useState("");
   const [revisionSuccess, setRevisionSuccess] = useState(false);
+  const [isCmdOpen, setIsCmdOpen] = useState(false);
 
   useEffect(() => {
     try {
-      const local = JSON.parse(localStorage.getItem("infimindss_my_projects") || "[]");
-      const found = local.find((p: any) => p.id === projectId);
-      if (found) {
-        setProject(found);
-      } else {
-        // Fallback placeholder project
-        setProject({
-          id: projectId,
-          brand_name: "Kite & Linen",
-          category_id: "clothing-fashion",
-          goal: "Sales & Conversions",
-          platform: "Instagram Reels & Meta Ads",
-          formats: ["9:16", "4:5"],
-          duration_seconds: 30,
-          status: "ai_enhancement",
-          script_text: `[HOOK - 0 to 3s]:\n"Stop scrolling if you hate ironing your clothes."\n\n[BODY - 3 to 22s]:\n"This 100% organic linen shirt literally defies creases."\n\n[CTA - 22 to 30s]:\n"Tap below to claim 20% off launch discount."`,
-          created_at: new Date().toISOString(),
-          drive_links: [{ url: "https://drive.google.com/drive/folders/sample", kind: "folder" }],
-        });
+      if (typeof window !== "undefined") {
+        const local = JSON.parse(localStorage.getItem("infimindss_my_projects") || "[]");
+        const found = local.find((p: any) => p.id === projectId);
+        if (found) {
+          setProject(found);
+        } else {
+          // Fallback placeholder project
+          setProject({
+            id: projectId,
+            brand_name: "Kite & Linen",
+            category_id: "clothing-fashion",
+            goal: "Sales & Conversions",
+            platform: "Instagram Reels & Meta Ads",
+            formats: ["9:16", "4:5"],
+            duration_seconds: 30,
+            status: "ai_enhancement",
+            script_text: `[HOOK - 0 to 3s]:\n"Stop scrolling if you hate ironing your clothes."\n\n[BODY - 3 to 22s]:\n"This 100% organic linen shirt literally defies creases."\n\n[CTA - 22 to 30s]:\n"Tap below to claim 20% off launch discount."`,
+            created_at: new Date().toISOString(),
+            drive_links: [{ url: "https://drive.google.com/drive/folders/sample", kind: "folder" }],
+          });
+        }
       }
     } catch {}
   }, [projectId]);
@@ -97,25 +102,7 @@ export default function ProjectDetailPage({ params }: PageProps) {
     <div className="presentation-wrapper" style={{ minHeight: "100vh", padding: "20px" }}>
       <div className="window-frame" style={{ maxWidth: "1240px", margin: "0 auto", padding: "32px" }}>
         {/* Navigation Bar */}
-        <header className="header" style={{ marginBottom: "28px" }}>
-          <Link href="/" className="brand-logo" aria-label="infimindss Home">
-            infimindss<span className="logo-degree">°</span>
-          </Link>
-
-          <nav className="nav-pill" aria-label="Main Navigation">
-            <Link href="/" className="nav-item">Home</Link>
-            <Link href="/explore" className="nav-item">Explore</Link>
-            <Link href="/studio" className="nav-item">Studio</Link>
-            <Link href="/studio/projects" className="nav-item active">My Projects</Link>
-          </nav>
-
-          <div className="header-right">
-            <Link href="/studio" className="btn-get-app">
-              <span>Start new project</span>
-              <ArrowUpRight size={14} />
-            </Link>
-          </div>
-        </header>
+        <Navbar activeRoute="projects" onOpenSearch={() => setIsCmdOpen(true)} />
 
         {/* Success Banner after submission */}
         {showSuccessBanner && (
@@ -424,6 +411,16 @@ export default function ProjectDetailPage({ params }: PageProps) {
           </div>
         </div>
       )}
+
+      <CommandPalette isOpen={isCmdOpen} onClose={() => setIsCmdOpen(false)} />
     </div>
+  );
+}
+
+export default function ProjectDetailPage({ params }: PageProps) {
+  return (
+    <Suspense fallback={<div style={{ padding: "60px", textAlign: "center" }}>Loading project details...</div>}>
+      <ProjectDetailContent params={params} />
+    </Suspense>
   );
 }

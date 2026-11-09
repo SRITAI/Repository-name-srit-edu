@@ -5,7 +5,10 @@ export function createClient() {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    // Return null or placeholder if not configured yet
+    if (typeof window !== 'undefined' && !(window as any).__supabase_warned) {
+      console.warn('[Supabase Client] NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY is not set. Running in demo / local draft mode safely.');
+      (window as any).__supabase_warned = true;
+    }
     return null;
   }
 

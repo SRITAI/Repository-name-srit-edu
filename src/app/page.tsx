@@ -23,6 +23,7 @@ import CommandPalette from "@/components/CommandPalette";
 import InstagramEmbedModal from "@/components/InstagramEmbedModal";
 import AgeGateModal from "@/components/AgeGateModal";
 import CookieConsent from "@/components/CookieConsent";
+import Navbar from "@/components/Navbar";
 
 import {
   SEED_CATEGORIES,
@@ -141,17 +142,28 @@ export default function MindlyPage() {
     setIsAdultVerified(verified);
   }, []);
 
-  // Global ⌘K / Ctrl+K listener
+  // Global ⌘K / Ctrl+K and custom event listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      const target = e.target as HTMLElement;
+      const isInput = target?.tagName === "INPUT" || target?.tagName === "TEXTAREA" || target?.isContentEditable;
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setIsCmdOpen((prev) => !prev);
+      } else if (e.key === "/" && !isInput && !isCmdOpen) {
+        e.preventDefault();
+        setIsCmdOpen(true);
       }
     };
+    const handleOpenCmd = () => setIsCmdOpen(true);
+
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+    window.addEventListener("open-command-palette", handleOpenCmd);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("open-command-palette", handleOpenCmd);
+    };
+  }, [isCmdOpen]);
 
   // Connecting Splines update
   useEffect(() => {
@@ -402,38 +414,8 @@ export default function MindlyPage() {
   return (
     <div className="presentation-wrapper">
       <div className="window-frame">
-        {/* Header Navigation */}
-        <header className="header">
-          <Link href="/" className="brand-logo" aria-label="infimindss Home">
-            infimindss<span className="logo-degree">°</span>
-          </Link>
-
-          <nav className="nav-pill" aria-label="Main Navigation">
-            <a href="#features" className="nav-item">Features</a>
-            <a href="#how-it-works" className="nav-item">How it works</a>
-            <Link href="/explore" className="nav-item">Explore</Link>
-            <Link href="/studio" className="nav-item">Studio</Link>
-            <a href="#pricing" className="nav-item">Pricing</a>
-          </nav>
-
-          <div className="header-right" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <button
-              type="button"
-              className="btn-search-trigger"
-              onClick={() => setIsCmdOpen(true)}
-              title="Search (Ctrl+K / ⌘K)"
-              aria-label="Open command palette search"
-            >
-              <Search size={15} />
-              <span className="search-kbd-hint">⌘K</span>
-            </button>
-
-            <Link href="/studio" className="btn-get-app">
-              <span>Start a project</span>
-              <ArrowUpRight size={14} />
-            </Link>
-          </div>
-        </header>
+        {/* Header Navigation (Task B) */}
+        <Navbar activeRoute="home" onOpenSearch={() => setIsCmdOpen(true)} />
 
         {/* Existing Hero Stage (Preserved Intact) */}
         <main className="hero-stage">
@@ -512,9 +494,16 @@ export default function MindlyPage() {
             </p>
 
             <div className="hero-cta-group">
-              <Link href="/studio" className="btn-primary-cta">
+              <Link href="/studio" className="btn-start-project btn-hero" aria-label="Start a project free">
+                <span className="btn-pulse-badge">
+                  <span className="pulse-dot-green"></span>
+                  <span>New</span>
+                </span>
                 <span>Start a project free</span>
-                <ArrowUpRight size={15} />
+                <span className="btn-arrow-circle" aria-hidden="true">
+                  <ArrowUpRight size={15} className="btn-arrow-icon primary" />
+                  <ArrowUpRight size={15} className="btn-arrow-icon clone" />
+                </span>
               </Link>
 
               <button type="button" className="btn-video-cta" onClick={() => setIsVideoModalOpen(true)}>

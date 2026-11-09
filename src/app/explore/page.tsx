@@ -20,6 +20,7 @@ import CommandPalette from "@/components/CommandPalette";
 import InstagramEmbedModal from "@/components/InstagramEmbedModal";
 import AgeGateModal from "@/components/AgeGateModal";
 import CookieConsent from "@/components/CookieConsent";
+import Navbar from "@/components/Navbar";
 
 import {
   SEED_CATEGORIES,
@@ -134,34 +135,7 @@ function ExploreContent() {
     <div className="presentation-wrapper" style={{ minHeight: "100vh", padding: "20px" }}>
       <div className="window-frame" style={{ maxWidth: "1280px", margin: "0 auto", padding: "28px" }}>
         {/* Navigation Bar */}
-        <header className="header" style={{ marginBottom: "32px" }}>
-          <Link href="/" className="brand-logo" aria-label="infimindss Home">
-            infimindss<span className="logo-degree">°</span>
-          </Link>
-
-          <nav className="nav-pill" aria-label="Main Navigation">
-            <Link href="/" className="nav-item">Home</Link>
-            <Link href="/explore" className="nav-item active">Explore</Link>
-            <Link href="/studio" className="nav-item">Studio</Link>
-            <Link href="/studio/projects" className="nav-item">My Projects</Link>
-          </nav>
-
-          <div className="header-right" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            <button
-              type="button"
-              className="btn-search-trigger"
-              onClick={() => setIsCmdOpen(true)}
-              title="Search (⌘K)"
-            >
-              <Search size={15} />
-              <span className="search-kbd-hint">⌘K</span>
-            </button>
-            <Link href="/studio" className="btn-get-app">
-              <span>Start a project</span>
-              <ArrowUpRight size={14} />
-            </Link>
-          </div>
-        </header>
+        <Navbar activeRoute="explore" onOpenSearch={() => setIsCmdOpen(true)} />
 
         {/* Explore Hub Header */}
         <div style={{ marginBottom: "36px" }}>

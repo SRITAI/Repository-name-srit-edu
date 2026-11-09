@@ -172,37 +172,266 @@ body {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
-/* Right Header CTA Button: Get the app ↗ */
+/* Right Header CTA & Action Items */
 .header-right {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
-.btn-get-app {
-  background-color: var(--text-main);
-  color: #FFFFFF;
-  text-decoration: none;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  padding: 9px 20px;
+/* Sticky Header Style (Task B4) */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 10px;
+  z-index: 90;
+  padding: 8px 16px;
   border-radius: var(--radius-pill);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.header.header-sticky {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+}
+
+/* Search Button Pill (Task B2) */
+.btn-search-pill {
+  height: 44px;
+  padding: 0 16px;
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 9999px;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #111111;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+  font-family: inherit;
+  outline: none;
 }
-.btn-get-app:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+
+.btn-search-pill:hover {
+  border-color: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.btn-search-pill:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #FAF9F6, 0 0 0 4px #C4B5FD;
+}
+
+.btn-search-pill:hover .search-icon {
+  transform: scale(1.1) translate(1px, -1px);
+}
+
+.search-icon {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #71717A;
+}
+
+.search-kbd-chip {
+  background: #F4F4F5;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #71717A;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+
+/* Start a project ↗ Button (Task B1) */
+.btn-start-project {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: #111111;
+  color: #FFFFFF;
+  height: 44px;
+  padding: 0 14px 0 22px;
+  border-radius: 9999px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.btn-start-project:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.24);
   background-color: #000000;
 }
-.arrow-up-right {
-  transition: transform 0.2s ease;
+
+.btn-start-project:active {
+  transform: scale(0.97);
 }
-.btn-get-app:hover .arrow-up-right {
-  transform: translate(2px, -2px);
+
+.btn-start-project:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #FAF9F6, 0 0 0 4px #C4B5FD, 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* Hero variant: 52px height */
+.btn-start-project.btn-hero {
+  height: 52px;
+  padding: 0 18px 0 24px;
+  font-size: 0.95rem;
+}
+
+/* Shine sweep across button on hover */
+.btn-start-project::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -130%;
+  width: 90%;
+  height: 100%;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 30%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.05) 70%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+
+.btn-start-project:hover::before {
+  left: 150%;
+  transition: left 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Arrow circle container with arrow swap */
+.btn-arrow-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.btn-hero .btn-arrow-circle {
+  width: 28px;
+  height: 28px;
+}
+
+.btn-arrow-icon {
+  position: absolute;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-arrow-icon.primary {
+  transform: translate(0, 0);
+}
+
+.btn-arrow-icon.clone {
+  transform: translate(-120%, 120%);
+}
+
+.btn-start-project:hover .btn-arrow-icon.primary {
+  transform: translate(120%, -120%);
+}
+
+.btn-start-project:hover .btn-arrow-icon.clone {
+  transform: translate(0, 0);
+}
+
+/* Optional pulsing green dot for hero */
+.btn-pulse-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #10B981;
+  margin-right: 2px;
+}
+
+.pulse-dot-green {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #10B981;
+  animation: pulseGreen 1.8s infinite;
+}
+
+@keyframes pulseGreen {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Mobile hamburger button */
+.mobile-hamburger-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111111;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Legacy alias backward compatibility */
+.btn-get-app {
+  composes: btn-start-project;
+}
+
+/* Responsive helper classes */
+.mobile-only {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .hidden-mobile {
+    display: none !important;
+  }
+  .mobile-only {
+    display: flex !important;
+  }
+  .btn-search-pill {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+  }
 }
 
 /* --------------------------------------------------------------------------
