@@ -88,7 +88,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 Return to Site
               </Link>
               <Link
-                href="/studio"
+                href="/studio/projects"
                 className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-[#1C1F23] border border-white/10 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors"
               >
                 Go to User Studio
