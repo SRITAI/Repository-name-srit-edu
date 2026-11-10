@@ -24,6 +24,7 @@ import InstagramEmbedModal from "@/components/InstagramEmbedModal";
 import AgeGateModal from "@/components/AgeGateModal";
 import CookieConsent from "@/components/CookieConsent";
 import Navbar from "@/components/Navbar";
+import { AdExplorerModule } from "@/components/ad-explorer/AdExplorerModule";
 
 import {
   SEED_CATEGORIES,
@@ -658,6 +659,13 @@ export default function MindlyPage() {
             </div>
           </div>
         </main>
+
+        {/* ====================================================================
+            FEATURED: Cross-Platform Ad Explorer Module
+            ==================================================================== */}
+        <section className="home-section" id="ad-explorer" style={{ paddingTop: "64px", paddingBottom: "48px" }}>
+          <AdExplorerModule mode="embedded" />
+        </section>
 
         {/* ====================================================================
             NEW SECTION 1: Category Search Section

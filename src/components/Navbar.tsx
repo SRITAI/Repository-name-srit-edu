@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 
 interface NavbarProps {
-  activeRoute?: "home" | "explore" | "studio" | "projects";
+  activeRoute?: "home" | "explore" | "studio" | "projects" | "ad-explorer";
   onOpenSearch: () => void;
 }
 
@@ -46,6 +46,7 @@ export default function Navbar({ activeRoute = "home", onOpenSearch }: NavbarPro
 
   const navLinks = [
     { label: "Home", href: "/", id: "home" },
+    { label: "Ad Explorer", href: "/ad-explorer", id: "ad-explorer" },
     { label: "How it works", href: "/#how-it-works", id: "how-it-works" },
     { label: "Explore", href: "/explore", id: "explore" },
     { label: "Studio", href: "/studio", id: "studio", isStudio: true },

@@ -170,3 +170,63 @@ export interface SearchResults {
   reels: (TrendingReel & { category_slug?: string; category_name?: string })[];
   ads: (FamousAd & { category_slug?: string; category_name?: string })[];
 }
+
+export type AdPlatform = 'meta' | 'google' | 'linkedin' | 'tiktok' | 'x' | 'amazon';
+export type CreativeFormat = 'video' | 'image' | 'carousel' | 'text' | 'other';
+export type MediaRightsStatus = 'platform_link_only' | 'licensed' | 'fair_use_editorial' | 'client_authorized';
+export type AdListingStatus = 'draft' | 'review' | 'published' | 'archived';
+
+export interface AdListing {
+  id: string;
+  platform: AdPlatform;
+  platform_surface?: string | null;
+  brand_name: string;
+  advertiser_name?: string | null;
+  title: string;
+  short_description?: string | null;
+  hook_summary?: string | null;
+  call_to_action?: string | null;
+  category: string;
+  country_code: string;
+  creative_format: CreativeFormat;
+  source_url: string;
+  source_ad_id?: string | null;
+  media_url?: string | null;
+  media_provider?: string | null;
+  preview_image_path?: string | null;
+  landing_page_url?: string | null;
+  product_url?: string | null;
+  asin?: string | null;
+  amazon_ad_type?: string | null;
+  search_term?: string | null;
+  marketplace?: string | null;
+  media_rights_status: MediaRightsStatus;
+  first_seen_at?: string | null;
+  last_reviewed_at: string;
+  status: AdListingStatus;
+  curator_note?: string | null;
+  signal_labels: string[];
+  is_featured: boolean;
+  performance_evidence_note?: string | null;
+  created_by?: string | null;
+  updated_by?: string | null;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface AdSearchFilters {
+  query?: string;
+  platforms?: AdPlatform[];
+  category?: string;
+  country?: string;
+  format?: CreativeFormat | 'all';
+  signal?: string;
+  sort?: 'reviewed' | 'added' | 'featured';
+  limit?: number;
+  offset?: number;
+}
+
+export interface AdSearchResult {
+  items: AdListing[];
+  total: number;
+}
