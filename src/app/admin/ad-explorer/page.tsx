@@ -34,6 +34,13 @@ import {
   Globe,
   Database,
   ArrowDownUp,
+  Upload,
+  ChevronUp,
+  CheckSquare,
+  Square,
+  FileVideo,
+  Image as ImageIcon,
+  Loader2,
 } from "lucide-react";
 import {
   SEED_AD_LISTINGS,
@@ -50,12 +57,15 @@ import {
   MediaRightsStatus,
   AdListingStatus,
   Category,
+  AdMediaItem,
+  AdMediaType,
 } from "@/lib/supabase/types";
 import { PlatformIcon } from "@/components/ad-explorer/PlatformIcon";
 import { parseVideoMediaUrl } from "@/lib/media/video-embed";
 import { SafeVideoPlayer } from "@/components/ad-explorer/SafeVideoPlayer";
-import { AdListingSchema, CategorySchema } from "@/lib/validation/ad-listing";
+import { AdListingSchema, CategorySchema, isMetaAdLibraryUrl } from "@/lib/validation/ad-listing";
 import { AdDetailModal } from "@/components/ad-explorer/AdDetailModal";
+import { createClient as createBrowserClient } from "@/lib/supabase/client";
 
 const ALL_PLATFORMS: AdPlatform[] = ["meta", "google", "linkedin", "tiktok", "x", "amazon"];
 
@@ -116,6 +126,12 @@ export default function AdminAdExplorerPage() {
   const [firstSeenAt, setFirstSeenAt] = useState("");
   const [lastReviewedAt, setLastReviewedAt] = useState(new Date().toISOString());
   const [markReviewedNow, setMarkReviewedNow] = useState(false);
+
+  // Multi-Media Items and Supabase Storage State
+  const [mediaItems, setMediaItems] = useState<AdMediaItem[]>([]);
+  const [rightsAcknowledged, setRightsAcknowledged] = useState(false);
+  const [uploadingItemIndex, setUploadingItemIndex] = useState<number | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Extended URLs & Amazon Specific Fields
   const [productUrl, setProductUrl] = useState("");
@@ -250,6 +266,10 @@ export default function AdminAdExplorerPage() {
     setFirstSeenAt("");
     setLastReviewedAt(new Date().toISOString());
     setMarkReviewedNow(false);
+    setMediaItems([]);
+    setRightsAcknowledged(false);
+    setUploadingItemIndex(null);
+    setUploadError(null);
     setFormErrors({});
     setIsEditorOpen(false);
   };
@@ -287,9 +307,194 @@ export default function AdminAdExplorerPage() {
     setFirstSeenAt(ad.first_seen_at ? ad.first_seen_at.substring(0, 10) : "");
     setLastReviewedAt(ad.last_reviewed_at);
     setMarkReviewedNow(false);
+
+    // Populate media items (or synthesize from ad.media_url / preview)
+    if (ad.media_items && ad.media_items.length > 0) {
+      setMediaItems(ad.media_items);
+    } else if (ad.media_url) {
+      const isDirect =
+        ad.media_url.endsWith(".mp4") ||
+        ad.media_url.endsWith(".webm") ||
+        ad.media_url.endsWith(".mov");
+      setMediaItems([
+        {
+          media_type: isDirect ? "hosted_video" : "embed",
+          media_url: ad.media_url,
+          thumbnail_url: ad.preview_image_path || null,
+          caption: ad.title,
+          display_order: 0,
+        },
+      ]);
+    } else if (ad.preview_image_path) {
+      setMediaItems([
+        {
+          media_type: "image",
+          media_url: ad.preview_image_path,
+          thumbnail_url: ad.preview_image_path,
+          caption: ad.title,
+          display_order: 0,
+        },
+      ]);
+    } else {
+      setMediaItems([]);
+    }
+
+    setRightsAcknowledged(false);
+    setUploadingItemIndex(null);
+    setUploadError(null);
     setFormErrors({});
     setIsEditorOpen(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Media items management helpers
+  const handleAddMediaItem = (type: AdMediaType = "embed") => {
+    setMediaItems((prev) => [
+      ...prev,
+      {
+        media_type: type,
+        media_url: "",
+        thumbnail_url: "",
+        caption: "",
+        display_order: prev.length,
+      },
+    ]);
+  };
+
+  const handleUpdateMediaItem = (index: number, patch: Partial<AdMediaItem>) => {
+    setMediaItems((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], ...patch };
+      return next;
+    });
+  };
+
+  const handleRemoveMediaItem = (index: number) => {
+    setMediaItems((prev) =>
+      prev.filter((_, i) => i !== index).map((m, i) => ({ ...m, display_order: i }))
+    );
+  };
+
+  const handleMoveMediaItem = (index: number, dir: "up" | "down") => {
+    const targetIndex = dir === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= mediaItems.length) return;
+    const next = [...mediaItems];
+    const temp = next[index];
+    next[index] = next[targetIndex];
+    next[targetIndex] = temp;
+    setMediaItems(next.map((m, i) => ({ ...m, display_order: i })));
+  };
+
+  // Supabase Storage Upload for ad-previews bucket
+  const handleStorageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    targetItemIndex?: number
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError(null);
+
+    // 1. Explicit Rights check
+    if (!rightsAcknowledged) {
+      setUploadError(
+        "Please confirm you own or have permission from the rights holder to host this media before uploading."
+      );
+      return;
+    }
+
+    // 2. Format validation
+    const allowedExts = [".mp4", ".webm", ".mov", ".jpg", ".jpeg", ".png", ".webp"];
+    const fileName = file.name.toLowerCase();
+    const isAllowed = allowedExts.some((ext) => fileName.endsWith(ext));
+    if (!isAllowed) {
+      setUploadError(
+        `Unsupported file format. Supported formats: ${allowedExts.join(", ")}`
+      );
+      return;
+    }
+
+    // 3. 50 MB file size limit enforcement
+    const MAX_BYTES = 52428800; // 50MB
+    if (file.size > MAX_BYTES) {
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+      setUploadError(
+        `File size (${sizeMb} MB) exceeds the 50 MB limit for ad previews. Please compress the file or provide an external video link.`
+      );
+      return;
+    }
+
+    const idx = typeof targetItemIndex === "number" ? targetItemIndex : 0;
+    setUploadingItemIndex(idx);
+
+    try {
+      const supabase = createBrowserClient();
+      if (!supabase) {
+        // Fallback for local preview without Supabase credentials
+        const localBlobUrl = URL.createObjectURL(file);
+        const isImg = file.type.startsWith("image/");
+        if (typeof targetItemIndex === "number") {
+          handleUpdateMediaItem(targetItemIndex, {
+            media_url: localBlobUrl,
+            media_type: isImg ? "image" : "hosted_video",
+          });
+        } else {
+          setMediaUrl(localBlobUrl);
+        }
+        setSuccessMsg("Local asset loaded into preview (demo mode).");
+        setTimeout(() => setSuccessMsg(null), 3000);
+        return;
+      }
+
+      const ext = file.name.split(".").pop();
+      const cleanPath = `ad_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`;
+
+      const { error: uploadErr } = await supabase.storage
+        .from("ad-previews")
+        .upload(cleanPath, file, { cacheControl: "3600", upsert: false });
+
+      if (uploadErr) {
+        setUploadError(`Upload failed: ${uploadErr.message}`);
+        return;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("ad-previews")
+        .getPublicUrl(cleanPath);
+
+      const isImg = file.type.startsWith("image/");
+      if (typeof targetItemIndex === "number") {
+        handleUpdateMediaItem(targetItemIndex, {
+          media_url: publicUrl,
+          media_type: isImg ? "image" : "hosted_video",
+        });
+      } else {
+        setMediaUrl(publicUrl);
+        if (isImg) {
+          setPreviewImagePath(publicUrl);
+        }
+      }
+      setSuccessMsg("Asset uploaded successfully to ad-previews storage!");
+      setTimeout(() => setSuccessMsg(null), 3500);
+    } catch (err: any) {
+      setUploadError(err?.message || "Storage upload failed");
+    } finally {
+      setUploadingItemIndex(null);
+    }
+  };
+
+  // Move Meta Ad Library URL to Official Source Link
+  const handleMoveMetaAdLibToSource = (metaUrl: string, itemIdx?: number) => {
+    setSourceUrl(metaUrl);
+    setMediaRightsStatus("platform_link_only");
+    if (typeof itemIdx === "number") {
+      handleRemoveMediaItem(itemIdx);
+    } else {
+      setMediaUrl("");
+    }
+    setSuccessMsg(
+      "Transferred Meta Ad Library link to Official Source URL field. Meta Ad Library pages cannot be played inline due to Meta security policy."
+    );
+    setTimeout(() => setSuccessMsg(null), 5000);
   };
 
   const handleSignalToggle = (signal: string) => {
@@ -306,6 +511,17 @@ export default function AdminAdExplorerPage() {
     setSaving(true);
     setFormErrors({});
 
+    // Mirror primary media if media items exist
+    const firstPlayable = mediaItems.find((m) => m.media_url);
+    const effectiveMediaUrl =
+      mediaUrl ||
+      (firstPlayable?.media_type !== "image" ? firstPlayable?.media_url : null) ||
+      null;
+    const effectivePreviewPath =
+      previewImagePath ||
+      mediaItems.find((m) => m.thumbnail_url)?.thumbnail_url ||
+      null;
+
     const formData = {
       platform,
       platform_surface: platformSurface || null,
@@ -319,9 +535,9 @@ export default function AdminAdExplorerPage() {
       country_code: countryCode,
       creative_format: creativeFormat,
       source_url: sourceUrl,
-      media_url: mediaUrl || null,
+      media_url: effectiveMediaUrl,
       source_ad_id: sourceAdId || null,
-      preview_image_path: previewImagePath || null,
+      preview_image_path: effectivePreviewPath,
       product_url: productUrl || null,
       landing_page_url: landingPageUrl || null,
       asin: platform === "amazon" ? asin || null : null,
@@ -336,6 +552,7 @@ export default function AdminAdExplorerPage() {
       performance_evidence_note: performanceEvidenceNote || null,
       first_seen_at: firstSeenAt || null,
       mark_reviewed: markReviewedNow,
+      media_items: mediaItems,
     };
 
     // Client-side Zod validation
@@ -899,11 +1116,53 @@ export default function AdminAdExplorerPage() {
             </div>
 
             {/* Section 3: Links & Media */}
-            <div className="p-5 rounded-2xl bg-black/40 border border-white/5 space-y-4">
-              <span className="text-xs font-mono font-semibold text-[#C8FF00] uppercase tracking-wider">
-                3. URLs &amp; Playable Media (HTTPS Only)
-              </span>
+            <div className="p-5 rounded-2xl bg-black/40 border border-white/5 space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-mono font-semibold text-[#C8FF00] uppercase tracking-wider block">
+                    3. URLs &amp; Playable Media (Multi-Media Supported)
+                  </span>
+                  <p className="text-[11px] text-neutral-400 mt-0.5">
+                    Configure official transparency source links, direct video streams, embeds, or upload authorized assets to storage.
+                  </p>
+                </div>
+              </div>
 
+              {/* Upload Rights & Authorization Box */}
+              <div className="p-4 rounded-xl bg-[#17191C] border border-white/10 space-y-3">
+                <div className="flex items-start gap-2.5">
+                  <ShieldAlert className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                  <div className="space-y-1">
+                    <span className="text-xs font-bold text-white block">
+                      Asset Rights &amp; Host Compliance Acknowledgment
+                    </span>
+                    <p className="text-[11px] text-neutral-400 leading-relaxed">
+                      Supabase Storage uploads (bucket: <code className="text-[#C8FF00]">ad-previews</code>) are restricted to authenticated administrators. Only upload media you own or have explicit written permission from the rights holder to host. Third-party brand ads should be linked via the official platform transparency URL instead of re-hosted. Max file size: <strong>50 MB</strong>.
+                    </p>
+                  </div>
+                </div>
+
+                <label className="flex items-center gap-2.5 cursor-pointer pt-1">
+                  <input
+                    type="checkbox"
+                    checked={rightsAcknowledged}
+                    onChange={(e) => setRightsAcknowledged(e.target.checked)}
+                    className="w-4 h-4 rounded border-white/20 text-[#C8FF00] focus:ring-[#C8FF00]"
+                  />
+                  <span className="text-xs font-mono text-neutral-300">
+                    I confirm that I own this media asset or have express permission from the rights holder to host and display it.
+                  </span>
+                </label>
+
+                {uploadError && (
+                  <div className="p-2.5 rounded-lg bg-rose-950/40 border border-rose-500/40 text-xs font-mono text-rose-300 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                    <span>{uploadError}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Primary External URLs */}
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-mono text-neutral-300 mb-1.5">
@@ -913,7 +1172,7 @@ export default function AdminAdExplorerPage() {
                     type="url"
                     value={sourceUrl}
                     onChange={(e) => setSourceUrl(e.target.value)}
-                    placeholder="https://www.facebook.com/ads/library/?id=... or https://www.amazon.com/dp/..."
+                    placeholder="https://www.facebook.com/ads/library/?id=... or https://adstransparency.google.com/..."
                     className={`w-full px-3.5 py-2.5 rounded-xl bg-[#1C1F23] border ${
                       formErrors.source_url ? "border-rose-500" : "border-white/10"
                     } text-white text-xs font-mono placeholder:text-neutral-600 focus:border-[#C8FF00] focus:outline-none`}
@@ -951,10 +1210,25 @@ export default function AdminAdExplorerPage() {
                   </div>
                 </div>
 
+                {/* Primary Media URL with Meta Ad Library Detection */}
                 <div>
-                  <label className="block text-xs font-mono text-neutral-300 mb-1.5">
-                    Media URL (Video / Playable Embed)
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-mono text-neutral-300">
+                      Primary Media URL (Playable Video / Embed)
+                    </label>
+                    <label className="cursor-pointer text-[11px] font-mono text-[#C8FF00] hover:underline flex items-center gap-1">
+                      <Upload className="w-3 h-3" />
+                      <span>{uploadingItemIndex === 9999 ? "Uploading..." : "Upload Asset (Max 50MB)"}</span>
+                      <input
+                        type="file"
+                        accept="video/mp4,video/webm,video/quicktime,image/jpeg,image/png,image/webp"
+                        className="hidden"
+                        disabled={uploadingItemIndex !== null}
+                        onChange={(e) => handleStorageUpload(e, 9999)}
+                      />
+                    </label>
+                  </div>
+
                   <input
                     type="url"
                     value={mediaUrl}
@@ -964,7 +1238,30 @@ export default function AdminAdExplorerPage() {
                       formErrors.media_url ? "border-rose-500" : "border-white/10"
                     } text-white text-xs font-mono placeholder:text-neutral-600 focus:border-[#C8FF00] focus:outline-none`}
                   />
-                  {mediaUrl.trim() && (
+
+                  {/* Meta Ad Library Detection Warning & 1-Click Transfer */}
+                  {isMetaAdLibraryUrl(mediaUrl) && (
+                    <div className="mt-2.5 p-3.5 rounded-xl bg-amber-950/40 border border-amber-500/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono">
+                      <div className="flex items-start gap-2 text-amber-200">
+                        <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="text-white block">Meta Ad Library URL Detected:</strong>
+                          <span>
+                            Meta Ad Library pages are platform transparency repositories, not direct video stream files or embeds. They cannot be played inline due to Meta security policy.
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleMoveMetaAdLibToSource(mediaUrl)}
+                        className="px-3 py-1.5 rounded-lg bg-amber-400 text-black font-sans font-bold hover:bg-amber-300 transition-colors flex-shrink-0"
+                      >
+                        Move to Official Source URL
+                      </button>
+                    </div>
+                  )}
+
+                  {mediaUrl.trim() && !isMetaAdLibraryUrl(mediaUrl) && (
                     <div className="mt-2 p-3 rounded-xl bg-[#17191C] border border-white/5 flex items-center gap-2 text-xs font-mono">
                       {mediaEmbedAnalysis.canEmbed ? (
                         <>
@@ -981,13 +1278,222 @@ export default function AdminAdExplorerPage() {
                         <>
                           <Info className="w-4 h-4 text-amber-400" />
                           <span className="text-neutral-300">
-                            {mediaEmbedAnalysis.notice || "External library link reference (will open in verified portal)"}
+                            {mediaEmbedAnalysis.notice ||
+                              "External library link reference (will open in verified portal)"}
                           </span>
                         </>
                       )}
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Normalized Multi-Media Collection Manager */}
+              <div className="pt-4 border-t border-white/10 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-[#C8FF00]" />
+                    <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                      Multi-Media Collection ({mediaItems.length})
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAddMediaItem("hosted_video")}
+                      className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white text-xs font-mono border border-white/10 flex items-center gap-1.5 transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-[#C8FF00]" />
+                      <span>Add Video (MP4)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAddMediaItem("embed")}
+                      className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white text-xs font-mono border border-white/10 flex items-center gap-1.5 transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-[#C8FF00]" />
+                      <span>Add Embed</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAddMediaItem("image")}
+                      className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white text-xs font-mono border border-white/10 flex items-center gap-1.5 transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-[#C8FF00]" />
+                      <span>Add Image</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAddMediaItem("source_link")}
+                      className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white text-xs font-mono border border-white/10 flex items-center gap-1.5 transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-[#C8FF00]" />
+                      <span>Add Source Link</span>
+                    </button>
+                  </div>
+                </div>
+
+                {mediaItems.length === 0 ? (
+                  <div className="p-4 rounded-xl bg-[#17191C]/60 border border-dashed border-white/10 text-center text-xs font-mono text-neutral-500">
+                    No secondary media items attached. The single Primary Media URL above will be used. Click &ldquo;Add Video&rdquo; or &ldquo;Add Embed&rdquo; to add variants, cuts, or multi-media items.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {mediaItems.map((item, idx) => {
+                      const isItemMeta = isMetaAdLibraryUrl(item.media_url);
+
+                      return (
+                        <div
+                          key={idx}
+                          className="p-4 rounded-xl bg-[#17191C] border border-white/10 space-y-3 relative group"
+                        >
+                          <div className="flex items-center justify-between pb-2 border-b border-white/5">
+                            <div className="flex items-center gap-2">
+                              <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-[#C8FF00]/15 text-[#C8FF00]">
+                                #{idx + 1}
+                              </span>
+                              <span className="text-xs font-mono uppercase text-neutral-300">
+                                {item.media_type.replace("_", " ")}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                disabled={idx === 0}
+                                onClick={() => handleMoveMediaItem(idx, "up")}
+                                className="p-1 rounded text-neutral-400 hover:text-white disabled:opacity-30"
+                                title="Move up"
+                              >
+                                <ChevronUp className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                disabled={idx === mediaItems.length - 1}
+                                onClick={() => handleMoveMediaItem(idx, "down")}
+                                className="p-1 rounded text-neutral-400 hover:text-white disabled:opacity-30"
+                                title="Move down"
+                              >
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveMediaItem(idx)}
+                                className="p-1 rounded text-rose-400 hover:text-rose-300 ml-1"
+                                title="Remove item"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                              <label className="block text-[11px] font-mono text-neutral-400 mb-1">
+                                Media Type
+                              </label>
+                              <select
+                                value={item.media_type}
+                                onChange={(e) =>
+                                  handleUpdateMediaItem(idx, {
+                                    media_type: e.target.value as AdMediaType,
+                                  })
+                                }
+                                className="w-full px-3 py-2 rounded-lg bg-[#1C1F23] border border-white/10 text-white text-xs font-mono focus:border-[#C8FF00] focus:outline-none"
+                              >
+                                <option value="hosted_video">Hosted Video (Direct MP4)</option>
+                                <option value="embed">Embed (YouTube/TikTok/Vimeo/Reel)</option>
+                                <option value="image">Image (Creative/Product)</option>
+                                <option value="source_link">Source Link Only</option>
+                              </select>
+                            </div>
+
+                            <div className="sm:col-span-2">
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="block text-[11px] font-mono text-neutral-400">
+                                  Media URL
+                                </label>
+                                {(item.media_type === "hosted_video" || item.media_type === "image") && (
+                                  <label className="cursor-pointer text-[10px] font-mono text-[#C8FF00] hover:underline flex items-center gap-1">
+                                    <Upload className="w-2.5 h-2.5" />
+                                    <span>
+                                      {uploadingItemIndex === idx ? "Uploading..." : "Upload File (Max 50MB)"}
+                                    </span>
+                                    <input
+                                      type="file"
+                                      accept="video/mp4,video/webm,video/quicktime,image/jpeg,image/png,image/webp"
+                                      className="hidden"
+                                      disabled={uploadingItemIndex !== null}
+                                      onChange={(e) => handleStorageUpload(e, idx)}
+                                    />
+                                  </label>
+                                )}
+                              </div>
+                              <input
+                                type="url"
+                                value={item.media_url}
+                                onChange={(e) =>
+                                  handleUpdateMediaItem(idx, { media_url: e.target.value })
+                                }
+                                placeholder="https://..."
+                                className="w-full px-3 py-2 rounded-lg bg-[#1C1F23] border border-white/10 text-white text-xs font-mono placeholder:text-neutral-600 focus:border-[#C8FF00] focus:outline-none"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Item Meta Ad Library Warning */}
+                          {isItemMeta && (
+                            <div className="p-2.5 rounded-lg bg-amber-950/40 border border-amber-500/40 flex items-center justify-between gap-2 text-xs font-mono">
+                              <span className="text-amber-200 text-[11px]">
+                                Meta Ad Library URL: cannot be played inline.
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleMoveMetaAdLibToSource(item.media_url, idx)}
+                                className="px-2.5 py-1 rounded bg-amber-400 text-black text-[11px] font-bold"
+                              >
+                                Move to Source URL
+                              </button>
+                            </div>
+                          )}
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            <div>
+                              <label className="block text-[11px] font-mono text-neutral-400 mb-1">
+                                Caption / Variant Label (Optional)
+                              </label>
+                              <input
+                                type="text"
+                                value={item.caption || ""}
+                                onChange={(e) =>
+                                  handleUpdateMediaItem(idx, { caption: e.target.value })
+                                }
+                                placeholder="e.g. 15s Hook Cut, 9:16 Vertical Reel, Storefront Hero"
+                                className="w-full px-3 py-2 rounded-lg bg-[#1C1F23] border border-white/10 text-white text-xs placeholder:text-neutral-600 focus:border-[#C8FF00] focus:outline-none"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] font-mono text-neutral-400 mb-1">
+                                Thumbnail / Poster URL (Optional)
+                              </label>
+                              <input
+                                type="url"
+                                value={item.thumbnail_url || ""}
+                                onChange={(e) =>
+                                  handleUpdateMediaItem(idx, { thumbnail_url: e.target.value })
+                                }
+                                placeholder="https://..."
+                                className="w-full px-3 py-2 rounded-lg bg-[#1C1F23] border border-white/10 text-white text-xs font-mono placeholder:text-neutral-600 focus:border-[#C8FF00] focus:outline-none"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1193,6 +1699,7 @@ export default function AdminAdExplorerPage() {
                     signal_labels: signalLabels,
                     is_featured: isFeatured,
                     performance_evidence_note: performanceEvidenceNote,
+                    media_items: mediaItems,
                     created_at: new Date().toISOString(),
                   };
                   setPreviewAd(mockAd);

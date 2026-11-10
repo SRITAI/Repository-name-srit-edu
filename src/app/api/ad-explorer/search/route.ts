@@ -5,6 +5,64 @@ import { AdPlatform, CreativeFormat } from '@/lib/supabase/types';
 
 export const dynamic = 'force-dynamic';
 
+function enrichListingsWithMedia(items: any[], mediaRows: any[] = []): any[] {
+  const mediaMap: Record<string, any[]> = {};
+  for (const m of mediaRows) {
+    if (!mediaMap[m.ad_listing_id]) {
+      mediaMap[m.ad_listing_id] = [];
+    }
+    mediaMap[m.ad_listing_id].push(m);
+  }
+
+  return items.map((item) => {
+    let mediaList = item.media_items;
+    if (Array.isArray(mediaList) && mediaList.length > 0) {
+      return item;
+    }
+
+    if (mediaMap[item.id] && mediaMap[item.id].length > 0) {
+      return { ...item, media_items: mediaMap[item.id] };
+    }
+
+    // Synthesize media items from legacy single-media fields
+    const synthesized: any[] = [];
+    if (item.media_url) {
+      const isDirect =
+        item.media_url.endsWith(".mp4") ||
+        item.media_url.endsWith(".webm") ||
+        item.media_url.endsWith(".mov");
+      synthesized.push({
+        ad_listing_id: item.id,
+        media_type: isDirect ? "hosted_video" : "embed",
+        media_url: item.media_url,
+        thumbnail_url: item.preview_image_path || null,
+        caption: item.title,
+        display_order: 0,
+      });
+    } else if (item.preview_image_path) {
+      synthesized.push({
+        ad_listing_id: item.id,
+        media_type: "image",
+        media_url: item.preview_image_path,
+        thumbnail_url: item.preview_image_path,
+        caption: item.title,
+        display_order: 0,
+      });
+    } else if (item.source_url) {
+      synthesized.push({
+        ad_listing_id: item.id,
+        media_type: "source_link",
+        media_url: item.source_url,
+        thumbnail_url: null,
+        caption: `Official listing on ${item.platform}`,
+        display_order: 0,
+      });
+    }
+
+    return { ...item, media_items: synthesized };
+  });
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -41,8 +99,10 @@ export async function GET(request: NextRequest) {
         });
 
         if (!rpcError && rpcData && Array.isArray((rpcData as any).items)) {
+          const rawItems = (rpcData as any).items;
+          const enriched = enrichListingsWithMedia(rawItems);
           return NextResponse.json({
-            items: (rpcData as any).items,
+            items: enriched,
             total: (rpcData as any).total || 0,
             source: 'supabase_rpc',
           });
@@ -115,8 +175,26 @@ export async function GET(request: NextRequest) {
             });
           }
 
+          // Try fetching normalized media items for this batch if table exists
+          let mediaRows: any[] = [];
+          if (sortedData.length > 0) {
+            try {
+              const ids = sortedData.map((d: any) => d.id);
+              const { data: mData } = await supabase
+                .from('ad_media_items')
+                .select('*')
+                .in('ad_listing_id', ids)
+                .order('display_order', { ascending: true });
+              if (mData) mediaRows = mData;
+            } catch {
+              // Table not yet migrated
+            }
+          }
+
+          const enriched = enrichListingsWithMedia(sortedData, mediaRows);
+
           return NextResponse.json({
-            items: sortedData,
+            items: enriched,
             total: count !== null && count !== undefined ? count : sortedData.length,
             source: 'supabase_table',
           });

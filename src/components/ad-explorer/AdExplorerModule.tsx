@@ -72,6 +72,7 @@ export function AdExplorerModule({
   const [items, setItems] = useState<AdListing[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [inspectedAd, setInspectedAd] = useState<AdListing | null>(null);
   const [availableCategories, setAvailableCategories] = useState<{ id: string; label: string }[]>(AD_CATEGORIES);
@@ -150,6 +151,42 @@ export function AdExplorerModule({
       setIsLoading(false);
     }
   }, [selectedPlatforms, category, country, format, signal, sort, mode]);
+
+  // Load more pagination for full mode
+  const handleLoadMore = async () => {
+    if (isLoadingMore || items.length >= totalCount) return;
+    setIsLoadingMore(true);
+
+    try {
+      const params = new URLSearchParams();
+      if (debouncedQuery.trim()) params.set("q", debouncedQuery.trim());
+      if (selectedPlatforms.length > 0) {
+        params.set("platforms", selectedPlatforms.join(","));
+      }
+      if (category !== "all") params.set("category", category);
+      if (country !== "all") params.set("country", country);
+      if (format !== "all") params.set("format", format);
+      if (signal !== "all") params.set("signal", signal);
+      params.set("sort", sort);
+      params.set("limit", "24");
+      params.set("offset", items.length.toString());
+
+      const res = await fetch(`/api/ad-explorer/search?${params.toString()}`);
+      if (!res.ok) throw new Error("Failed to load more listings");
+
+      const data = await res.json();
+      if (data.items && data.items.length > 0) {
+        setItems((prev) => [...prev, ...data.items]);
+      }
+      if (typeof data.total === "number") {
+        setTotalCount(data.total);
+      }
+    } catch (err: any) {
+      console.error("Load more error:", err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   useEffect(() => {
     fetchAds(debouncedQuery);
@@ -716,14 +753,41 @@ export function AdExplorerModule({
         </div>
       ) : (
         /* Ads Grid */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {items.map((ad) => (
-            <AdCard
-              key={ad.id}
-              ad={ad}
-              onInspect={(selected) => setInspectedAd(selected)}
-            />
-          ))}
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {items.map((ad) => (
+              <AdCard
+                key={ad.id}
+                ad={ad}
+                onInspect={(selected) => setInspectedAd(selected)}
+              />
+            ))}
+          </div>
+
+          {/* Full Mode: Pagination / Load More */}
+          {mode === "full" && items.length < totalCount && (
+            <div className="pt-2 text-center space-y-2">
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="px-8 border border-border hover:border-accent transition-colors"
+              >
+                {isLoadingMore ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2 text-accent" />
+                    <span>Loading more ads…</span>
+                  </>
+                ) : (
+                  <span>Load More Listings ({totalCount - items.length} remaining)</span>
+                )}
+              </Button>
+              <p className="text-[11px] font-mono text-text-muted">
+                Showing {items.length} of {totalCount} curated listings
+              </p>
+            </div>
+          )}
         </div>
       )}
 

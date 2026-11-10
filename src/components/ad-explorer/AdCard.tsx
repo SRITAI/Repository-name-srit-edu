@@ -80,12 +80,17 @@ export function AdCard({ ad, onInspect }: AdCardProps) {
 
           {/* Format and Market Badges (Top Right) */}
           <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
-            {ad.media_url && (
+            {ad.media_items && ad.media_items.length > 1 ? (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-accent text-accent-ink font-bold flex items-center gap-1 shadow-sm">
+                <Layers className="w-2.5 h-2.5" />
+                <span>{ad.media_items.length} MEDIA</span>
+              </span>
+            ) : ad.media_url || ad.media_items?.[0]?.media_type === "hosted_video" || ad.media_items?.[0]?.media_type === "embed" ? (
               <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-accent/90 text-accent-ink font-bold flex items-center gap-1 shadow-sm">
                 <Play className="w-2.5 h-2.5 fill-current" />
                 <span>VIDEO</span>
               </span>
-            )}
+            ) : null}
             <span className="px-2 py-0.5 rounded-full text-[10px] font-mono uppercase bg-black/60 backdrop-blur-md border border-white/10 text-white/90">
               {ad.creative_format}
             </span>
@@ -123,9 +128,16 @@ export function AdCard({ ad, onInspect }: AdCardProps) {
           </div>
 
           {/* Headline Title */}
-          <p className="text-xs sm:text-sm font-medium text-white/90 line-clamp-2">
-            {ad.title}
-          </p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-white/90 line-clamp-2">
+              {ad.title}
+            </p>
+            {ad.short_description && ad.short_description !== ad.title && (
+              <p className="text-[11px] text-text-muted line-clamp-1">
+                {ad.short_description}
+              </p>
+            )}
+          </div>
 
           {/* Hook Formulation Box */}
           {ad.hook_summary && (

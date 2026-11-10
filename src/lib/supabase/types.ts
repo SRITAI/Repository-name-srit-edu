@@ -175,6 +175,20 @@ export type AdPlatform = 'meta' | 'google' | 'linkedin' | 'tiktok' | 'x' | 'amaz
 export type CreativeFormat = 'video' | 'image' | 'carousel' | 'text' | 'other';
 export type MediaRightsStatus = 'platform_link_only' | 'licensed' | 'fair_use_editorial' | 'client_authorized';
 export type AdListingStatus = 'draft' | 'review' | 'published' | 'archived';
+export type AdMediaType = 'embed' | 'hosted_video' | 'image' | 'source_link';
+
+export interface AdMediaItem {
+  id?: string;
+  ad_listing_id?: string;
+  media_type: AdMediaType;
+  media_url: string;
+  thumbnail_url?: string | null;
+  caption?: string | null;
+  display_order: number;
+  metadata?: Record<string, any>;
+  created_at?: string;
+  updated_at?: string;
+}
 
 export interface AdListing {
   id: string;
@@ -212,6 +226,7 @@ export interface AdListing {
   updated_by?: string | null;
   created_at: string;
   updated_at?: string;
+  media_items?: AdMediaItem[];
 }
 
 export interface AdSearchFilters {

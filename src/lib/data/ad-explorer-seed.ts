@@ -1,4 +1,4 @@
-import { AdListing, AdSearchFilters, AdSearchResult, AdPlatform, CreativeFormat } from '../supabase/types';
+import { AdListing, AdSearchFilters, AdSearchResult, AdPlatform, CreativeFormat, AdMediaItem } from '../supabase/types';
 
 export interface PlatformConfig {
   id: AdPlatform;
@@ -713,7 +713,43 @@ export function searchAdListingsLocal(filters: AdSearchFilters = {}): AdSearchRe
   });
 
   const total = filtered.length;
-  const paged = filtered.slice(offset, offset + limit);
+  const paged = filtered.slice(offset, offset + limit).map((ad) => {
+    if (ad.media_items && ad.media_items.length > 0) return ad;
+    const synthesized: AdMediaItem[] = [];
+    if (ad.media_url) {
+      const isDirect =
+        ad.media_url.endsWith(".mp4") ||
+        ad.media_url.endsWith(".webm") ||
+        ad.media_url.endsWith(".mov");
+      synthesized.push({
+        ad_listing_id: ad.id,
+        media_type: isDirect ? "hosted_video" : "embed",
+        media_url: ad.media_url,
+        thumbnail_url: ad.preview_image_path || null,
+        caption: ad.title,
+        display_order: 0,
+      });
+    } else if (ad.preview_image_path) {
+      synthesized.push({
+        ad_listing_id: ad.id,
+        media_type: "image",
+        media_url: ad.preview_image_path,
+        thumbnail_url: ad.preview_image_path,
+        caption: ad.title,
+        display_order: 0,
+      });
+    } else if (ad.source_url) {
+      synthesized.push({
+        ad_listing_id: ad.id,
+        media_type: "source_link",
+        media_url: ad.source_url,
+        thumbnail_url: null,
+        caption: `Official listing on ${ad.platform}`,
+        display_order: 0,
+      });
+    }
+    return { ...ad, media_items: synthesized };
+  });
 
   return {
     items: paged,

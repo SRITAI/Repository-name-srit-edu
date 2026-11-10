@@ -1,5 +1,57 @@
 import { z } from "zod";
 
+/**
+ * Detects whether a URL points to the Meta Ad Library transparency portal
+ * instead of an embeddable/playable video file.
+ */
+export function isMetaAdLibraryUrl(url: string | null | undefined): boolean {
+  if (!url || typeof url !== "string") return false;
+  try {
+    const trimmed = url.trim();
+    if (!trimmed.startsWith("https://") && !trimmed.startsWith("http://")) return false;
+    const parsed = new URL(trimmed);
+    const host = parsed.hostname.toLowerCase();
+    const isMetaHost =
+      host === "facebook.com" ||
+      host === "www.facebook.com" ||
+      host === "fb.com" ||
+      host === "www.fb.com" ||
+      host === "web.facebook.com";
+    return isMetaHost && parsed.pathname.toLowerCase().includes("/ads/library");
+  } catch {
+    return false;
+  }
+}
+
+export const AdMediaItemSchema = z.object({
+  id: z.string().optional(),
+  ad_listing_id: z.string().optional(),
+  media_type: z.enum(["embed", "hosted_video", "image", "source_link"], {
+    error: "Media type must be embed, hosted_video, image, or source_link.",
+  }),
+  media_url: z
+    .string({ error: "Media URL is required." })
+    .trim()
+    .min(1, "Media URL cannot be empty.")
+    .url("Media URL must be a valid URL.")
+    .refine((val) => val.startsWith("https://"), {
+      message: "Media URL must use secure HTTPS protocol.",
+    }),
+  thumbnail_url: z
+    .string()
+    .trim()
+    .optional()
+    .nullable()
+    .refine((val) => !val || val === "" || (val.startsWith("https://") && z.string().url().safeParse(val).success), {
+      message: "Thumbnail URL must be a valid HTTPS URL.",
+    }),
+  caption: z.string().trim().max(300).optional().nullable(),
+  display_order: z.number().int().default(0),
+  metadata: z.record(z.string(), z.any()).optional().default({}),
+});
+
+export type AdMediaItemFormData = z.infer<typeof AdMediaItemSchema>;
+
 export const AdListingSchema = z.object({
   platform: z.enum(["meta", "google", "linkedin", "tiktok", "x", "amazon"], {
     error: "Platform must be one of Meta, Google, LinkedIn, TikTok, X, or Amazon.",
@@ -84,6 +136,7 @@ export const AdListingSchema = z.object({
   performance_evidence_note: z.string().trim().max(1000).optional().nullable(),
   first_seen_at: z.string().trim().optional().nullable(),
   mark_reviewed: z.boolean().optional(),
+  media_items: z.array(AdMediaItemSchema).optional().default([]),
 });
 
 export type AdListingFormData = z.infer<typeof AdListingSchema>;

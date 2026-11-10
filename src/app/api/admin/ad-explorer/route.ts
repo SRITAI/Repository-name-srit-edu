@@ -48,6 +48,63 @@ async function verifyAdminAuth() {
   return { authorized: true, user, supabase, isLocalPreview: false };
 }
 
+function enrichAdminListingsWithMedia(items: any[], mediaRows: any[] = []): any[] {
+  const mediaMap: Record<string, any[]> = {};
+  for (const m of mediaRows) {
+    if (!mediaMap[m.ad_listing_id]) {
+      mediaMap[m.ad_listing_id] = [];
+    }
+    mediaMap[m.ad_listing_id].push(m);
+  }
+
+  return items.map((item) => {
+    let mediaList = item.media_items;
+    if (Array.isArray(mediaList) && mediaList.length > 0) {
+      return item;
+    }
+
+    if (mediaMap[item.id] && mediaMap[item.id].length > 0) {
+      return { ...item, media_items: mediaMap[item.id] };
+    }
+
+    const synthesized: any[] = [];
+    if (item.media_url) {
+      const isDirect =
+        item.media_url.endsWith(".mp4") ||
+        item.media_url.endsWith(".webm") ||
+        item.media_url.endsWith(".mov");
+      synthesized.push({
+        ad_listing_id: item.id,
+        media_type: isDirect ? "hosted_video" : "embed",
+        media_url: item.media_url,
+        thumbnail_url: item.preview_image_path || null,
+        caption: item.title,
+        display_order: 0,
+      });
+    } else if (item.preview_image_path) {
+      synthesized.push({
+        ad_listing_id: item.id,
+        media_type: "image",
+        media_url: item.preview_image_path,
+        thumbnail_url: item.preview_image_path,
+        caption: item.title,
+        display_order: 0,
+      });
+    } else if (item.source_url) {
+      synthesized.push({
+        ad_listing_id: item.id,
+        media_type: "source_link",
+        media_url: item.source_url,
+        thumbnail_url: null,
+        caption: `Official listing on ${item.platform}`,
+        display_order: 0,
+      });
+    }
+
+    return { ...item, media_items: synthesized };
+  });
+}
+
 /**
  * GET /api/admin/ad-explorer
  * List all ads (including drafts, review, and archived) for admin management
@@ -90,7 +147,8 @@ export async function GET(request: NextRequest) {
           a.category.toLowerCase().includes(q)
       );
     }
-    return NextResponse.json({ items: results, total: results.length, isLocalPreview: true });
+    const enrichedLocal = enrichAdminListingsWithMedia(results);
+    return NextResponse.json({ items: enrichedLocal, total: enrichedLocal.length, isLocalPreview: true });
   }
 
   // Query Supabase
@@ -121,7 +179,24 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ items: data || [], total: count || 0 });
+  // Fetch ad_media_items if table exists
+  let mediaRows: any[] = [];
+  if (data && data.length > 0) {
+    try {
+      const ids = data.map((d: any) => d.id);
+      const { data: mData } = await auth.supabase
+        .from("ad_media_items")
+        .select("*")
+        .in("ad_listing_id", ids)
+        .order("display_order", { ascending: true });
+      if (mData) mediaRows = mData;
+    } catch {
+      // Table not yet migrated
+    }
+  }
+
+  const enrichedData = enrichAdminListingsWithMedia(data || [], mediaRows);
+  return NextResponse.json({ items: enrichedData, total: count || 0 });
 }
 
 /**
@@ -150,9 +225,26 @@ export async function POST(request: NextRequest) {
 
     const validData = parseResult.data;
 
+    // Mirror primary media from media_items if provided and not explicitly set
+    let primaryMediaUrl = validData.media_url || null;
+    let primaryPreviewPath = validData.preview_image_path || null;
+
+    if (validData.media_items && validData.media_items.length > 0) {
+      const firstVideo = validData.media_items.find(
+        (m) => m.media_type === "hosted_video" || m.media_type === "embed"
+      );
+      if (!primaryMediaUrl && firstVideo) {
+        primaryMediaUrl = firstVideo.media_url;
+      }
+      const firstWithThumb = validData.media_items.find((m) => m.thumbnail_url);
+      if (!primaryPreviewPath && firstWithThumb) {
+        primaryPreviewPath = firstWithThumb.thumbnail_url || null;
+      }
+    }
+
     // Detect media provider from media_url if supplied
-    const mediaParsed = parseVideoMediaUrl(validData.media_url);
-    const mediaProvider = validData.media_url ? mediaParsed.provider : null;
+    const mediaParsed = parseVideoMediaUrl(primaryMediaUrl);
+    const mediaProvider = primaryMediaUrl ? mediaParsed.provider : null;
 
     const payload: Partial<AdListing> = {
       platform: validData.platform,
@@ -168,9 +260,9 @@ export async function POST(request: NextRequest) {
       creative_format: validData.creative_format,
       source_url: validData.source_url,
       source_ad_id: validData.source_ad_id || null,
-      media_url: validData.media_url || null,
+      media_url: primaryMediaUrl,
       media_provider: mediaProvider,
-      preview_image_path: validData.preview_image_path || null,
+      preview_image_path: primaryPreviewPath,
       product_url: validData.product_url || null,
       landing_page_url: validData.landing_page_url || null,
       asin: validData.asin || null,
@@ -193,6 +285,7 @@ export async function POST(request: NextRequest) {
       const mockCreated = {
         ...payload,
         id: `ad_local_${Date.now()}`,
+        media_items: validData.media_items || [],
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -209,7 +302,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ item: data, success: true });
+    // Try inserting normalized media items into ad_media_items
+    if (validData.media_items && validData.media_items.length > 0) {
+      try {
+        const mediaToInsert = validData.media_items.map((m, idx) => ({
+          ad_listing_id: data.id,
+          media_type: m.media_type,
+          media_url: m.media_url,
+          thumbnail_url: m.thumbnail_url || null,
+          caption: m.caption || null,
+          display_order: m.display_order ?? idx,
+          metadata: m.metadata || {},
+        }));
+        await auth.supabase.from("ad_media_items").insert(mediaToInsert);
+      } catch (mErr) {
+        console.warn("Could not insert ad_media_items:", mErr);
+      }
+    }
+
+    return NextResponse.json({
+      item: { ...data, media_items: validData.media_items || [] },
+      success: true,
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || "Failed to create ad listing" }, { status: 500 });
   }
@@ -244,8 +358,25 @@ export async function PUT(request: NextRequest) {
     }
 
     const validData = parseResult.data;
-    const mediaParsed = parseVideoMediaUrl(validData.media_url);
-    const mediaProvider = validData.media_url ? mediaParsed.provider : null;
+
+    let primaryMediaUrl = validData.media_url || null;
+    let primaryPreviewPath = validData.preview_image_path || null;
+
+    if (validData.media_items && validData.media_items.length > 0) {
+      const firstVideo = validData.media_items.find(
+        (m) => m.media_type === "hosted_video" || m.media_type === "embed"
+      );
+      if (!primaryMediaUrl && firstVideo) {
+        primaryMediaUrl = firstVideo.media_url;
+      }
+      const firstWithThumb = validData.media_items.find((m) => m.thumbnail_url);
+      if (!primaryPreviewPath && firstWithThumb) {
+        primaryPreviewPath = firstWithThumb.thumbnail_url || null;
+      }
+    }
+
+    const mediaParsed = parseVideoMediaUrl(primaryMediaUrl);
+    const mediaProvider = primaryMediaUrl ? mediaParsed.provider : null;
 
     const updates: Record<string, any> = {
       platform: validData.platform,
@@ -261,9 +392,9 @@ export async function PUT(request: NextRequest) {
       creative_format: validData.creative_format,
       source_url: validData.source_url,
       source_ad_id: validData.source_ad_id || null,
-      media_url: validData.media_url || null,
+      media_url: primaryMediaUrl,
       media_provider: mediaProvider,
-      preview_image_path: validData.preview_image_path || null,
+      preview_image_path: primaryPreviewPath,
       product_url: validData.product_url || null,
       landing_page_url: validData.landing_page_url || null,
       asin: validData.asin || null,
@@ -290,7 +421,7 @@ export async function PUT(request: NextRequest) {
 
     if (auth.isLocalPreview || !auth.supabase) {
       return NextResponse.json({
-        item: { ...updates, id, updated_at: new Date().toISOString() },
+        item: { ...updates, id, media_items: validData.media_items || [], updated_at: new Date().toISOString() },
         success: true,
         isLocalPreview: true,
       });
@@ -307,7 +438,31 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ item: data, success: true });
+    // Update ad_media_items if table exists
+    if (validData.media_items) {
+      try {
+        await auth.supabase.from("ad_media_items").delete().eq("ad_listing_id", id);
+        if (validData.media_items.length > 0) {
+          const mediaToInsert = validData.media_items.map((m, idx) => ({
+            ad_listing_id: id,
+            media_type: m.media_type,
+            media_url: m.media_url,
+            thumbnail_url: m.thumbnail_url || null,
+            caption: m.caption || null,
+            display_order: m.display_order ?? idx,
+            metadata: m.metadata || {},
+          }));
+          await auth.supabase.from("ad_media_items").insert(mediaToInsert);
+        }
+      } catch (mErr) {
+        console.warn("Could not update ad_media_items:", mErr);
+      }
+    }
+
+    return NextResponse.json({
+      item: { ...data, media_items: validData.media_items || [] },
+      success: true,
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || "Failed to update ad listing" }, { status: 500 });
   }

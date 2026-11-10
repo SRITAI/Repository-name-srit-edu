@@ -125,6 +125,7 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
         {/* Link-Based Safe Video Player or Official Reference Preview */}
         <div>
           <SafeVideoPlayer
+            mediaItems={ad.media_items}
             mediaUrl={ad.media_url}
             sourceUrl={ad.source_url}
             platform={ad.platform}
@@ -256,9 +257,16 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
 
         {/* Footer Meta Row & Action */}
         <div className="pt-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-xs font-mono text-text-muted">
-            <Calendar className="w-3.5 h-3.5 text-accent" />
-            <span>Editor Verified: <strong className="text-white">{formattedDate}</strong></span>
+          <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-text-muted">
+            <div className="flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-accent" />
+              <span>Verified: <strong className="text-white">{formattedDate}</strong></span>
+            </div>
+            {ad.first_seen_at && (
+              <div className="text-text-faint">
+                · First Seen: <span className="text-neutral-300">{new Date(ad.first_seen_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
