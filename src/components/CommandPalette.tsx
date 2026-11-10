@@ -7,17 +7,21 @@ import {
   Search,
   X,
   Sparkles,
-  Film,
   ArrowUpRight,
-  ShieldAlert,
   Loader2,
   Clock,
   TrendingUp,
   Tag,
+  Film,
+  Instagram,
   CornerDownLeft,
 } from "lucide-react";
 import { SearchResults } from "@/lib/supabase/types";
-import { searchSeedData } from "@/lib/data/seed-data";
+import { searchSeedData, SEED_CATEGORIES } from "@/lib/data/seed-data";
+import { MEDIA_ITEMS } from "@/lib/media";
+import { Badge } from "@/components/ui/Badge";
+import { Chip } from "@/components/ui/Chip";
+import { cn } from "@/lib/utils";
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -26,11 +30,12 @@ interface CommandPaletteProps {
 }
 
 const POPULAR_CHIPS = [
-  { label: "Skincare", slug: "skincare" },
-  { label: "Clothing & Fashion", slug: "clothing-fashion" },
-  { label: "Makeup & Beauty", slug: "makeup-beauty" },
-  { label: "Sexual Wellness (18+)", slug: "sexual-wellness" },
-  { label: "Health Supplements", slug: "health-supplements" },
+  { label: "Skincare", slug: "skincare", icon: "💧" },
+  { label: "Clothing & Fashion", slug: "clothing-fashion", icon: "👕" },
+  { label: "Makeup & Beauty", slug: "makeup-beauty", icon: "✨" },
+  { label: "Sexual Wellness", slug: "sexual-wellness", icon: "🔞", badge: "18+" },
+  { label: "Health Supplements", slug: "health-supplements", icon: "🌿" },
+  { label: "Jewellery", slug: "jewellery-accessories", icon: "💎" },
 ];
 
 export default function CommandPalette({
@@ -61,23 +66,20 @@ export default function CommandPalette({
   // Global keyboard shortcuts: ⌘K, Ctrl+K, and '/'
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if user is typing in another input/textarea
       const target = e.target as HTMLElement;
-      const isInput = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
+      const isInput =
+        target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
 
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         if (isOpen) {
           onClose();
         } else {
-          // Open palette
-          const event = new CustomEvent("open-command-palette");
-          window.dispatchEvent(event);
+          window.dispatchEvent(new CustomEvent("open-command-palette"));
         }
       } else if (e.key === "/" && !isInput && !isOpen) {
         e.preventDefault();
-        const event = new CustomEvent("open-command-palette");
-        window.dispatchEvent(event);
+        window.dispatchEvent(new CustomEvent("open-command-palette"));
       }
     };
 
@@ -151,12 +153,11 @@ export default function CommandPalette({
         setIsLoading(false);
       }
       setSelectedIndex(0);
-    }, 200);
+    }, 180);
 
     return () => clearTimeout(timer);
   }, [query, isOpen, isAdultVerified]);
 
-  // Flattened items for keyboard navigation
   const allItems = [
     ...results.categories.map((c) => ({ type: "category", data: c })),
     ...results.reels.map((r) => ({ type: "reel", data: r })),
@@ -196,14 +197,13 @@ export default function CommandPalette({
     }
   };
 
-  // Highlight matching text helper
   const renderHighlighted = (text: string, highlight: string) => {
     if (!highlight.trim()) return text;
     const regex = new RegExp(`(${highlight.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
     const parts = text.split(regex);
     return parts.map((part, i) =>
       regex.test(part) ? (
-        <span key={i} className="bg-amber-100 text-amber-950 font-semibold rounded px-0.5">
+        <span key={i} className="bg-accent/20 text-accent font-semibold px-0.5 rounded">
           {part}
         </span>
       ) : (
@@ -215,21 +215,34 @@ export default function CommandPalette({
   if (!isOpen) return null;
 
   return (
-    <div className="cmd-backdrop" onClick={onClose} role="dialog" aria-modal="true" aria-label="Search Palette">
-      <div className="cmd-container" onClick={(e) => e.stopPropagation()} onKeyDown={handleKeyDown}>
-        {/* Search Input Row */}
-        <div className="cmd-input-row">
-          <Search size={18} color="#71717A" />
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Universal Search Palette"
+    >
+      <div
+        className={cn(
+          "w-full max-w-[680px] rounded-[28px] bg-surface border border-border-strong shadow-[0_24px_80px_rgba(0,0,0,0.85)]",
+          "overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200 backdrop-blur-3xl"
+        )}
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={handleKeyDown}
+      >
+        {/* Top Input Bar */}
+        <div className="flex items-center gap-3.5 px-6 py-4.5 border-b border-border bg-surface-2/40">
+          <Search size={18} className="text-accent flex-shrink-0" />
           <input
             ref={inputRef}
             type="text"
-            className="cmd-input"
+            className="w-full bg-transparent text-text text-base font-sans placeholder:text-text-faint focus:outline-none"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search categories, reels, ads..."
+            placeholder="Search categories, reels, benchmark ads..."
             aria-label="Search"
           />
-          {isLoading && <Loader2 size={16} className="animate-spin text-neutral-400" />}
+          {isLoading && <Loader2 size={16} className="animate-spin text-accent flex-shrink-0" />}
           {query && !isLoading && (
             <button
               type="button"
@@ -237,41 +250,53 @@ export default function CommandPalette({
                 setQuery("");
                 inputRef.current?.focus();
               }}
-              className="text-neutral-400 hover:text-neutral-700 p-1"
-              aria-label="Clear search query"
+              className="text-text-faint hover:text-text p-1"
+              aria-label="Clear query"
             >
               <X size={16} />
             </button>
           )}
-          <span className="cmd-esc-badge" onClick={onClose}>
+          <kbd className="px-2 py-0.5 rounded-lg bg-surface-3 border border-border text-[10px] font-mono font-bold text-text-muted select-none">
             ESC
-          </span>
+          </kbd>
         </div>
 
-        {/* Results / Default State Area */}
-        <div className="cmd-results">
-          {/* Default state when query is empty */}
+        {/* Modal Body */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {/* Empty Query State: Popular Categories, Trending, Recent */}
           {!query.trim() && (
             <div className="space-y-6">
               {/* Recent Searches */}
               {recentSearches.length > 0 && (
                 <div>
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#71717A] mb-2 flex items-center gap-1.5">
-                    <Clock size={12} />
-                    <span>Recent Searches</span>
+                  <div className="text-[11px] font-mono uppercase tracking-wider text-text-muted mb-2.5 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <Clock size={12} className="text-accent" />
+                      <span>Recent Searches</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRecentSearches([]);
+                        localStorage.removeItem("infimindss_recent_searches");
+                      }}
+                      className="text-[10px] text-text-faint hover:text-text underline"
+                    >
+                      Clear all
+                    </button>
                   </div>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-2">
                     {recentSearches.map((term, i) => (
                       <button
                         key={i}
                         type="button"
                         onClick={() => setQuery(term)}
-                        className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-200 text-xs text-[#111111] transition-colors"
+                        className="group inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-2 hover:bg-surface-3 border border-border text-xs text-text transition-colors"
                       >
                         <span>{term}</span>
                         <X
                           size={12}
-                          className="text-neutral-400 group-hover:text-neutral-700"
+                          className="text-text-faint group-hover:text-text"
                           onClick={(e) => removeRecentSearch(e, term)}
                         />
                       </button>
@@ -280,109 +305,125 @@ export default function CommandPalette({
                 </div>
               )}
 
-              {/* Popular Categories */}
+              {/* Popular Categories Chips */}
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-[#71717A] mb-2 flex items-center gap-1.5">
-                  <Tag size={12} />
+                <div className="text-[11px] font-mono uppercase tracking-wider text-text-muted mb-3 flex items-center gap-1.5">
+                  <Tag size={12} className="text-accent" />
                   <span>Popular Categories</span>
                 </div>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-2">
                   {POPULAR_CHIPS.map((chip) => (
-                    <button
+                    <Chip
                       key={chip.slug}
-                      type="button"
+                      icon={<span>{chip.icon}</span>}
+                      badge={chip.badge}
+                      badgeVariant={chip.badge === "18+" ? "danger" : "default"}
                       onClick={() => {
                         router.push(`/explore/${chip.slug}`);
                         onClose();
                       }}
-                      className="px-3 py-1.5 rounded-full border border-black/10 hover:border-black/25 bg-white text-xs text-[#111111] font-medium transition-colors"
                     >
                       {chip.label}
-                    </button>
+                    </Chip>
                   ))}
                 </div>
               </div>
 
-              {/* Trending Now Quick Suggestions */}
+              {/* Trending Inspiration with 48x64 9:16 Thumbnails */}
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-[#71717A] mb-2 flex items-center gap-1.5">
-                  <TrendingUp size={12} />
+                <div className="text-[11px] font-mono uppercase tracking-wider text-text-muted mb-3 flex items-center gap-1.5">
+                  <TrendingUp size={12} className="text-accent" />
                   <span>Trending Inspiration</span>
                 </div>
-                <div className="space-y-1">
-                  <div
-                    onClick={() => {
-                      router.push("/explore/skincare");
-                      onClose();
-                    }}
-                    className="p-2.5 rounded-xl hover:bg-neutral-100 flex items-center justify-between cursor-pointer transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center text-xs font-bold">
-                        UV
-                      </div>
-                      <div>
-                        <div className="text-xs font-semibold text-[#111111]">Under-UV camera sunscreen wear test</div>
-                        <div className="text-[11px] text-[#71717A]">Skincare & Derma · 3.1M views</div>
-                      </div>
-                    </div>
-                    <ArrowUpRight size={14} className="text-neutral-400" />
-                  </div>
+                <div className="space-y-2">
+                  {MEDIA_ITEMS.slice(0, 3).map((item) => (
+                    <div
+                      key={item.id}
+                      onClick={() => {
+                        router.push(`/explore/${item.categorySlug}`);
+                        onClose();
+                      }}
+                      className="group p-2.5 rounded-2xl bg-surface-2/60 hover:bg-surface-2 border border-border hover:border-accent/40 flex items-center justify-between cursor-pointer transition-all duration-200"
+                    >
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        {/* 48x64 9:16 Video Thumbnail */}
+                        <div className="w-12 h-16 rounded-xl overflow-hidden bg-surface-3 border border-border flex-shrink-0 relative">
+                          <img
+                            src={item.posterSrc}
+                            alt={item.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute top-1 left-1 p-0.5 rounded bg-black/60 text-white">
+                            <Instagram size={9} className="text-pink-400" />
+                          </div>
+                        </div>
 
-                  <div
-                    onClick={() => {
-                      router.push("/explore/clothing-fashion");
-                      onClose();
-                    }}
-                    className="p-2.5 rounded-xl hover:bg-neutral-100 flex items-center justify-between cursor-pointer transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center text-xs font-bold">
-                        9:16
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Badge variant="lime" size="sm">
+                              {item.category}
+                            </Badge>
+                            <span className="text-[11px] font-mono text-text-muted">
+                              {item.views} views
+                            </span>
+                          </div>
+                          <h4 className="text-xs font-semibold text-text group-hover:text-white transition-colors truncate">
+                            {item.title}
+                          </h4>
+                          <div className="text-[11px] text-text-faint font-mono mt-0.5">
+                            {item.handle}
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-xs font-semibold text-[#111111]">Oversized linen blazer: 4 styling transitions</div>
-                        <div className="text-[11px] text-[#71717A]">Clothing & Fashion · 2.8M views</div>
+
+                      <div className="w-8 h-8 rounded-full bg-surface-3 flex items-center justify-center text-text-muted group-hover:text-accent group-hover:bg-accent/15 transition-all flex-shrink-0 ml-3">
+                        <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                       </div>
                     </div>
-                    <ArrowUpRight size={14} className="text-neutral-400" />
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
           )}
 
-          {/* Active Search Results */}
+          {/* Active Query Grouped Results */}
           {query.trim() && (
-            <>
-              {/* Categories Group */}
+            <div className="space-y-6">
+              {/* Categories */}
               {results.categories.length > 0 && (
                 <div>
-                  <div className="cmd-group-label">Categories ({results.categories.length})</div>
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-text-muted mb-2">
+                    Categories ({results.categories.length})
+                  </div>
                   <div className="space-y-1">
                     {results.categories.map((cat, idx) => {
                       const isSelected = selectedIndex === idx;
                       return (
                         <div
                           key={cat.id}
-                          className={`cmd-item ${isSelected ? "selected" : ""}`}
                           onClick={() => handleSelectItem({ type: "category", data: cat })}
+                          className={cn(
+                            "p-3 rounded-xl flex items-center justify-between cursor-pointer transition-colors border",
+                            isSelected
+                              ? "bg-accent/10 border-accent/40 text-text"
+                              : "bg-surface-2/40 border-border hover:bg-surface-2 text-text"
+                          )}
                         >
-                          <div className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center text-sm flex-shrink-0">
-                            {cat.icon || "✦"}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs font-semibold text-[#111111] flex items-center gap-2">
-                              <span>{renderHighlighted(cat.name, query)}</span>
-                              {cat.is_adult && (
-                                <span className="text-[9px] bg-rose-50 text-rose-700 border border-rose-200 px-1.5 py-0.5 rounded font-semibold">
-                                  18+
-                                </span>
-                              )}
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-8 h-8 rounded-lg bg-surface-3 flex items-center justify-center text-sm flex-shrink-0">
+                              {cat.icon || "✦"}
                             </div>
-                            <div className="text-[11px] text-[#71717A] truncate">{cat.description}</div>
+                            <div className="min-w-0">
+                              <div className="text-xs font-semibold flex items-center gap-2">
+                                <span>{renderHighlighted(cat.name, query)}</span>
+                                {cat.is_adult && <Badge variant="danger">18+</Badge>}
+                              </div>
+                              <div className="text-[11px] text-text-muted truncate">
+                                {cat.description}
+                              </div>
+                            </div>
                           </div>
-                          <CornerDownLeft size={13} className="text-neutral-400 flex-shrink-0" />
+                          <CornerDownLeft size={13} className="text-text-faint flex-shrink-0 ml-2" />
                         </div>
                       );
                     })}
@@ -390,36 +431,47 @@ export default function CommandPalette({
                 </div>
               )}
 
-              {/* Reels Group */}
+              {/* Reels */}
               {results.reels.length > 0 && (
                 <div>
-                  <div className="cmd-group-label">Trending Reels ({results.reels.length})</div>
-                  <div className="space-y-1">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-text-muted mb-2">
+                    Trending Reels ({results.reels.length})
+                  </div>
+                  <div className="space-y-2">
                     {results.reels.map((reel, idx) => {
                       const itemIndex = results.categories.length + idx;
                       const isSelected = selectedIndex === itemIndex;
                       return (
                         <div
                           key={reel.id}
-                          className={`cmd-item ${isSelected ? "selected" : ""}`}
                           onClick={() => handleSelectItem({ type: "reel", data: reel })}
+                          className={cn(
+                            "p-2.5 rounded-2xl flex items-center justify-between cursor-pointer transition-all border",
+                            isSelected
+                              ? "bg-accent/10 border-accent/40 text-text"
+                              : "bg-surface-2/40 border-border hover:bg-surface-2 text-text"
+                          )}
                         >
-                          <img
-                            src={reel.thumbnail_url || ""}
-                            alt=""
-                            className="w-8 h-12 rounded object-cover flex-shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs font-semibold text-[#111111]">
-                              {renderHighlighted(reel.creator_handle || "@creator", query)}
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-12 h-16 rounded-xl overflow-hidden bg-surface-3 flex-shrink-0 border border-border">
+                              <img
+                                src={reel.thumbnail_url || ""}
+                                alt=""
+                                className="w-full h-full object-cover"
+                              />
                             </div>
-                            <div className="text-[11px] text-[#71717A] truncate">
-                              {renderHighlighted(reel.caption || "", query)}
+                            <div className="min-w-0">
+                              <div className="text-xs font-semibold text-text">
+                                {renderHighlighted(reel.creator_handle || "@creator", query)}
+                              </div>
+                              <div className="text-[11px] text-text-muted truncate mt-0.5">
+                                {renderHighlighted(reel.caption || "", query)}
+                              </div>
                             </div>
                           </div>
-                          <span className="text-[10px] text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full font-medium flex-shrink-0">
+                          <Badge variant="violet" size="sm" className="flex-shrink-0 ml-2">
                             {reel.views_label || "Viral"}
-                          </span>
+                          </Badge>
                         </div>
                       );
                     })}
@@ -427,36 +479,47 @@ export default function CommandPalette({
                 </div>
               )}
 
-              {/* Famous Ads Group */}
+              {/* Ads */}
               {results.ads.length > 0 && (
                 <div>
-                  <div className="cmd-group-label">Benchmark Ads ({results.ads.length})</div>
-                  <div className="space-y-1">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-text-muted mb-2">
+                    Benchmark Ads ({results.ads.length})
+                  </div>
+                  <div className="space-y-2">
                     {results.ads.map((ad, idx) => {
                       const itemIndex = results.categories.length + results.reels.length + idx;
                       const isSelected = selectedIndex === itemIndex;
                       return (
                         <div
                           key={ad.id}
-                          className={`cmd-item ${isSelected ? "selected" : ""}`}
                           onClick={() => handleSelectItem({ type: "ad", data: ad })}
+                          className={cn(
+                            "p-2.5 rounded-2xl flex items-center justify-between cursor-pointer transition-all border",
+                            isSelected
+                              ? "bg-accent/10 border-accent/40 text-text"
+                              : "bg-surface-2/40 border-border hover:bg-surface-2 text-text"
+                          )}
                         >
-                          <img
-                            src={ad.thumbnail_url || ""}
-                            alt=""
-                            className="w-10 h-10 rounded object-cover flex-shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs font-semibold text-[#111111]">
-                              {renderHighlighted(`${ad.brand_name || ""} — ${ad.title}`, query)}
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-12 h-12 rounded-xl overflow-hidden bg-surface-3 flex-shrink-0 border border-border">
+                              <img
+                                src={ad.thumbnail_url || ""}
+                                alt=""
+                                className="w-full h-full object-cover"
+                              />
                             </div>
-                            <div className="text-[11px] text-[#71717A] truncate">
-                              Hook: {ad.hook_type || "Direct response"}
+                            <div className="min-w-0">
+                              <div className="text-xs font-semibold text-text truncate">
+                                {renderHighlighted(`${ad.brand_name || ""} — ${ad.title}`, query)}
+                              </div>
+                              <div className="text-[11px] text-text-muted truncate">
+                                Hook: {ad.hook_type || "Direct response"}
+                              </div>
                             </div>
                           </div>
-                          <span className="text-[10px] bg-neutral-100 text-[#111111] px-2 py-0.5 rounded font-mono flex-shrink-0">
+                          <Badge variant="outline" size="sm" className="flex-shrink-0 ml-2">
                             {ad.format || "9:16"}
-                          </span>
+                          </Badge>
                         </div>
                       );
                     })}
@@ -464,55 +527,43 @@ export default function CommandPalette({
                 </div>
               )}
 
-              {/* Empty state */}
+              {/* Empty Search Results */}
               {allItems.length === 0 && !isLoading && (
-                <div className="py-8 text-center">
-                  <div className="text-sm font-semibold text-[#111111] mb-1">
-                    No results found for "{query}"
+                <div className="py-12 text-center space-y-3">
+                  <div className="w-10 h-10 rounded-full bg-surface-2 flex items-center justify-center text-text-muted mx-auto">
+                    <Search size={18} />
                   </div>
-                  <p className="text-xs text-[#71717A] mb-4">
+                  <div className="text-sm font-semibold text-text">
+                    No results for "{query}"
+                  </div>
+                  <p className="text-xs text-text-faint max-w-sm mx-auto">
                     Try searching for broader keywords like "skincare", "clothing", or "luxury".
                   </p>
-                  <div className="flex flex-wrap justify-center gap-1.5">
-                    {POPULAR_CHIPS.map((chip) => (
-                      <button
-                        key={chip.slug}
-                        type="button"
-                        onClick={() => setQuery(chip.label)}
-                        className="px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-neutral-200 text-[11px] text-[#111111]"
-                      >
-                        {chip.label}
-                      </button>
-                    ))}
-                  </div>
                 </div>
               )}
-            </>
+            </div>
           )}
         </div>
 
-        {/* Footer with key hints & direct Start a project shortcut */}
-        <div className="cmd-footer" style={{ borderTop: "1px solid rgba(0,0,0,0.06)", padding: "12px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#FFFFFF" }}>
-          <div className="hidden sm:flex items-center gap-4 text-[11px] text-[#71717A]">
+        {/* Modal Footer Bar */}
+        <div className="px-6 py-3.5 border-t border-border bg-surface-2/60 flex items-center justify-between text-[11px] text-text-faint">
+          <div className="hidden sm:flex items-center gap-3 font-mono">
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-neutral-100 border border-black/10 rounded font-mono text-[10px]">↑</kbd>
-              <kbd className="px-1.5 py-0.5 bg-neutral-100 border border-black/10 rounded font-mono text-[10px]">↓</kbd>
-              <span>to move</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-surface-3 border border-border text-[10px]">↑</kbd>
+              <kbd className="px-1.5 py-0.5 rounded bg-surface-3 border border-border text-[10px]">↓</kbd>
+              <span>to navigate</span>
             </span>
+            <span>•</span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-neutral-100 border border-black/10 rounded font-mono text-[10px]">↵</kbd>
-              <span>to select</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-neutral-100 border border-black/10 rounded font-mono text-[10px]">esc</kbd>
-              <span>to close</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-surface-3 border border-border text-[10px]">↵</kbd>
+              <span>to open</span>
             </span>
           </div>
 
           <Link
             href="/studio"
             onClick={onClose}
-            className="text-xs font-semibold text-[#111111] hover:underline flex items-center gap-1 ml-auto"
+            className="text-accent hover:underline flex items-center gap-1 font-medium font-sans ml-auto"
           >
             <span>Start a project in Studio</span>
             <ArrowUpRight size={13} />

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import confetti from "canvas-confetti";
 import {
   ArrowLeft,
   ArrowRight,
@@ -23,16 +24,31 @@ import {
   Users,
   Loader2,
   Wand2,
+  ExternalLink,
+  Smartphone,
+  Layers,
   ChevronDown,
-  ChevronUp,
-  Link2,
+  Info,
 } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import CommandPalette from "@/components/CommandPalette";
 import AgeGateModal from "@/components/AgeGateModal";
 import CookieConsent from "@/components/CookieConsent";
-import { SEED_CATEGORIES, SEED_ADS } from "@/lib/data/seed-data";
+import {
+  Button,
+  Badge,
+  Input,
+  Textarea,
+  Select,
+  Chip,
+  ChoiceCard,
+  SegmentedControl,
+  Stepper,
+  Dropzone,
+  UploadedFile,
+} from "@/components/ui";
+import { SEED_CATEGORIES } from "@/lib/data/seed-data";
 import { createClient } from "@/lib/supabase/client";
 
 interface DriveLinkState {
@@ -42,19 +58,57 @@ interface DriveLinkState {
   valid?: boolean;
 }
 
-interface ProductImageItem {
-  id: string;
-  url: string;
-  name: string;
-  isPrimary: boolean;
-  progress: number;
-}
+const CATEGORY_ITEMS = [
+  { id: "clothing-fashion", name: "Clothing & Fashion", icon: "👗", badge: undefined },
+  { id: "skincare", name: "Skincare & Dermat", icon: "💧", badge: undefined },
+  { id: "makeup-beauty", name: "Makeup & Beauty", icon: "✨", badge: undefined },
+  { id: "sexual-wellness", name: "Sexual Wellness", icon: "🔞", badge: "18+", badgeVariant: "danger" as const },
+  { id: "health-supplements", name: "Health Supplements", icon: "🌿", badge: undefined },
+  { id: "jewellery-accessories", name: "Jewellery & Accessories", icon: "💎", badge: undefined },
+  { id: "tech-electronics", name: "Tech & Gadgets", icon: "⚡", badge: undefined },
+  { id: "food-beverage", name: "Food & Beverage", icon: "🍵", badge: undefined },
+];
+
+const GOAL_OPTIONS = [
+  { value: "Sales & Conversions", label: "Sales & Conversions", description: "Direct-response UGC hooks optimized for ROAS" },
+  { value: "Viral Brand Awareness", label: "Viral Brand Awareness", description: "High-retention storytelling built for algorithmic reach" },
+  { value: "Product Launch Hook", label: "Product Launch Hook", description: "Punchy problem/solution reveal for new drops" },
+  { value: "Meta Ad Scaling", label: "Meta Ad Scaling", description: "A/B testable creator hooks for Ads Manager" },
+  { value: "Retargeting Social Proof", label: "Retargeting Social Proof", description: "Authentic customer testimonial and unboxing style" },
+];
+
+const PLATFORM_OPTIONS = [
+  { value: "Instagram Reels & Meta Ads", label: "Instagram Reels & Meta Ads", description: "9:16 vertical ads + organic feed" },
+  { value: "TikTok Organic + Spark Ads", label: "TikTok Organic + Spark Ads", description: "Fast-paced, native trend aesthetic" },
+  { value: "YouTube Shorts", label: "YouTube Shorts", description: "High-hook retention vertical video" },
+  { value: "Omnichannel Vertical", label: "Omnichannel Vertical (All Platforms)", description: "Universal 9:16 master cut with platform-safe margins" },
+];
+
+const DURATION_OPTIONS = [
+  { value: 15, label: "15s", badge: "Hook" },
+  { value: 30, label: "30s", badge: "Standard" },
+  { value: 45, label: "45s", badge: "Story" },
+  { value: 60, label: "60s", badge: "Deep Dive" },
+];
+
+const GENDER_OPTIONS = [
+  "Any / Best Fit",
+  "Female Creator",
+  "Male Creator",
+  "Couple / Duo",
+];
+
+const AGE_OPTIONS = [
+  { value: "18–25", label: "18–25 Gen-Z" },
+  { value: "20–30s", label: "20–30s Millennial" },
+  { value: "30–45", label: "30–45 Prime" },
+  { value: "45+", label: "45+ Mature" },
+];
 
 function StudioWizardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Prefill from URL query params
   const initialCategory = searchParams.get("category") || "clothing-fashion";
   const initialRef = searchParams.get("ref") || "";
   const initialTitle = searchParams.get("title") || "";
@@ -74,8 +128,6 @@ function StudioWizardContent() {
   const [platform, setPlatform] = useState("Instagram Reels & Meta Ads");
   const [formats, setFormats] = useState<string[]>(["9:16"]);
   const [duration, setDuration] = useState<number>(30);
-  const [language, setLanguage] = useState("English");
-  const [tone, setTone] = useState("Fun & High Energy");
 
   // Real Human Creator Preference
   const [creatorGender, setCreatorGender] = useState("Any / Best Fit");
@@ -86,9 +138,8 @@ function StudioWizardContent() {
   const [referenceUrls, setReferenceUrls] = useState<string[]>(
     initialRef ? [`Reference Ad: ${initialTitle || initialRef}`] : []
   );
-  const [isPickerModalOpen, setIsPickerModalOpen] = useState(false);
 
-  // STEP 2 — Input Modes (Multi-select: 'script' | 'product_images' | 'drive_link')
+  // STEP 2 — Input Modes
   const [selectedModes, setSelectedModes] = useState<("script" | "product_images" | "drive_link")[]>([
     "script",
   ]);
@@ -100,10 +151,8 @@ function StudioWizardContent() {
   const [scriptSource, setScriptSource] = useState<"client" | "ai_draft">("client");
 
   // Mode 2: Product Images & AI Script
-  const [productImages, setProductImages] = useState<ProductImageItem[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
+  const [productFiles, setProductFiles] = useState<UploadedFile[]>([]);
   const [productName, setProductName] = useState("");
-  const [productBenefits, setProductBenefits] = useState<string[]>(["", "", ""]);
   const [productUsp, setProductUsp] = useState("");
   const [targetAudience, setTargetAudience] = useState("");
   const [isGeneratingAiScript, setIsGeneratingAiScript] = useState(false);
@@ -139,8 +188,6 @@ function StudioWizardContent() {
           if (parsed.platform) setPlatform(parsed.platform);
           if (parsed.formats) setFormats(parsed.formats);
           if (parsed.duration) setDuration(parsed.duration);
-          if (parsed.language) setLanguage(parsed.language);
-          if (parsed.tone) setTone(parsed.tone);
           if (parsed.scriptText) setScriptText(parsed.scriptText);
           if (parsed.productName) setProductName(parsed.productName);
           if (parsed.productUsp) setProductUsp(parsed.productUsp);
@@ -165,8 +212,6 @@ function StudioWizardContent() {
           platform,
           formats,
           duration,
-          language,
-          tone,
           scriptText,
           productName,
           productUsp,
@@ -190,15 +235,13 @@ function StudioWizardContent() {
     platform,
     formats,
     duration,
-    language,
-    tone,
     scriptText,
     productName,
     productUsp,
     selectedModes,
   ]);
 
-  // Mode Selection Toggle (Multi-select)
+  // Mode Selection Toggle
   const toggleMode = (mode: "script" | "product_images" | "drive_link") => {
     if (selectedModes.includes(mode)) {
       if (selectedModes.length > 1) {
@@ -259,32 +302,44 @@ function StudioWizardContent() {
       setDriveInput("");
     } else {
       setDriveError(
-        "Please paste a valid Google Drive file or folder sharing link (e.g. drive.google.com/drive/folders/...)"
+        "Please paste a valid Google Drive file or folder link (e.g. drive.google.com/drive/folders/...)"
       );
     }
   };
 
   // Image Upload Handler
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-    const files = Array.from(e.target.files);
-    processFiles(files);
-  };
-
-  const processFiles = (files: File[]) => {
-    const newItems: ProductImageItem[] = files.map((file, idx) => ({
+  const handleFilesAdded = (files: File[]) => {
+    const newItems: UploadedFile[] = files.map((file, idx) => ({
       id: `img_${Date.now()}_${idx}`,
       url: URL.createObjectURL(file),
       name: file.name,
-      isPrimary: productImages.length === 0 && idx === 0,
-      progress: 100,
+      isPrimary: productFiles.length === 0 && idx === 0,
     }));
-    setProductImages((prev) => [...prev, ...newItems]);
+    setProductFiles((prev) => [...prev, ...newItems]);
+  };
+
+  const handleFileRemoved = (id: string) => {
+    setProductFiles((prev) => {
+      const filtered = prev.filter((f) => f.id !== id);
+      if (filtered.length > 0 && !filtered.some((f) => f.isPrimary)) {
+        filtered[0].isPrimary = true;
+      }
+      return filtered;
+    });
+  };
+
+  const handleSetPrimary = (id: string) => {
+    setProductFiles((prev) =>
+      prev.map((f) => ({
+        ...f,
+        isPrimary: f.id === id,
+      }))
+    );
   };
 
   // AI Script Drafting
   const handleGenerateAiScript = async () => {
-    if (!productName.trim() && productImages.length === 0) {
+    if (!productName.trim() && productFiles.length === 0) {
       setErrorMsg("Please enter a product name or upload product images first.");
       return;
     }
@@ -300,8 +355,6 @@ function StudioWizardContent() {
           productName,
           category,
           duration,
-          tone,
-          productBenefits: productBenefits.filter(Boolean),
           productUsp,
           targetAudience,
         }),
@@ -311,12 +364,11 @@ function StudioWizardContent() {
       if (data.scripts && data.scripts.length > 0) {
         setAiScriptOptions(data.scripts);
       } else {
-        // Fallback generator
         setAiScriptOptions([
           {
-            hook: `Stop scrolling if you care about your ${category.replace("-", " ")} routine.`,
-            body: `${productName || "Our formula"} delivers visible real-human results in under 7 days. Zero filler, pure performance.`,
-            cta: `Tap below to try it risk-free today.`,
+            hook: `Stop scrolling if you care about real ${category.replace("-", " ")} results.`,
+            body: `${productName || "Our formula"} was engineered specifically to solve this problem without the fluff. Real human skin, real visible difference in 7 days.`,
+            cta: `Tap the link below to test it with a 30-day guarantee.`,
           },
         ]);
       }
@@ -324,8 +376,8 @@ function StudioWizardContent() {
       setAiScriptOptions([
         {
           hook: `The single biggest mistake people make with ${category.replace("-", " ")}:`,
-          body: `${productName || "Our formula"} was engineered specifically to solve this problem without the hassle.`,
-          cta: `Tap the link to get 20% off your first order.`,
+          body: `${productName || "Our formula"} eliminates the guesswork with pure, active performance.`,
+          cta: `Tap below to get yours delivered with 20% off today.`,
         },
       ]);
     } finally {
@@ -352,20 +404,22 @@ function StudioWizardContent() {
     }
     setErrorMsg("");
     setCurrentStep(2);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Step 2 Validation
   const handleProceedToStep3 = () => {
     const hasScript = selectedModes.includes("script") && scriptText.trim().length > 0;
-    const hasImages = selectedModes.includes("product_images") && (productImages.length > 0 || productName.trim().length > 0);
+    const hasImages = selectedModes.includes("product_images") && (productFiles.length > 0 || productName.trim().length > 0);
     const hasDrive = selectedModes.includes("drive_link") && driveLinks.length > 0;
 
     if (!hasScript && !hasImages && !hasDrive) {
-      setErrorMsg("Please provide at least ONE input: write a script, upload product images, or paste a Google Drive link.");
+      setErrorMsg("Please provide at least ONE input: write a script, upload product images, or link Google Drive assets.");
       return;
     }
     setErrorMsg("");
     setCurrentStep(3);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Final Submit
@@ -389,8 +443,6 @@ function StudioWizardContent() {
         platform,
         formats,
         duration_seconds: duration,
-        language,
-        tone,
         creator_preference: {
           gender: creatorGender,
           age_range: creatorAge,
@@ -400,7 +452,6 @@ function StudioWizardContent() {
         script_text: scriptText,
         script_source: scriptSource,
         product_name: productName,
-        product_benefits: productBenefits.filter(Boolean),
         product_usp: productUsp,
         target_audience: targetAudience,
         drive_links: driveLinks,
@@ -420,1269 +471,918 @@ function StudioWizardContent() {
               ...projectPayload,
               user_id: userData.user.id,
             });
-            await supabase.from("project_events").insert({
-              project_id: projectId,
-              actor_id: userData.user.id,
-              event_type: "project_submitted",
-              to_status: "submitted",
-              note: "Project submitted by client via Studio chamber.",
-            });
           }
         } catch {
-          // Continue safely with local save
+          // Logged-out or unauthenticated demo submission
         }
       }
 
-      // Save locally to projects list
+      // Also persist to localStorage
       try {
         if (typeof window !== "undefined") {
-          const existing = JSON.parse(
-            localStorage.getItem("infimindss_my_projects") || "[]"
-          );
-          existing.unshift(projectPayload);
-          localStorage.setItem("infimindss_my_projects", JSON.stringify(existing));
+          localStorage.setItem(`project_${projectId}`, JSON.stringify(projectPayload));
           localStorage.removeItem("infimindss_studio_draft");
         }
       } catch {}
 
-      // Trigger success state
       setSubmittedProjectId(projectId);
-      setIsSubmitting(false);
+
+      // Trigger celebratory confetti
+      try {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ["#D7FF3D", "#8B6CFF", "#FFFFFF"],
+        });
+      } catch {}
     } catch (err: any) {
-      setErrorMsg(err.message || "Failed to submit project. Please try again.");
+      setErrorMsg(err?.message || "Failed to submit project. Please try again.");
+    } finally {
       setIsSubmitting(false);
     }
   };
 
+  const primaryImage = productFiles.find((f) => f.isPrimary) || productFiles[0];
+  const selectedCategoryObj = CATEGORY_ITEMS.find((c) => c.id === category) || CATEGORY_ITEMS[0];
+
   return (
-    <div className="presentation-wrapper" style={{ minHeight: "100vh", padding: "16px" }}>
-      <div className="window-frame" style={{ maxWidth: "1280px", margin: "0 auto", padding: "24px 32px 48px 32px" }}>
-        {/* Navigation Bar */}
-        <Navbar activeRoute="studio" onOpenSearch={() => setIsCmdOpen(true)} />
+    <div className="min-h-screen bg-bg text-text selection:bg-accent selection:text-accent-ink pb-28">
+      {/* Navbar */}
+      <Navbar onOpenSearch={() => setIsCmdOpen(true)} />
 
-        {/* Success View (Calm Success Card with Confetti & Next Steps) */}
-        {submittedProjectId ? (
-          <div style={{ maxWidth: "680px", margin: "48px auto", textAlign: "center" }}>
-            <div
-              style={{
-                background: "#FFFFFF",
-                borderRadius: "32px",
-                padding: "48px 36px",
-                border: "1px solid rgba(0,0,0,0.06)",
-                boxShadow: "0 20px 50px -10px rgba(0,0,0,0.08)",
-                position: "relative",
-                overflow: "hidden",
+      {/* Main Container */}
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32">
+        {/* Top Header */}
+        <div className="text-center max-w-2xl mx-auto space-y-4 mb-10">
+          <div className="flex items-center justify-center gap-2">
+            <Badge variant="lime">✦ STUDIO CHAMBER</Badge>
+            <Badge variant="outline">Meta-Ready 9:16</Badge>
+          </div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white font-sans">
+            Brief us once.{" "}
+            <span className="font-serif italic text-accent font-normal block sm:inline">
+              We&apos;ll make it feel human.
+            </span>
+          </h1>
+          <p className="text-sm sm:text-base text-text-muted">
+            Real creators on camera + AI for speed. Meta-ready 9:16 ads delivered in 48 hours.
+          </p>
+
+          {/* Stepper Component */}
+          <div className="pt-4">
+            <Stepper
+              currentStep={currentStep}
+              onStepClick={(step) => {
+                if (step === 1) setCurrentStep(1);
+                if (step === 2 && brandName.trim()) setCurrentStep(2);
+                if (step === 3 && brandName.trim()) setCurrentStep(3);
               }}
-            >
-              {/* Confetti Sparkles Effect */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: "4px",
-                  background: "linear-gradient(90deg, #10B981, #06B6D4, #8B5CF6, #F59E0B)",
-                }}
-              />
+              canNavigateTo={(step) => {
+                if (step === 1) return true;
+                if (step === 2) return Boolean(brandName.trim());
+                if (step === 3) return Boolean(brandName.trim());
+                return false;
+              }}
+            />
+          </div>
+        </div>
 
-              <div
-                style={{
-                  width: "64px",
-                  height: "64px",
-                  borderRadius: "50%",
-                  background: "#ECFDF5",
-                  color: "#10B981",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 20px auto",
-                  boxShadow: "0 8px 20px rgba(16, 185, 129, 0.2)",
-                }}
-              >
-                <Check size={32} strokeWidth={2.5} />
-              </div>
+        {/* Success View */}
+        {submittedProjectId ? (
+          <div className="max-w-3xl mx-auto bg-surface/80 border border-border backdrop-blur-xl rounded-[32px] p-8 sm:p-14 text-center space-y-8 shadow-2xl relative overflow-hidden">
+            <div className="w-20 h-20 rounded-full bg-accent/20 border-2 border-accent text-accent flex items-center justify-center mx-auto shadow-[0_0_40px_rgba(215,255,61,0.3)]">
+              <Check className="w-10 h-10 stroke-[2.5]" />
+            </div>
 
-              <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/60 px-3 py-1 rounded-full w-fit mx-auto mb-3">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Brief Locked & Received</span>
-              </div>
-
-              <h1 className="text-3xl sm:text-4xl font-serif text-[#111111] mb-3 leading-tight">
-                We got your brief. <br />
-                <span className="italic font-normal">Real creators on camera are being briefed.</span>
-              </h1>
-
-              <p className="text-xs sm:text-sm text-[#71717A] mb-8 leading-relaxed max-w-md mx-auto">
-                Your campaign <strong>{brandName}</strong> has entered our Human + AI production pipeline.
-                Zero robotic avatars. 100% human-verified commercial footage.
+            <div className="space-y-3">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white font-sans">
+                We got your brief <span className="text-accent font-serif italic">✦</span>
+              </h2>
+              <p className="text-text-muted max-w-lg mx-auto text-sm sm:text-base">
+                Your project <code className="text-accent font-mono bg-surface-2 px-2 py-0.5 rounded">{submittedProjectId}</code> has been received. Our production studio is matching you with a verified human creator.
               </p>
+            </div>
 
-              {/* Next Steps Timeline */}
-              <div
-                style={{
-                  background: "#FAF9F6",
-                  borderRadius: "20px",
-                  padding: "24px",
-                  border: "1px solid rgba(0,0,0,0.05)",
-                  textAlign: "left",
-                  marginBottom: "32px",
+            {/* 5-Step Human + AI Timeline */}
+            <div className="p-6 rounded-2xl bg-surface-2/60 border border-border text-left space-y-4 max-w-lg mx-auto">
+              <div className="text-xs font-mono uppercase tracking-wider text-text-muted flex items-center justify-between">
+                <span>Production Roadmap</span>
+                <span className="text-accent">~48 Hr First Cut</span>
+              </div>
+              <div className="space-y-3 text-xs sm:text-sm">
+                <div className="flex items-center gap-3 text-white">
+                  <div className="w-5 h-5 rounded-full bg-accent text-accent-ink flex items-center justify-center text-[10px] font-bold">1</div>
+                  <span className="font-medium">Brief Received &amp; Human Creative Review</span>
+                  <Badge variant="lime" className="ml-auto text-[10px]">Active</Badge>
+                </div>
+                <div className="flex items-center gap-3 text-text-muted">
+                  <div className="w-5 h-5 rounded-full bg-surface-3 flex items-center justify-center text-[10px]">2</div>
+                  <span>Real Creator Matched &amp; Physical Product Shipped</span>
+                  <span className="ml-auto text-xs font-mono">Day 1</span>
+                </div>
+                <div className="flex items-center gap-3 text-text-muted">
+                  <div className="w-5 h-5 rounded-full bg-surface-3 flex items-center justify-center text-[10px]">3</div>
+                  <span>4K Studio &amp; Lifestyle Filming (No CGI actors)</span>
+                  <span className="ml-auto text-xs font-mono">Day 2</span>
+                </div>
+                <div className="flex items-center gap-3 text-text-muted">
+                  <div className="w-5 h-5 rounded-full bg-surface-3 flex items-center justify-center text-[10px]">4</div>
+                  <span>AI Rhythm Editing, Audio Polish &amp; Captions</span>
+                  <span className="ml-auto text-xs font-mono">Day 2</span>
+                </div>
+                <div className="flex items-center gap-3 text-text-muted">
+                  <div className="w-5 h-5 rounded-full bg-surface-3 flex items-center justify-center text-[10px]">5</div>
+                  <span>First Cut Delivery in 9:16 Meta-Ready Master</span>
+                  <span className="ml-auto text-xs font-mono">48 Hours</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={() => router.push(`/studio/projects/${submittedProjectId}`)}
+              >
+                View Project Dashboard
+              </Button>
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => {
+                  setSubmittedProjectId(null);
+                  setCurrentStep(1);
+                  setBrandName("");
+                  setScriptText("");
+                  setProductFiles([]);
                 }}
               >
-                <div style={{ fontSize: "0.78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#111111", marginBottom: "16px" }}>
-                  What happens next:
-                </div>
-
-                <div className="space-y-3.5 text-xs">
-                  <div className="flex items-start gap-3">
-                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">
-                      1
-                    </span>
-                    <div>
-                      <strong className="text-[#111111]">Producer Review & Angle Lock:</strong> Script and visual angle vetted for Meta ad policy compliance (<span className="text-emerald-700">under 4 hours</span>).
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">
-                      2
-                    </span>
-                    <div>
-                      <strong className="text-[#111111]">Real Creator Shoot:</strong> Vetted on-camera creator records authentic hooks, b-roll, and demonstrations.
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">
-                      3
-                    </span>
-                    <div>
-                      <strong className="text-[#111111]">AI Polish & Multi-Ratio Delivery:</strong> Word-by-word kinetic captions, audio cleaning, and 9:16 / 4:5 / 1:1 exports.
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* View Project Button */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <Link
-                  href={`/studio/projects/${submittedProjectId}?success=true`}
-                  className="btn-start-project"
-                  style={{ padding: "0 28px", height: "48px" }}
-                >
-                  <span>View Project Timeline</span>
-                  <span className="btn-arrow-circle" aria-hidden="true">
-                    <ArrowUpRight size={14} className="btn-arrow-icon primary" />
-                    <ArrowUpRight size={14} className="btn-arrow-icon clone" />
-                  </span>
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSubmittedProjectId(null);
-                    setCurrentStep(1);
-                    setBrandName("");
-                    setScriptText("");
-                    setProductImages([]);
-                    setDriveLinks([]);
-                  }}
-                  className="px-5 py-3 rounded-full border border-black/10 hover:border-black/25 text-xs font-semibold text-[#111111] bg-white transition-colors"
-                >
-                  Brief Another Campaign
-                </button>
-              </div>
+                Create Another Project
+              </Button>
             </div>
           </div>
         ) : (
-          <>
-            {/* Header Block with Floating Mini-Cards (Task C) */}
-            <div style={{ position: "relative", margin: "24px 0 36px 0", textAlign: "center" }}>
-              {/* Floating Mini-Card Left */}
-              <div
-                className="hidden lg:flex"
-                style={{
-                  position: "absolute",
-                  left: "2%",
-                  top: "10px",
-                  background: "#FFFFFF",
-                  border: "1px solid rgba(0,0,0,0.06)",
-                  borderRadius: "16px",
-                  padding: "12px 16px",
-                  boxShadow: "0 10px 25px rgba(0,0,0,0.04)",
-                  transform: "rotate(-3deg)",
-                  alignItems: "center",
-                  gap: "10px",
-                  zIndex: 2,
-                }}
-              >
-                <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#EFF6FF", color: "#3B82F6", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Users size={16} />
-                </div>
-                <div style={{ textAlign: "left" }}>
-                  <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#111111" }}>Real Creators</div>
-                  <div style={{ fontSize: "0.68rem", color: "#71717A" }}>Vetted humans on camera</div>
-                </div>
-              </div>
-
-              {/* Floating Mini-Card Right */}
-              <div
-                className="hidden lg:flex"
-                style={{
-                  position: "absolute",
-                  right: "2%",
-                  top: "15px",
-                  background: "#FFFFFF",
-                  border: "1px solid rgba(0,0,0,0.06)",
-                  borderRadius: "16px",
-                  padding: "12px 16px",
-                  boxShadow: "0 10px 25px rgba(0,0,0,0.04)",
-                  transform: "rotate(2.5deg)",
-                  alignItems: "center",
-                  gap: "10px",
-                  zIndex: 2,
-                }}
-              >
-                <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#FAF5FF", color: "#A855F7", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Wand2 size={16} />
-                </div>
-                <div style={{ textAlign: "left" }}>
-                  <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#111111" }}>AI Velocity</div>
-                  <div style={{ fontSize: "0.68rem", color: "#71717A" }}>48-hr first cut</div>
-                </div>
-              </div>
-
-              {/* Center Title & Subheading */}
-              <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/60 px-3.5 py-1 rounded-full w-fit mx-auto mb-3">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                <span>✦ Studio Chamber</span>
-              </div>
-
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-[#111111] leading-tight mb-2">
-                Brief us once. <br />
-                <span className="italic font-normal">We'll make it feel human.</span>
-              </h1>
-
-              <p className="text-xs sm:text-sm text-[#71717A] max-w-lg mx-auto leading-relaxed">
-                Real creators on camera. AI to make it fast. Zero robotic videos.
-              </p>
-
-              {/* Stepper Progress Bar */}
-              <div style={{ maxWidth: "480px", margin: "28px auto 0 auto" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    background: "#FFFFFF",
-                    borderRadius: "9999px",
-                    padding: "6px 8px",
-                    border: "1px solid rgba(0,0,0,0.06)",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(1)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      padding: "6px 14px",
-                      borderRadius: "9999px",
-                      background: currentStep === 1 ? "#111111" : "transparent",
-                      color: currentStep === 1 ? "#FFFFFF" : currentStep > 1 ? "#10B981" : "#71717A",
-                      border: "none",
-                      fontSize: "0.78rem",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      transition: "all 0.2s ease",
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: "18px",
-                        height: "18px",
-                        borderRadius: "50%",
-                        background: currentStep === 1 ? "#FFFFFF" : currentStep > 1 ? "#10B981" : "#E4E4E7",
-                        color: currentStep === 1 ? "#111111" : "#FFFFFF",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "0.68rem",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {currentStep > 1 ? <Check size={11} strokeWidth={3} /> : "1"}
-                    </span>
-                    <span>1. Brief</span>
-                  </button>
-
-                  <div style={{ flex: 1, height: "2px", background: currentStep >= 2 ? "#111111" : "#E4E4E7", margin: "0 6px", transition: "all 0.3s ease" }} />
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (brandName.trim()) setCurrentStep(2);
-                    }}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      padding: "6px 14px",
-                      borderRadius: "9999px",
-                      background: currentStep === 2 ? "#111111" : "transparent",
-                      color: currentStep === 2 ? "#FFFFFF" : currentStep > 2 ? "#10B981" : "#71717A",
-                      border: "none",
-                      fontSize: "0.78rem",
-                      fontWeight: 600,
-                      cursor: brandName.trim() ? "pointer" : "default",
-                      transition: "all 0.2s ease",
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: "18px",
-                        height: "18px",
-                        borderRadius: "50%",
-                        background: currentStep === 2 ? "#FFFFFF" : currentStep > 2 ? "#10B981" : "#E4E4E7",
-                        color: currentStep === 2 ? "#111111" : "#FFFFFF",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "0.68rem",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {currentStep > 2 ? <Check size={11} strokeWidth={3} /> : "2"}
-                    </span>
-                    <span>2. Input</span>
-                  </button>
-
-                  <div style={{ flex: 1, height: "2px", background: currentStep >= 3 ? "#111111" : "#E4E4E7", margin: "0 6px", transition: "all 0.3s ease" }} />
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (brandName.trim()) setCurrentStep(3);
-                    }}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      padding: "6px 14px",
-                      borderRadius: "9999px",
-                      background: currentStep === 3 ? "#111111" : "transparent",
-                      color: currentStep === 3 ? "#FFFFFF" : "#71717A",
-                      border: "none",
-                      fontSize: "0.78rem",
-                      fontWeight: 600,
-                      cursor: brandName.trim() ? "pointer" : "default",
-                      transition: "all 0.2s ease",
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: "18px",
-                        height: "18px",
-                        borderRadius: "50%",
-                        background: currentStep === 3 ? "#FFFFFF" : "#E4E4E7",
-                        color: currentStep === 3 ? "#111111" : "#FFFFFF",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "0.68rem",
-                        fontWeight: 700,
-                      }}
-                    >
-                      3
-                    </span>
-                    <span>3. Review</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Error Notification */}
-            {errorMsg && (
-              <div
-                style={{
-                  maxWidth: "920px",
-                  margin: "0 auto 20px auto",
-                  padding: "12px 18px",
-                  background: "#FEF2F2",
-                  border: "1px solid #FECACA",
-                  borderRadius: "14px",
-                  color: "#991B1B",
-                  fontSize: "0.82rem",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
-                <AlertCircle size={16} />
-                <span>{errorMsg}</span>
-              </div>
-            )}
-
-            {/* Main Studio Grid (Left 65% Card, Right 35% Sticky Summary) */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr",
-                gap: "28px",
-                alignItems: "start",
-              }}
-              className="lg:grid-cols-[1fr_360px]"
-            >
-              {/* Left Column: Active Step Card */}
-              <div
-                style={{
-                  background: "#FFFFFF",
-                  borderRadius: "28px",
-                  padding: "36px",
-                  border: "1px solid rgba(0,0,0,0.06)",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.03)",
-                }}
-              >
-                {/* STEP 1: BRIEF */}
-                {currentStep === 1 && (
-                  <div className="space-y-6">
-                    <div>
-                      <h2 className="text-xl sm:text-2xl font-serif text-[#111111]">
-                        1. Campaign Brief & Specifications
-                      </h2>
-                      <p className="text-xs text-[#71717A] mt-1">
-                        Tell us who you are, what goal you have, and who should shoot the video.
-                      </p>
+          /* Workspace Layout: 12-column grid */
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left 64% (8 Cols): Main Canvas Card */}
+            <div className="lg:col-span-8 bg-surface/70 border border-border backdrop-blur-xl rounded-[32px] p-6 sm:p-10 shadow-2xl relative space-y-10">
+              {/* STEP 1: BRIEF */}
+              {currentStep === 1 && (
+                <div className="space-y-10">
+                  {/* Section 01: Brand Identifiers */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-xs font-mono text-accent uppercase tracking-wider">
+                      <span>01 / BRAND IDENTIFIERS</span>
                     </div>
-
-                    {/* Brand Name & Link */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-[#111111] mb-1.5">
-                          Brand / Product Name <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={brandName}
-                          onChange={(e) => setBrandName(e.target.value)}
-                          placeholder="e.g. Lumiere Botanicals"
-                          className="w-full px-4 py-2.5 rounded-2xl border border-black/10 focus:border-black focus:outline-none text-xs bg-neutral-50/60"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-[#111111] mb-1.5">
-                          Website or Instagram Handle (Optional)
-                        </label>
-                        <input
-                          type="text"
-                          value={brandLink}
-                          onChange={(e) => setBrandLink(e.target.value)}
-                          placeholder="e.g. instagram.com/lumierebotanicals"
-                          className="w-full px-4 py-2.5 rounded-2xl border border-black/10 focus:border-black focus:outline-none text-xs bg-neutral-50/60"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Category Selector with 18+ tag */}
-                    <div>
-                      <label className="block text-xs font-semibold text-[#111111] mb-2">
-                        Select Category <span className="text-red-500">*</span>
-                      </label>
-                      <div className="flex flex-wrap gap-2">
-                        {SEED_CATEGORIES.map((cat) => {
-                          const isSelected = category === cat.slug;
-                          return (
-                            <button
-                              key={cat.slug}
-                              type="button"
-                              onClick={() => setCategory(cat.slug)}
-                              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all flex items-center gap-1.5 ${
-                                isSelected
-                                  ? "bg-[#111111] text-white border-[#111111] shadow-sm"
-                                  : "bg-white text-[#111111] border-black/10 hover:border-black/25"
-                              }`}
-                            >
-                              <span>{cat.icon || "✦"}</span>
-                              <span>{cat.name}</span>
-                              {cat.is_adult && (
-                                <span
-                                  className={`text-[9px] px-1.5 py-0.2 rounded font-bold ${
-                                    isSelected
-                                      ? "bg-rose-500 text-white"
-                                      : "bg-rose-50 text-rose-700 border border-rose-200"
-                                  }`}
-                                >
-                                  18+
-                                </span>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Goal & Target Platform */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-[#111111] mb-1.5">
-                          Campaign Goal
-                        </label>
-                        <select
-                          value={goal}
-                          onChange={(e) => setGoal(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-2xl border border-black/10 focus:border-black focus:outline-none text-xs bg-neutral-50/60"
-                        >
-                          <option value="Sales & Conversions">Sales & Conversions (Meta Ads)</option>
-                          <option value="Viral Organic Reach">Viral Organic Reach (Instagram Reels)</option>
-                          <option value="Product Launch">New Product Launch</option>
-                          <option value="Brand Awareness">Brand Awareness & Trust</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-[#111111] mb-1.5">
-                          Primary Platform
-                        </label>
-                        <select
-                          value={platform}
-                          onChange={(e) => setPlatform(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-2xl border border-black/10 focus:border-black focus:outline-none text-xs bg-neutral-50/60"
-                        >
-                          <option value="Instagram Reels & Meta Ads">Instagram Reels & Meta Ads</option>
-                          <option value="TikTok & Reels">TikTok & Reels</option>
-                          <option value="YouTube Shorts">YouTube Shorts</option>
-                          <option value="Omnichannel">All Social Platforms</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Aspect Ratios & Duration */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-[#111111] mb-1.5">
-                          Delivery Ratios (Multi-select)
-                        </label>
-                        <div className="flex gap-2">
-                          {["9:16", "4:5", "1:1"].map((fmt) => {
-                            const isSel = formats.includes(fmt);
-                            return (
-                              <button
-                                key={fmt}
-                                type="button"
-                                onClick={() => toggleFormat(fmt)}
-                                className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                                  isSel
-                                    ? "bg-[#111111] text-white border-[#111111]"
-                                    : "bg-neutral-50 text-[#111111] border-black/10 hover:border-black/20"
-                                }`}
-                              >
-                                {fmt} {fmt === "9:16" ? "(Reel)" : fmt === "4:5" ? "(Feed)" : "(Square)"}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-[#111111] mb-1.5">
-                          Target Duration
-                        </label>
-                        <div className="flex gap-2">
-                          {[15, 30, 45, 60].map((sec) => (
-                            <button
-                              key={sec}
-                              type="button"
-                              onClick={() => setDuration(sec)}
-                              className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                                duration === sec
-                                  ? "bg-[#111111] text-white border-[#111111]"
-                                  : "bg-neutral-50 text-[#111111] border-black/10 hover:border-black/20"
-                              }`}
-                            >
-                              {sec}s
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Real Human Creator Preference */}
-                    <div className="p-4 rounded-2xl bg-neutral-50/70 border border-black/[0.06] space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Users size={16} className="text-emerald-700" />
-                        <span className="text-xs font-bold text-[#111111]">
-                          Real Human Creator Casting Preference
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-[#71717A] leading-relaxed">
-                        We cast vetted on-camera creators with signed commercial model releases. We never generate synthetic artificial faces.
-                      </p>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-[11px] font-semibold text-[#111111] mb-1">
-                            Creator Gender
-                          </label>
-                          <select
-                            value={creatorGender}
-                            onChange={(e) => setCreatorGender(e.target.value)}
-                            className="w-full p-2 rounded-xl border border-black/10 bg-white text-xs"
-                          >
-                            <option value="Any / Best Fit">Any / Best Fit for Category</option>
-                            <option value="Female">Female Creator</option>
-                            <option value="Male">Male Creator</option>
-                            <option value="Duo / Couple">Couple / Duo</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="block text-[11px] font-semibold text-[#111111] mb-1">
-                            Age Bracket
-                          </label>
-                          <select
-                            value={creatorAge}
-                            onChange={(e) => setCreatorAge(e.target.value)}
-                            className="w-full p-2 rounded-xl border border-black/10 bg-white text-xs"
-                          >
-                            <option value="20–30s">Early 20s – 30s (Gen Z / Young Millennial)</option>
-                            <option value="30s–40s">30s – 40s (Established Adult)</option>
-                            <option value="40s+">40s+ (Mature / Expert Persona)</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Step 1 CTA */}
-                    <div className="pt-2 flex justify-end">
-                      <button
-                        type="button"
-                        onClick={handleProceedToStep2}
-                        className="btn-start-project"
-                        style={{ height: "46px" }}
-                      >
-                        <span>Continue to Step 2: Input</span>
-                        <span className="btn-arrow-circle" aria-hidden="true">
-                          <ArrowRight size={13} className="btn-arrow-icon primary" />
-                          <ArrowRight size={13} className="btn-arrow-icon clone" />
-                        </span>
-                      </button>
+                      <Input
+                        label="Brand or Product Name *"
+                        placeholder="e.g. Lumina Botanicals"
+                        value={brandName}
+                        onChange={(e) => setBrandName(e.target.value)}
+                        error={!brandName.trim() && errorMsg ? "Brand name is required" : undefined}
+                      />
+                      <Input
+                        label="Website or Instagram Handle"
+                        placeholder="e.g. @luminabotanicals or luminasite.com"
+                        value={brandLink}
+                        onChange={(e) => setBrandLink(e.target.value)}
+                      />
                     </div>
                   </div>
-                )}
 
-                {/* STEP 2: INPUT MODES (BIG VISUAL CARDS — TASK C) */}
-                {currentStep === 2 && (
-                  <div className="space-y-6">
-                    <div>
-                      <h2 className="text-xl sm:text-2xl font-serif text-[#111111]">
-                        2. How would you like to provide input?
-                      </h2>
-                      <p className="text-xs text-[#71717A] mt-1">
-                        Select one or more input formats. Combine photos with your own script or Google Drive folder.
-                      </p>
+                  {/* Section 02: Category Choice Cards */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between text-xs font-mono text-accent uppercase tracking-wider">
+                      <span>02 / INDUSTRY CATEGORY</span>
+                      <span className="text-text-muted">Select 1 category</span>
                     </div>
-
-                    {/* 3 Selectable Big Visual Mode Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      {/* Card A: Script */}
-                      <div
-                        onClick={() => toggleMode("script")}
-                        className={`p-4 rounded-2xl cursor-pointer transition-all border-2 flex flex-col justify-between ${
-                          selectedModes.includes("script")
-                            ? "border-[#111111] bg-white shadow-md transform -translate-y-0.5"
-                            : "border-black/[0.08] bg-neutral-50/50 hover:border-black/25"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center text-[#111111]">
-                            <FileText size={18} />
-                          </div>
-                          {selectedModes.includes("script") && (
-                            <div className="w-5 h-5 rounded-full bg-[#111111] text-white flex items-center justify-center">
-                              <Check size={12} strokeWidth={3} />
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <div className="text-xs font-bold text-[#111111]">I have a script</div>
-                          <div className="text-[11px] text-[#71717A] mt-0.5 leading-snug">
-                            Provide your own hook, dialogue and call to action.
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Card B: Product Pictures */}
-                      <div
-                        onClick={() => toggleMode("product_images")}
-                        className={`p-4 rounded-2xl cursor-pointer transition-all border-2 flex flex-col justify-between ${
-                          selectedModes.includes("product_images")
-                            ? "border-[#111111] bg-white shadow-md transform -translate-y-0.5"
-                            : "border-black/[0.08] bg-neutral-50/50 hover:border-black/25"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
-                            <ImageIcon size={18} />
-                          </div>
-                          {selectedModes.includes("product_images") && (
-                            <div className="w-5 h-5 rounded-full bg-[#111111] text-white flex items-center justify-center">
-                              <Check size={12} strokeWidth={3} />
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <div className="text-xs font-bold text-[#111111]">Upload product pictures</div>
-                          <div className="text-[11px] text-[#71717A] mt-0.5 leading-snug">
-                            Drop photos & we'll draft the script for you with AI.
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Card C: Drive Link */}
-                      <div
-                        onClick={() => toggleMode("drive_link")}
-                        className={`p-4 rounded-2xl cursor-pointer transition-all border-2 flex flex-col justify-between ${
-                          selectedModes.includes("drive_link")
-                            ? "border-[#111111] bg-white shadow-md transform -translate-y-0.5"
-                            : "border-black/[0.08] bg-neutral-50/50 hover:border-black/25"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-                            <FolderSymlink size={18} />
-                          </div>
-                          {selectedModes.includes("drive_link") && (
-                            <div className="w-5 h-5 rounded-full bg-[#111111] text-white flex items-center justify-center">
-                              <Check size={12} strokeWidth={3} />
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <div className="text-xs font-bold text-[#111111]">Paste Drive link</div>
-                          <div className="text-[11px] text-[#71717A] mt-0.5 leading-snug">
-                            Share raw footage, b-roll or product assets folder.
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Mode Panel 1: Script Area */}
-                    {selectedModes.includes("script") && (
-                      <div className="p-5 rounded-2xl bg-neutral-50/60 border border-black/[0.06] space-y-3 animate-fadeIn">
-                        <div className="flex items-center justify-between">
-                          <label className="text-xs font-bold text-[#111111] flex items-center gap-1.5">
-                            <FileText size={14} />
-                            <span>Script Dialogue & Visual Instructions</span>
-                          </label>
-                          <div className="flex items-center gap-3 text-[11px]">
-                            <span className="text-[#71717A]">
-                              {wordCount} words ({scriptText.length} chars)
-                            </span>
-                            <span
-                              className={`px-2 py-0.5 rounded-full font-semibold ${
-                                isTooLong
-                                  ? "bg-amber-100 text-amber-800"
-                                  : "bg-emerald-50 text-emerald-800"
-                              }`}
-                            >
-                              Est. {estimatedSeconds}s / {duration}s target
-                            </span>
-                          </div>
-                        </div>
-
-                        <textarea
-                          rows={6}
-                          value={scriptText}
-                          onChange={(e) => setScriptText(e.target.value)}
-                          placeholder="[HOOK - 0 to 3s]:&#10;Creator pulls shirt out of cramped bag...&#10;&#10;[BODY - 3 to 22s]:&#10;'Stop scrolling if you hate wrinkled clothes...'&#10;&#10;[CTA - 22 to 30s]:&#10;'Get 20% off your first pack at the link below.'"
-                          className="w-full p-3.5 rounded-xl border border-black/10 focus:border-black focus:outline-none text-xs bg-white font-mono leading-relaxed"
-                        />
-
-                        {isTooLong && (
-                          <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800 flex items-center gap-2">
-                            <AlertCircle size={14} className="flex-shrink-0" />
-                            <span>
-                              Your script is approximately {estimatedSeconds} seconds spoken. Consider trimming to fit your {duration}s duration target.
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Mode Panel 2: Product Images & AI Script Generator */}
-                    {selectedModes.includes("product_images") && (
-                      <div className="p-5 rounded-2xl bg-neutral-50/60 border border-black/[0.06] space-y-4 animate-fadeIn">
-                        <div className="flex items-center justify-between">
-                          <label className="text-xs font-bold text-[#111111] flex items-center gap-1.5">
-                            <ImageIcon size={14} />
-                            <span>Product Photos & AI Script Studio</span>
-                          </label>
-                          <span className="text-[11px] text-[#71717A]">
-                            PNG, JPG or WebP up to 10MB
-                          </span>
-                        </div>
-
-                        {/* Drag & Drop Zone */}
-                        <label
-                          onDragOver={(e) => {
-                            e.preventDefault();
-                            setIsDragging(true);
-                          }}
-                          onDragLeave={() => setIsDragging(false)}
-                          onDrop={(e) => {
-                            e.preventDefault();
-                            setIsDragging(false);
-                            if (e.dataTransfer.files) {
-                              processFiles(Array.from(e.dataTransfer.files));
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {CATEGORY_ITEMS.map((cat) => (
+                        <ChoiceCard
+                          key={cat.id}
+                          title={cat.name}
+                          icon={<span className="text-2xl">{cat.icon}</span>}
+                          selected={category === cat.id}
+                          badge={cat.badge}
+                          badgeVariant={cat.badgeVariant}
+                          onClick={() => {
+                            if (cat.badge === "18+") {
+                              setIsAgeGateOpen(true);
                             }
+                            setCategory(cat.id);
                           }}
-                          className={`block p-6 rounded-2xl border-2 border-dashed text-center cursor-pointer transition-all ${
-                            isDragging
-                              ? "border-[#111111] bg-neutral-100"
-                              : "border-black/15 bg-white hover:border-black/30"
-                          }`}
-                        >
-                          <input
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                            className="hidden"
-                          />
-                          <div className="w-10 h-10 rounded-full bg-neutral-100 text-[#111111] flex items-center justify-center mx-auto mb-2">
-                            <ImageIcon size={20} />
-                          </div>
-                          <div className="text-xs font-semibold text-[#111111]">
-                            Drop your product photos here, or browse
-                          </div>
-                          <p className="text-[11px] text-[#71717A] mt-1">
-                            High-res packaging, texture close-ups, or unboxings.
-                          </p>
-                        </label>
-
-                        {/* Uploaded Thumbnails Grid */}
-                        {productImages.length > 0 && (
-                          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 pt-2">
-                            {productImages.map((img) => (
-                              <div
-                                key={img.id}
-                                className="relative aspect-square rounded-xl overflow-hidden border border-black/10 group"
-                              >
-                                <img
-                                  src={img.url}
-                                  alt={img.name}
-                                  className="w-full h-full object-cover"
-                                />
-                                {img.isPrimary && (
-                                  <span className="absolute top-1.5 left-1.5 bg-[#111111] text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
-                                    Primary
-                                  </span>
-                                )}
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setProductImages(productImages.filter((p) => p.id !== img.id))
-                                  }
-                                  className="absolute top-1.5 right-1.5 p-1 bg-black/60 hover:bg-black/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                  <X size={12} />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Product Detail Fields for Script Generation */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                          <div>
-                            <label className="block text-[11px] font-semibold text-[#111111] mb-1">
-                              Product Name
-                            </label>
-                            <input
-                              type="text"
-                              value={productName}
-                              onChange={(e) => setProductName(e.target.value)}
-                              placeholder="e.g. Ceramide Barrier Glaze"
-                              className="w-full p-2.5 rounded-xl border border-black/10 bg-white text-xs"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-[11px] font-semibold text-[#111111] mb-1">
-                              Unique Selling Point (USP)
-                            </label>
-                            <input
-                              type="text"
-                              value={productUsp}
-                              onChange={(e) => setProductUsp(e.target.value)}
-                              placeholder="e.g. 72hr hydration without pore clogging"
-                              className="w-full p-2.5 rounded-xl border border-black/10 bg-white text-xs"
-                            />
-                          </div>
-                        </div>
-
-                        {/* AI Script Draft Button */}
-                        <div className="pt-2">
-                          <button
-                            type="button"
-                            onClick={handleGenerateAiScript}
-                            disabled={isGeneratingAiScript}
-                            className="w-full py-2.5 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
-                          >
-                            {isGeneratingAiScript ? (
-                              <>
-                                <Loader2 size={14} className="animate-spin" />
-                                <span>Generating Hook Options with AI...</span>
-                              </>
-                            ) : (
-                              <>
-                                <Sparkles size={14} />
-                                <span>✦ Draft high-converting script with AI</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-
-                        {/* Generated AI Options */}
-                        {aiScriptOptions.length > 0 && (
-                          <div className="space-y-2 pt-2">
-                            <span className="text-[11px] font-bold text-[#111111] uppercase tracking-wider block">
-                              AI Hook & Script Variations:
-                            </span>
-                            {aiScriptOptions.map((opt, i) => (
-                              <div
-                                key={i}
-                                className="p-3 rounded-xl bg-white border border-purple-200/80 space-y-2"
-                              >
-                                <div className="text-xs text-[#111111]">
-                                  <strong>Hook:</strong> "{opt.hook}"
-                                </div>
-                                <div className="text-[11px] text-[#71717A]">
-                                  {opt.body}
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => handleApplyAiScript(opt)}
-                                  className="text-[11px] font-semibold text-purple-700 hover:text-purple-900 underline flex items-center gap-1"
-                                >
-                                  <span>Apply this script to project</span>
-                                  <ArrowRight size={12} />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Mode Panel 3: Google Drive Link Area */}
-                    {selectedModes.includes("drive_link") && (
-                      <div className="p-5 rounded-2xl bg-neutral-50/60 border border-black/[0.06] space-y-3 animate-fadeIn">
-                        <label className="block text-xs font-bold text-[#111111]">
-                          Google Drive Asset Link (Raw clips, b-roll, logos)
-                        </label>
-                        <div className="flex gap-2">
-                          <input
-                            type="url"
-                            value={driveInput}
-                            onChange={(e) => setDriveInput(e.target.value)}
-                            placeholder="https://drive.google.com/drive/folders/..."
-                            className="flex-1 p-2.5 rounded-xl border border-black/10 bg-white text-xs focus:outline-none focus:border-black"
-                          />
-                          <button
-                            type="button"
-                            onClick={handleAddDriveLink}
-                            className="px-4 py-2.5 rounded-xl bg-[#111111] text-white text-xs font-semibold hover:bg-neutral-800 transition-colors"
-                          >
-                            Add Link
-                          </button>
-                        </div>
-
-                        {driveError && (
-                          <p className="text-[11px] text-red-600">{driveError}</p>
-                        )}
-
-                        <p className="text-[11px] text-[#71717A]">
-                          Ensure your Google Drive link permission is set to <strong>"Anyone with the link can view"</strong> so our production team can review assets.
-                        </p>
-
-                        {driveLinks.length > 0 && (
-                          <div className="space-y-1.5 pt-1">
-                            {driveLinks.map((link, i) => (
-                              <div
-                                key={i}
-                                className="p-2.5 rounded-xl bg-white border border-black/10 flex items-center justify-between text-xs"
-                              >
-                                <div className="flex items-center gap-2 truncate">
-                                  <FolderSymlink size={14} className="text-blue-600 flex-shrink-0" />
-                                  <span className="truncate">{link.url}</span>
-                                  {link.id && (
-                                    <span className="text-[9px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-mono">
-                                      ID: {link.id.slice(0, 8)}...
-                                    </span>
-                                  )}
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => setDriveLinks(driveLinks.filter((_, idx) => idx !== i))}
-                                  className="text-neutral-400 hover:text-red-600 p-1"
-                                >
-                                  <X size={14} />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Step 2 Buttons */}
-                    <div className="pt-2 flex items-center justify-between">
-                      <button
-                        type="button"
-                        onClick={() => setCurrentStep(1)}
-                        className="px-4 py-2.5 rounded-full border border-black/10 text-xs font-medium text-[#111111] hover:bg-neutral-50 transition-colors flex items-center gap-1.5"
-                      >
-                        <ArrowLeft size={14} />
-                        <span>Back to Brief</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={handleProceedToStep3}
-                        className="btn-start-project"
-                        style={{ height: "46px" }}
-                      >
-                        <span>Continue to Step 3: Review</span>
-                        <span className="btn-arrow-circle" aria-hidden="true">
-                          <ArrowRight size={13} className="btn-arrow-icon primary" />
-                          <ArrowRight size={13} className="btn-arrow-icon clone" />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* STEP 3: REVIEW & CONFIRM */}
-                {currentStep === 3 && (
-                  <div className="space-y-6">
-                    <div>
-                      <h2 className="text-xl sm:text-2xl font-serif text-[#111111]">
-                        3. Final Review & Production Lock
-                      </h2>
-                      <p className="text-xs text-[#71717A] mt-1">
-                        Review your campaign specifications before locking into our creator queue.
-                      </p>
-                    </div>
-
-                    {/* Summary Blocks */}
-                    <div className="space-y-3 text-xs">
-                      <div className="p-4 rounded-2xl bg-neutral-50 border border-black/[0.06] flex items-center justify-between">
-                        <div>
-                          <span className="text-[10px] uppercase font-bold text-[#71717A] block">
-                            Brand & Category
-                          </span>
-                          <span className="font-semibold text-sm text-[#111111]">{brandName}</span>
-                          <span className="ml-2 capitalize px-2 py-0.5 rounded-full bg-white text-[10px] font-medium border border-black/10">
-                            {category.replace("-", " ")}
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setCurrentStep(1)}
-                          className="text-xs text-neutral-600 hover:text-black underline"
-                        >
-                          Edit
-                        </button>
-                      </div>
-
-                      <div className="p-4 rounded-2xl bg-neutral-50 border border-black/[0.06] flex items-center justify-between">
-                        <div>
-                          <span className="text-[10px] uppercase font-bold text-[#71717A] block">
-                            Formats & Duration
-                          </span>
-                          <span className="font-semibold text-sm text-[#111111]">
-                            {duration} Seconds · {formats.join(", ")}
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setCurrentStep(1)}
-                          className="text-xs text-neutral-600 hover:text-black underline"
-                        >
-                          Edit
-                        </button>
-                      </div>
-
-                      <div className="p-4 rounded-2xl bg-neutral-50 border border-black/[0.06] flex items-center justify-between">
-                        <div>
-                          <span className="text-[10px] uppercase font-bold text-[#71717A] block">
-                            Input Provided
-                          </span>
-                          <span className="font-semibold text-sm text-[#111111]">
-                            {scriptText ? "Custom Script" : ""}{" "}
-                            {productImages.length > 0 ? `· ${productImages.length} Photos` : ""}{" "}
-                            {driveLinks.length > 0 ? `· Drive Folder Linked` : ""}
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setCurrentStep(2)}
-                          className="text-xs text-neutral-600 hover:text-black underline"
-                        >
-                          Edit
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Checkbox Confirmations */}
-                    <div className="space-y-3 pt-2">
-                      <label className="flex items-start gap-3 text-xs text-[#111111] cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={rightsConfirmed}
-                          onChange={(e) => setRightsConfirmed(e.target.checked)}
-                          className="mt-0.5 rounded border-black/20 accent-[#111111] w-4 h-4 cursor-pointer"
                         />
-                        <span>
-                          I confirm that I own all trademarks, logos, and product assets provided, or have full commercial authorization to commission this video ad.
-                        </span>
-                      </label>
-
-                      <label className="flex items-start gap-3 text-xs text-[#111111] cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={termsAgreed}
-                          onChange={(e) => setTermsAgreed(e.target.checked)}
-                          className="mt-0.5 rounded border-black/20 accent-[#111111] w-4 h-4 cursor-pointer"
-                        />
-                        <span>
-                          I agree to production terms, creator commercial model release standards, and Meta ad compliance policies.
-                        </span>
-                      </label>
-                    </div>
-
-                    {/* Step 3 Submit */}
-                    <div className="pt-4 flex items-center justify-between">
-                      <button
-                        type="button"
-                        onClick={() => setCurrentStep(2)}
-                        className="px-4 py-2.5 rounded-full border border-black/10 text-xs font-medium text-[#111111] hover:bg-neutral-50 transition-colors flex items-center gap-1.5"
-                      >
-                        <ArrowLeft size={14} />
-                        <span>Back to Input</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={handleSubmitProject}
-                        disabled={isSubmitting || !rightsConfirmed || !termsAgreed}
-                        className="btn-start-project"
-                        style={{ height: "48px", padding: "0 28px" }}
-                      >
-                        <span>{isSubmitting ? "Locking Chamber..." : "Submit Project & Start Production ↗"}</span>
-                        <span className="btn-arrow-circle" aria-hidden="true">
-                          <ArrowRight size={13} className="btn-arrow-icon primary" />
-                          <ArrowRight size={13} className="btn-arrow-icon clone" />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Right Column: Sticky Summary Card (Desktop) */}
-              <div
-                style={{
-                  position: "sticky",
-                  top: "24px",
-                  background: "#FFFFFF",
-                  borderRadius: "28px",
-                  padding: "24px",
-                  border: "1px solid rgba(0,0,0,0.06)",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.03)",
-                }}
-                className="hidden lg:block space-y-4"
-              >
-                <div className="flex items-center justify-between pb-3 border-b border-black/[0.06]">
-                  <span className="text-[11px] uppercase font-bold tracking-wider text-[#71717A]">
-                    Live Brief Summary
-                  </span>
-                  {lastSavedTime && (
-                    <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-                      <Check size={11} strokeWidth={3} />
-                      <span>Draft saved {lastSavedTime}</span>
-                    </span>
-                  )}
-                </div>
-
-                <div className="space-y-3 text-xs">
-                  <div>
-                    <span className="text-[10px] uppercase font-semibold text-[#71717A]">Brand</span>
-                    <div className="font-bold text-[#111111] text-sm">
-                      {brandName || "Untitled Campaign"}
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="text-[10px] uppercase font-semibold text-[#71717A]">Category</span>
-                    <div className="font-semibold text-[#111111] capitalize">
-                      {category.replace("-", " ")}
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="text-[10px] uppercase font-semibold text-[#71717A]">Formats & Time</span>
-                    <div className="font-semibold text-[#111111]">
-                      {formats.join(", ")} · {duration}s target
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="text-[10px] uppercase font-semibold text-[#71717A]">Active Modes</span>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {selectedModes.map((m) => (
-                        <span
-                          key={m}
-                          className="px-2 py-0.5 rounded-full bg-neutral-100 text-[10px] font-medium text-[#111111]"
-                        >
-                          {m === "script" ? "Script" : m === "product_images" ? "Product Photos" : "Drive Link"}
-                        </span>
                       ))}
                     </div>
                   </div>
+
+                  {/* Section 03: Campaign Goal & Target Platform */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-xs font-mono text-accent uppercase tracking-wider">
+                      <span>03 / CAMPAIGN OBJECTIVE &amp; PLATFORM</span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Select
+                        label="Campaign Objective"
+                        value={goal}
+                        onChange={setGoal}
+                        options={GOAL_OPTIONS}
+                      />
+                      <Select
+                        label="Primary Platform"
+                        value={platform}
+                        onChange={setPlatform}
+                        options={PLATFORM_OPTIONS}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Section 04: Delivery Ratios (Visual Shapes) */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between text-xs font-mono text-accent uppercase tracking-wider">
+                      <span>04 / DELIVERY RATIOS (MULTI-SELECT)</span>
+                      <span className="text-text-muted font-sans">Multi-format master</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <ChoiceCard
+                        title="9:16 Vertical"
+                        description="Reels, TikTok, Shorts"
+                        ratioVisual="9:16"
+                        selected={formats.includes("9:16")}
+                        onClick={() => toggleFormat("9:16")}
+                      />
+                      <ChoiceCard
+                        title="4:5 Portrait"
+                        description="Meta In-Feed Ads"
+                        ratioVisual="4:5"
+                        selected={formats.includes("4:5")}
+                        onClick={() => toggleFormat("4:5")}
+                      />
+                      <ChoiceCard
+                        title="1:1 Square"
+                        description="Feed &amp; Catalog"
+                        ratioVisual="1:1"
+                        selected={formats.includes("1:1")}
+                        onClick={() => toggleFormat("1:1")}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Section 05: Target Duration */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between text-xs font-mono text-accent uppercase tracking-wider">
+                      <span>05 / TARGET VIDEO DURATION</span>
+                      <span className="text-text-muted font-sans font-mono">{duration}s target</span>
+                    </div>
+                    <SegmentedControl
+                      options={DURATION_OPTIONS}
+                      value={duration}
+                      onChange={(val) => setDuration(Number(val))}
+                    />
+                  </div>
+
+                  {/* Section 06: Real Human Creator Casting Preference */}
+                  <div className="p-6 rounded-2xl bg-surface-2/70 border border-border space-y-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-accent" />
+                        <span className="text-xs font-mono uppercase tracking-wider text-white">
+                          06 / REAL CREATOR CASTING
+                        </span>
+                      </div>
+                      <Badge variant="lime" className="text-[10px]">
+                        ✦ HUMAN-VERIFIED · NO SYNTHETIC FACES
+                      </Badge>
+                    </div>
+
+                    {/* Gender Chips */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono uppercase tracking-wider text-text-muted">
+                        Creator Gender Preference
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {GENDER_OPTIONS.map((g) => (
+                          <Chip
+                            key={g}
+                            label={g}
+                            selected={creatorGender === g}
+                            onClick={() => setCreatorGender(g)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Age Segmented */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono uppercase tracking-wider text-text-muted">
+                        Age Range
+                      </label>
+                      <SegmentedControl
+                        options={AGE_OPTIONS}
+                        value={creatorAge}
+                        onChange={setCreatorAge}
+                      />
+                    </div>
+
+                    {/* Look / Vibe Notes */}
+                    <Textarea
+                      label="Creator Vibe / Aesthetic Notes (Optional)"
+                      placeholder="e.g. Relatable everyday UGC creator, warm authentic smile, aesthetic bathroom counter setting..."
+                      value={creatorLookNotes}
+                      onChange={(e) => setCreatorLookNotes(e.target.value)}
+                      rows={2}
+                    />
+                  </div>
+
+                  {/* Error display */}
+                  {errorMsg && (
+                    <div className="p-4 rounded-xl bg-danger/10 border border-danger/30 text-danger text-sm flex items-center gap-3">
+                      <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                      <span>{errorMsg}</span>
+                    </div>
+                  )}
+
+                  {/* Bottom Action Bar */}
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <span className="text-xs text-text-muted font-mono hidden sm:inline">
+                      Step 1 of 3 · Brief Details
+                    </span>
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      onClick={handleProceedToStep2}
+                      className="w-full sm:w-auto ml-auto"
+                    >
+                      Continue to Input
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 2: INPUT */}
+              {currentStep === 2 && (
+                <div className="space-y-10">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-mono text-accent uppercase tracking-wider">
+                      <span>CHOOSE YOUR CREATIVE ASSET INPUTS</span>
+                    </div>
+                    <p className="text-sm text-text-muted">
+                      Select one or more ways to provide your material. You can write a script, drop product photos, or link a Google Drive folder.
+                    </p>
+                  </div>
+
+                  {/* 3 Large Multi-Select ChoiceCards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <ChoiceCard
+                      title="Script Ready"
+                      description="You already have a script or key talking points"
+                      icon={<FileText className="w-6 h-6 text-accent" />}
+                      selected={selectedModes.includes("script")}
+                      onClick={() => toggleMode("script")}
+                    />
+                    <ChoiceCard
+                      title="Product Pictures"
+                      description="Upload photos + let AI draft viral script hooks"
+                      icon={<ImageIcon className="w-6 h-6 text-violet-400" />}
+                      selected={selectedModes.includes("product_images")}
+                      onClick={() => toggleMode("product_images")}
+                    />
+                    <ChoiceCard
+                      title="Google Drive Link"
+                      description="Share a folder with raw footage or brand assets"
+                      icon={<FolderSymlink className="w-6 h-6 text-orange-400" />}
+                      selected={selectedModes.includes("drive_link")}
+                      onClick={() => toggleMode("drive_link")}
+                    />
+                  </div>
+
+                  {/* Mode 1: SCRIPT PANEL */}
+                  {selectedModes.includes("script") && (
+                    <div className="p-6 rounded-2xl bg-surface-2/60 border border-border space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <FileText className="w-4 h-4 text-accent" />
+                          <span className="text-xs font-mono uppercase tracking-wider text-white">
+                            Script &amp; Talking Points
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-mono text-text-muted">
+                            ~{estimatedSeconds}s / {duration}s target
+                          </span>
+                          {isTooLong && (
+                            <Badge variant="danger" className="text-[10px]">
+                              Script too long
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      <Textarea
+                        placeholder="Paste your hook, body talking points, and CTA here...&#10;&#10;[HOOK]: Stop scrolling if you want real results...&#10;[BODY]: Here is how Lumina works...&#10;[CTA]: Tap the link below to get 20% off!"
+                        value={scriptText}
+                        onChange={(e) => setScriptText(e.target.value)}
+                        rows={7}
+                        charCount={{ current: scriptText.length }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Mode 2: PRODUCT PICTURES & AI DRAFT */}
+                  {selectedModes.includes("product_images") && (
+                    <div className="p-6 rounded-2xl bg-surface-2/60 border border-border space-y-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <ImageIcon className="w-4 h-4 text-violet-400" />
+                          <span className="text-xs font-mono uppercase tracking-wider text-white">
+                            Product Photos &amp; AI Script Generator
+                          </span>
+                        </div>
+                        <Badge variant="violet" className="text-[10px]">
+                          AI-ASSISTED
+                        </Badge>
+                      </div>
+
+                      {/* Dropzone */}
+                      <Dropzone
+                        files={productFiles}
+                        onFilesAdded={handleFilesAdded}
+                        onFileRemoved={handleFileRemoved}
+                        onSetPrimary={handleSetPrimary}
+                      />
+
+                      {/* Product Name & USP */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <Input
+                          label="Product Name"
+                          placeholder="e.g. Lumina Clarifying Serum"
+                          value={productName}
+                          onChange={(e) => setProductName(e.target.value)}
+                        />
+                        <Input
+                          label="Key Benefit / USP"
+                          placeholder="e.g. Clear skin in 7 days without drying"
+                          value={productUsp}
+                          onChange={(e) => setProductUsp(e.target.value)}
+                        />
+                      </div>
+
+                      {/* AI Script Generator Button */}
+                      <div className="pt-2">
+                        <Button
+                          variant="secondary"
+                          onClick={handleGenerateAiScript}
+                          isLoading={isGeneratingAiScript}
+                          className="w-full sm:w-auto"
+                        >
+                          <Wand2 className="w-4 h-4 mr-2 text-accent" />
+                          <span>Draft High-Converting Script Angles with AI</span>
+                        </Button>
+                      </div>
+
+                      {/* Generated AI Script Options */}
+                      {aiScriptOptions.length > 0 && (
+                        <div className="space-y-3 pt-2">
+                          <div className="text-xs font-mono uppercase tracking-wider text-accent">
+                            ✦ AI Generated Hook Angles
+                          </div>
+                          <div className="grid grid-cols-1 gap-3">
+                            {aiScriptOptions.map((opt, i) => (
+                              <div
+                                key={i}
+                                className="p-4 rounded-xl bg-surface-3/80 border border-border space-y-2 hover:border-accent/40 transition-colors"
+                              >
+                                <div className="text-xs font-mono text-accent">Angle #{i + 1}</div>
+                                <div className="text-sm font-semibold text-white">&ldquo;{opt.hook}&rdquo;</div>
+                                <div className="text-xs text-text-muted">{opt.body}</div>
+                                <div className="pt-2 flex justify-end">
+                                  <Button
+                                    size="sm"
+                                    variant="primary"
+                                    onClick={() => handleApplyAiScript(opt)}
+                                  >
+                                    Apply this Script
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Mode 3: GOOGLE DRIVE LINK */}
+                  {selectedModes.includes("drive_link") && (
+                    <div className="p-6 rounded-2xl bg-surface-2/60 border border-border space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <FolderSymlink className="w-4 h-4 text-orange-400" />
+                          <span className="text-xs font-mono uppercase tracking-wider text-white">
+                            Google Drive Assets Folder
+                          </span>
+                        </div>
+                        <Badge variant="orange" className="text-[10px]">
+                          CLOUD SYNC
+                        </Badge>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Input
+                          placeholder="Paste link (drive.google.com/drive/folders/...)"
+                          value={driveInput}
+                          onChange={(e) => setDriveInput(e.target.value)}
+                          error={driveError}
+                        />
+                        <Button
+                          variant="secondary"
+                          onClick={handleAddDriveLink}
+                          className="sm:w-32 flex-shrink-0"
+                        >
+                          Add Link
+                        </Button>
+                      </div>
+
+                      {driveLinks.length > 0 && (
+                        <div className="space-y-2 pt-2">
+                          {driveLinks.map((dl, i) => (
+                            <div
+                              key={i}
+                              className="p-3 rounded-lg bg-surface-3 border border-border flex items-center justify-between text-xs font-mono"
+                            >
+                              <div className="flex items-center gap-2 text-white truncate max-w-md">
+                                <FolderSymlink className="w-4 h-4 text-accent flex-shrink-0" />
+                                <span className="truncate">{dl.url}</span>
+                              </div>
+                              <button
+                                onClick={() =>
+                                  setDriveLinks(driveLinks.filter((_, idx) => idx !== i))
+                                }
+                                className="text-text-muted hover:text-danger p-1"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <p className="text-xs text-text-muted flex items-center gap-1.5">
+                        <Info className="w-3.5 h-3.5 text-accent flex-shrink-0" />
+                        <span>Ensure the folder permission is set to <strong>&ldquo;Anyone with the link can view&rdquo;</strong></span>
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Error display */}
+                  {errorMsg && (
+                    <div className="p-4 rounded-xl bg-danger/10 border border-danger/30 text-danger text-sm flex items-center gap-3">
+                      <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                      <span>{errorMsg}</span>
+                    </div>
+                  )}
+
+                  {/* Bottom Action Bar */}
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setCurrentStep(1);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Back to Brief
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      onClick={handleProceedToStep3}
+                    >
+                      Continue to Review
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3: REVIEW & SUBMIT */}
+              {currentStep === 3 && (
+                <div className="space-y-8">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-mono text-accent uppercase tracking-wider">
+                      <span>REVIEW YOUR PRODUCTION BRIEF</span>
+                    </div>
+                    <p className="text-sm text-text-muted">
+                      Verify your project specifications before submitting. Once dispatched, our production director reviews your brief within 2 hours.
+                    </p>
+                  </div>
+
+                  {/* Summary Cards */}
+                  <div className="space-y-4">
+                    {/* Card 1: Brand & Campaign */}
+                    <div className="p-5 rounded-2xl bg-surface-2/60 border border-border space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-mono uppercase tracking-wider text-text-muted">
+                          Brand &amp; Campaign
+                        </span>
+                        <button
+                          onClick={() => setCurrentStep(1)}
+                          className="text-xs font-mono text-accent hover:underline"
+                        >
+                          Edit
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <div className="text-xs text-text-faint">Brand</div>
+                          <div className="font-semibold text-white">{brandName || "Untitled"}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-text-faint">Category</div>
+                          <div className="font-semibold text-white">{selectedCategoryObj.name}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-text-faint">Objective</div>
+                          <div className="font-semibold text-white">{goal}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-text-faint">Platform</div>
+                          <div className="font-semibold text-white">{platform}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Card 2: Creative & Creator Preference */}
+                    <div className="p-5 rounded-2xl bg-surface-2/60 border border-border space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-mono uppercase tracking-wider text-text-muted">
+                          Creator &amp; Specs
+                        </span>
+                        <button
+                          onClick={() => setCurrentStep(1)}
+                          className="text-xs font-mono text-accent hover:underline"
+                        >
+                          Edit
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <div className="text-xs text-text-faint">Duration</div>
+                          <div className="font-semibold text-white">{duration}s Master</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-text-faint">Ratios</div>
+                          <div className="font-semibold text-white">{formats.join(", ")}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-text-faint">Casting</div>
+                          <div className="font-semibold text-white">{creatorGender} ({creatorAge})</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-text-faint">Actor Type</div>
+                          <div className="font-semibold text-accent font-mono text-xs">Human-Verified</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Card 3: Inputs Provided */}
+                    <div className="p-5 rounded-2xl bg-surface-2/60 border border-border space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-mono uppercase tracking-wider text-text-muted">
+                          Inputs Provided
+                        </span>
+                        <button
+                          onClick={() => setCurrentStep(2)}
+                          className="text-xs font-mono text-accent hover:underline"
+                        >
+                          Edit
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedModes.includes("script") && (
+                          <Badge variant="lime">
+                            ✓ Script ({wordCount} words)
+                          </Badge>
+                        )}
+                        {selectedModes.includes("product_images") && (
+                          <Badge variant="violet">
+                            ✓ {productFiles.length} Product Photos
+                          </Badge>
+                        )}
+                        {selectedModes.includes("drive_link") && (
+                          <Badge variant="orange">
+                            ✓ {driveLinks.length} Drive Assets
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Rights and Terms Checkboxes */}
+                  <div className="p-6 rounded-2xl bg-surface-2/40 border border-border space-y-4">
+                    <label className="flex items-start gap-3 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={rightsConfirmed}
+                        onChange={(e) => setRightsConfirmed(e.target.checked)}
+                        className="mt-1 w-4 h-4 rounded border-border bg-surface-3 text-accent accent-accent focus:ring-accent"
+                      />
+                      <span className="text-xs sm:text-sm text-text-muted">
+                        I confirm ownership or commercial license for all uploaded brand assets, trademarks, and imagery.
+                      </span>
+                    </label>
+
+                    <label className="flex items-start gap-3 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={termsAgreed}
+                        onChange={(e) => setTermsAgreed(e.target.checked)}
+                        className="mt-1 w-4 h-4 rounded border-border bg-surface-3 text-accent accent-accent focus:ring-accent"
+                      />
+                      <span className="text-xs sm:text-sm text-text-muted">
+                        I agree to production terms: 48-hour first cut delivery, 1 included creator revision cycle, and full commercial usage rights.
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Error display */}
+                  {errorMsg && (
+                    <div className="p-4 rounded-xl bg-danger/10 border border-danger/30 text-danger text-sm flex items-center gap-3">
+                      <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                      <span>{errorMsg}</span>
+                    </div>
+                  )}
+
+                  {/* Bottom Action Bar */}
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setCurrentStep(2);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Back to Inputs
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      onClick={handleSubmitProject}
+                      isLoading={isSubmitting}
+                      disabled={!rightsConfirmed || !termsAgreed}
+                    >
+                      Submit Project &amp; Dispatch Creator ↗
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right 36% (4 Cols): Sticky Production Preview Panel */}
+            <div className="lg:col-span-4 sticky top-28 space-y-6">
+              {/* Phone Frame 9:16 Mockup */}
+              <div className="bg-surface/90 border border-border backdrop-blur-xl rounded-[32px] p-6 shadow-2xl space-y-6">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono uppercase tracking-wider text-text-muted">
+                    Live Production Preview
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                    <span className="text-[10px] font-mono text-accent">LIVE</span>
+                  </div>
                 </div>
 
-                {/* Pipeline Guarantee Pill */}
-                <div className="p-3 rounded-2xl bg-neutral-50 border border-black/[0.04] text-[11px] text-[#71717A] leading-relaxed">
-                  <div className="font-bold text-[#111111] flex items-center gap-1.5 mb-1">
-                    <ShieldCheck size={14} className="text-emerald-600" />
-                    <span>Human + AI Guarantee</span>
+                {/* The 9:16 Phone Device */}
+                <div className="relative aspect-[9/16] w-full max-w-[280px] mx-auto rounded-[32px] bg-black/90 border-4 border-surface-3 shadow-2xl overflow-hidden p-4 flex flex-col justify-between">
+                  {/* Background: uploaded primary image or ambient gradient */}
+                  {primaryImage ? (
+                    <div
+                      className="absolute inset-0 bg-cover bg-center opacity-60 transition-all duration-500 scale-105"
+                      style={{ backgroundImage: `url(${primaryImage.url})` }}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-b from-surface via-bg to-black opacity-80" />
+                  )}
+
+                  {/* Subtle inner dark gradient overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/60 pointer-events-none" />
+
+                  {/* Top Phone Elements */}
+                  <div className="relative z-10 flex items-center justify-between">
+                    <div className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[11px] font-medium text-white flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                      <span className="truncate max-w-[100px]">{brandName || "Brand Name"}</span>
+                    </div>
+                    <div className="px-2 py-0.5 rounded-full bg-white/10 backdrop-blur-md text-[10px] font-mono text-text-muted">
+                      {formats[0] || "9:16"}
+                    </div>
                   </div>
-                  Real creators shoot on camera. AI polishes kinetic subtitles and cutdowns. Zero synthetic avatars.
+
+                  {/* Middle Content */}
+                  <div className="relative z-10 text-center space-y-2 my-auto py-8">
+                    <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center mx-auto text-2xl shadow-lg">
+                      {selectedCategoryObj.icon}
+                    </div>
+                    <div className="text-xs font-semibold text-white tracking-wide uppercase font-mono">
+                      {selectedCategoryObj.name}
+                    </div>
+                    <div className="text-[11px] text-text-muted px-4 line-clamp-2">
+                      {scriptText ? `"${scriptText.slice(0, 60)}..."` : "Real human UGC video ad tailored for maximum conversion."}
+                    </div>
+                  </div>
+
+                  {/* Bottom Overlays */}
+                  <div className="relative z-10 space-y-2">
+                    <div className="flex items-center justify-between text-[10px] font-mono text-text-muted">
+                      <span>00:00</span>
+                      <span className="text-accent font-semibold">00:{duration < 10 ? `0${duration}` : duration}</span>
+                    </div>
+                    {/* Live Progress Bar */}
+                    <div className="w-full h-1 rounded-full bg-white/20 overflow-hidden">
+                      <div className="h-full bg-accent w-2/3 rounded-full animate-pulse" />
+                    </div>
+                    <div className="flex items-center justify-between pt-1 text-[10px] text-text-muted">
+                      <span className="flex items-center gap-1">
+                        <Users className="w-3 h-3 text-accent" />
+                        <span>Real Creator</span>
+                      </span>
+                      <span className="font-mono text-white/80">{goal.split(" ")[0]}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Key-Value Summary List */}
+                <div className="space-y-2.5 pt-2 border-t border-border text-xs">
+                  <div className="flex items-center justify-between text-text-muted">
+                    <span>Category</span>
+                    <span className="text-white font-medium">{selectedCategoryObj.name}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-text-muted">
+                    <span>Formats</span>
+                    <span className="text-white font-medium">{formats.join(", ")}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-text-muted">
+                    <span>Duration</span>
+                    <span className="text-white font-medium">{duration} seconds</span>
+                  </div>
+                  <div className="flex items-center justify-between text-text-muted">
+                    <span>Casting</span>
+                    <span className="text-white font-medium">{creatorGender}</span>
+                  </div>
+                </div>
+
+                {/* Draft saved status */}
+                <div className="pt-3 border-t border-border flex items-center justify-between text-[11px] font-mono text-text-faint">
+                  <div className="flex items-center gap-1.5 text-accent/80">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Draft autosaved</span>
+                  </div>
+                  <span>{lastSavedTime || "Active"}</span>
+                </div>
+
+                {/* Estimated Delivery Box */}
+                <div className="p-3 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-accent" />
+                    <span className="text-white font-medium">Estimated 1st Cut</span>
+                  </div>
+                  <span className="text-accent font-bold font-mono">~48 Hours</span>
                 </div>
               </div>
             </div>
-          </>
+          </div>
         )}
-
-        <CommandPalette isOpen={isCmdOpen} onClose={() => setIsCmdOpen(false)} />
-        <CookieConsent />
       </div>
+
+      {/* Command Palette Modal */}
+      <CommandPalette isOpen={isCmdOpen} onClose={() => setIsCmdOpen(false)} />
+
+      {/* Age Gate Modal for 18+ Categories */}
+      <AgeGateModal
+        isOpen={isAgeGateOpen}
+        onConfirm={() => setIsAgeGateOpen(false)}
+        onCancel={() => {
+          setIsAgeGateOpen(false);
+          setCategory("clothing-fashion");
+        }}
+      />
+
+      {/* Cookie Consent */}
+      <CookieConsent />
     </div>
   );
 }
 
-export default function StudioWizardPage() {
+export default function StudioPage() {
   return (
     <Suspense
       fallback={
-        <div style={{ padding: "60px", textAlign: "center" }}>
-          Loading Creative Studio Chamber...
+        <div className="min-h-screen bg-bg flex items-center justify-center text-text-muted">
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
         </div>
       }
     >

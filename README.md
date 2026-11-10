@@ -1,59 +1,75 @@
-# infimindss°
-> "A clearer mind for a brighter you."
+# infimindss° — Human + AI Brand Video Studio
+> "Real humans. AI-fast. Zero robotic-looking videos."
 
-A pixel-perfect, high-fidelity landing page for **infimindss°**, replicating the exact design, typography, layout, glassmorphism, 3D rotating halo orbit, and micro-interactions.
-
----
-
-## 🎨 Visual & Typography Stack
-
-- **Headline Font**: `Instrument Serif` (Google Fonts)
-  - Regular 400 for `"A clearer mind"`
-  - Italic 400 for `"*for a brighter you.*"` (characterized by calligraphic single-story *g*, graceful descenders, teardrop terminals)
-- **UI & Body Font**: `Plus Jakarta Sans` (Google Fonts)
-  - Geometric, clean weights from 400 to 800 for the `infimindss°` logo, pill navigation, cards, and buttons.
-- **Color Palette**:
-  - Warm serene canvas: `#FAF8F5`
-  - Deep obsidian text: `#111111` / `#18181B`
-  - Muted zinc subtext: `#71717A` / `#8E8E93`
-  - Halo accents: Lime Green (`#84CC16`), Purple (`#A855F7`), Vibrant Orange (`#F97316`), Teal (`#10B981`), Rose (`#F43F5E`)
-  - Ambient glow presentation container: `box-shadow: 0 0 65px -10px rgba(168, 192, 255, 0.42)`
+A cinematic, high-performance web platform for **infimindss°** — delivering real-human-style marketing video ads, viral Instagram Reels, and Meta-ready creative assets with 48-hour turnarounds.
 
 ---
 
-## 🧩 Key Components
+## ⚡ Design System Architecture Rule (MANDATORY)
 
-1. **Header Navigation**:
-   - Brand logo: `infimindss°`
-   - Floating frosted pill navigation (`Features`, `How it works`, active `Integrations`, `Pricing`)
-   - Black pill action button: `Get the app ↗`
-2. **Hero Centerpiece & 3D Rotating Orbit**:
-   - Contemplative portrait with upward gaze
-   - 3D orbiting halo of interactive frosted glass cards (`Focus`, `Ideas`, `Plan`, `Habits`, `Reflect`, mountain peak landscape, and celestial cosmos moon sphere)
-   - Real 3D depth occlusion (cards pass in front of and behind the head)
-   - Drag & swipe gestures to spin the orbit
-   - Smart hover slowdown for seamless reading
-3. **Floating Connected Cards**:
-   - Left card: Voice equalizer soundwave icon, `"Turn thoughts into progress."`, `"Capture, organise and do more."`
-   - Right card: Team avatar stack + `+` badge, `"Ideas, anytime, anywhere."`, `"Sync across all your devices."`
-   - Smooth SVG spline curves dynamically connecting the cards to the central halo, complete with traveling pulse energy dots.
-4. **Rotating Stamp**:
-   - SVG text path continuously rotating: `"A MORE FOCUSED YOU • EVERYDAY •"` around a central 4-pointed star.
-5. **Bottom Badges**:
-   - Bottom-left: `"Trusted by 50,000+ creators worldwide."` with 4 creator avatars + `+`.
-   - Bottom-right: 4-pointed star divider with `"Less chaos. / More clarity."`
-6. **Interactive Features**:
-   - Subtle 3D mouse parallax on cards and centerpiece.
-   - Interactive watch video modal dialog.
-   - Fluid responsive layout down to 360px mobile view with zero layout overflow.
+> **CRITICAL RULE**: To maintain visual consistency and prevent raw browser default rendering:
+> **All UI across the application MUST be built using the design-system components in `src/components/ui/*`.**
+> 
+> Never render raw, unstyled HTML controls like `<select>`, `<input>`, `<button>`, `<textarea>`, or native checkboxes. Always import from `@/components/ui`:
+> `Button`, `Badge`, `Input`, `Textarea`, `Select`, `Chip`, `ChoiceCard`, `SegmentedControl`, `Stepper`, `Dropzone`, `BentoTile`, `VideoTile`.
+
+Full documentation is available in [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md).
+
+---
+
+## 🎨 Visual Identity: "Cinematic Editorial"
+
+- **Canvas & Surfaces**:
+  - Film-set page background: `--bg: #09090B`
+  - Elevated containers: `--bg-elevated: #0F0F12`
+  - Cards & Glass: `--surface: #141418`, `--surface-2: #1B1B21` with `backdrop-filter: blur(20px)`
+- **Accent Palette**:
+  - Primary Action / Highlights: `--accent: #D7FF3D` (**Electric Lime**)
+  - AI Moments & Creative Badges: `--accent-2: #8B6CFF` (**Electric Violet**)
+  - Viral / Cloud Alerts: `--accent-3: #FF6B3D` (**Warm Orange**)
+- **Typography**:
+  - Display / Headings: `Plus Jakarta Sans` 700–800, tracking `-0.035em`
+  - Signature Accent Words: `Instrument Serif` *Italic*
+  - Body & UI: `Plus Jakarta Sans` 400–500
+  - Micro-Labels & Badges: `JetBrains Mono` 11px uppercase
+- **Texture**:
+  - Fixed SVG film-grain noise overlay (3–4% opacity)
+  - Ambient radial glow gradients behind key viewports
+
+---
+
+## 📹 Video Asset Specifications
+
+For custom videos placed in `public/media/` and registered in `src/lib/media.ts`:
+
+- **Container**: MP4 (`.mp4`) + optional WebM (`.webm`)
+- **Video Codec**: H.264
+- **Resolution**: `720 × 1280` px (9:16 vertical portrait)
+- **Duration**: 4–8 second seamless loops
+- **File Size**: **≤ 3 MB** per clip
+- **Playback**: `muted loop playsinline preload="metadata"`
+- **Hover Play**: Desktop plays on pointer hover; mobile autoplays when ≥60% in view.
 
 ---
 
 ## 🚀 Running Locally
 
 ```bash
-# Start the local server
-python3 -m http.server 8080
+# 1. Install dependencies
+pnpm install
+
+# 2. Start development server
+pnpm dev
+
+# 3. Production build & test
+pnpm build
+pnpm start
 ```
 
-Open [http://localhost:8080](http://localhost:8080) in your browser.
+Visit [http://localhost:3000](http://localhost:3000) (or whichever port is assigned).
+
+---
+
+## 🛠️ Visual QA Route
+
+Navigate to `/_kit` in development to inspect all design system components across their hover, selected, error, and disabled states.

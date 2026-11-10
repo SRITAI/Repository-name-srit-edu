@@ -2,7 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, ArrowUpRight, Menu, X, Sparkles, FolderGit2 } from "lucide-react";
+import { Search, Menu, X, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { cn } from "@/lib/utils";
 
 interface NavbarProps {
   activeRoute?: "home" | "explore" | "studio" | "projects";
@@ -16,27 +19,18 @@ export default function Navbar({ activeRoute = "home", onOpenSearch }: NavbarPro
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   useEffect(() => {
-    // Detect OS for shortcut hint (Mac: ⌘K, Windows/Linux: Ctrl K)
     if (typeof window !== "undefined") {
       const isMac = navigator.userAgent.toUpperCase().indexOf("MAC") >= 0;
-      setPlatformKey(isMac ? "⌘ K" : "Ctrl K");
+      setPlatformKey(isMac ? "⌘K" : "Ctrl K");
 
-      // Check if user has visited studio before
       try {
         const visited = localStorage.getItem("infimindss_visited_studio");
-        if (!visited) {
-          setHasVisitedStudio(false);
-        }
+        if (!visited) setHasVisitedStudio(false);
       } catch {}
     }
 
-    // Scroll listener for sticky navbar blur
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 20);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -50,277 +44,185 @@ export default function Navbar({ activeRoute = "home", onOpenSearch }: NavbarPro
     } catch {}
   };
 
+  const navLinks = [
+    { label: "Home", href: "/", id: "home" },
+    { label: "How it works", href: "/#how-it-works", id: "how-it-works" },
+    { label: "Explore", href: "/explore", id: "explore" },
+    { label: "Studio", href: "/studio", id: "studio", isStudio: true },
+    { label: "Pricing", href: "/#pricing", id: "pricing" },
+  ];
+
   return (
     <>
-      <header className={`header ${isScrolled ? "header-sticky" : ""}`}>
-        {/* Brand Logo */}
-        <Link href="/" className="brand-logo" aria-label="infimindss Home">
-          infimindss<span className="logo-degree">°</span>
-        </Link>
-
-        {/* Center Pill Navigation (Desktop) */}
-        <nav className="nav-pill hidden-mobile" aria-label="Main Navigation">
-          <Link href="/" className={`nav-item ${activeRoute === "home" ? "active" : ""}`}>
-            Home
-          </Link>
-          <a href="/#how-it-works" className="nav-item">
-            How it works
-          </a>
-          <Link href="/explore" className={`nav-item ${activeRoute === "explore" ? "active" : ""}`}>
-            Explore
-          </Link>
+      <header
+        className={cn(
+          "sticky top-4 z-40 mx-auto w-full max-w-[1100px] transition-all duration-300 px-4 sm:px-6"
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center justify-between px-4 sm:px-6 py-2.5 rounded-full transition-all duration-300",
+            "bg-surface/70 backdrop-blur-2xl border border-border",
+            isScrolled
+              ? "shadow-[0_16px_40px_-12px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.06)] bg-surface/90"
+              : "shadow-[0_8px_24px_-8px_rgba(0,0,0,0.5)]"
+          )}
+        >
+          {/* Brand Wordmark with signature degree */}
           <Link
-            href="/studio"
-            onClick={handleStudioClick}
-            className={`nav-item ${activeRoute === "studio" ? "active" : ""}`}
-            style={{ position: "relative" }}
+            href="/"
+            className="flex items-center gap-1 text-base sm:text-lg font-bold font-sans tracking-tight text-text hover:text-white transition-colors"
           >
-            <span>Studio</span>
-            {!hasVisitedStudio && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-4px",
-                  right: "-2px",
-                  background: "#10B981",
-                  color: "#FFFFFF",
-                  fontSize: "0.58rem",
-                  fontWeight: 700,
-                  padding: "1px 5px",
-                  borderRadius: "9999px",
-                  lineHeight: 1.2,
-                  boxShadow: "0 2px 6px rgba(16, 185, 129, 0.4)",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "2px",
-                }}
-              >
-                ✦ New
-              </span>
-            )}
-          </Link>
-          <a href="/#pricing" className="nav-item">
-            Pricing
-          </a>
-        </nav>
-
-        {/* Right Action Items */}
-        <div className="header-right" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {/* Search Button (Task B2) */}
-          <button
-            type="button"
-            className="btn-search-pill"
-            onClick={onOpenSearch}
-            title={`Search (${platformKey}) or press /`}
-            aria-label="Open command search"
-          >
-            <Search className="search-icon" size={16} />
-            <span className="search-btn-label hidden-mobile" style={{ fontSize: "0.85rem", fontWeight: 500 }}>
-              Search
-            </span>
-            <span className="search-kbd-chip hidden-mobile">{platformKey}</span>
-          </button>
-
-          {/* Start a project ↗ Button (Task B1) */}
-          <Link
-            href="/studio"
-            onClick={handleStudioClick}
-            className="btn-start-project hidden-mobile"
-            aria-label="Start a project in Studio"
-          >
-            <span>Start a project</span>
-            <span className="btn-arrow-circle" aria-hidden="true">
-              <ArrowUpRight size={13} className="btn-arrow-icon primary" />
-              <ArrowUpRight size={13} className="btn-arrow-icon clone" />
-            </span>
+            <span>infimindss</span>
+            <span className="text-accent font-serif text-sm -mt-2">°</span>
           </Link>
 
-          {/* Mobile Hamburger Toggle */}
-          <button
-            type="button"
-            className="mobile-hamburger-btn mobile-only"
-            onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
-            aria-label={mobileDrawerOpen ? "Close navigation menu" : "Open navigation menu"}
-          >
-            {mobileDrawerOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {/* Desktop Center Navigation Links */}
+          <nav className="hidden md:flex items-center gap-1 p-1 rounded-full bg-surface-2/60 border border-border/60">
+            {navLinks.map((link) => {
+              const isActive = activeRoute === link.id;
+              return (
+                <Link
+                  key={link.id}
+                  href={link.href}
+                  onClick={link.isStudio ? handleStudioClick : undefined}
+                  className={cn(
+                    "relative px-4 py-1.5 rounded-full text-xs font-sans font-medium transition-all duration-200 select-none",
+                    isActive
+                      ? "text-accent bg-surface-3 font-semibold shadow-sm border border-border"
+                      : "text-text-muted hover:text-text hover:bg-surface-3/50"
+                  )}
+                >
+                  <span>{link.label}</span>
+                  {link.isStudio && !hasVisitedStudio && (
+                    <span className="ml-1.5 px-1.5 py-0.2 rounded-full bg-accent text-accent-ink text-[9px] font-mono font-bold tracking-tight">
+                      ✦ NEW
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Right Action Items */}
+          <div className="flex items-center gap-2.5">
+            {/* Search Pill Button */}
+            <button
+              type="button"
+              onClick={onOpenSearch}
+              className={cn(
+                "h-10 px-3.5 rounded-full bg-surface-2/80 border border-border hover:border-border-strong hover:bg-surface-3",
+                "text-text-muted hover:text-text transition-all duration-200 flex items-center gap-2 text-xs font-sans",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              )}
+              title={`Search (${platformKey}) or press /`}
+            >
+              <Search size={15} className="text-text-muted group-hover:text-accent transition-colors" />
+              <span className="hidden sm:inline font-medium">Search</span>
+              <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-surface-3 text-[10px] font-mono text-text-faint border border-border">
+                {platformKey}
+              </kbd>
+            </button>
+
+            {/* Start a project primary lime CTA */}
+            <Button
+              href="/studio"
+              variant="primary"
+              size="sm"
+              withArrow
+              className="hidden sm:inline-flex"
+            >
+              Start a project
+            </Button>
+
+            {/* Mobile Hamburger Menu Toggle */}
+            <button
+              type="button"
+              onClick={() => setMobileDrawerOpen(true)}
+              className="md:hidden w-10 h-10 rounded-full bg-surface-2 border border-border flex items-center justify-center text-text hover:text-white"
+              aria-label="Open navigation drawer"
+            >
+              <Menu size={18} />
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Mobile Drawer Slide-over */}
+      {/* Mobile Drawer (Full screen slide-over) */}
       {mobileDrawerOpen && (
         <div
-          className="mobile-drawer-backdrop"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200 md:hidden flex flex-col justify-between p-6"
           onClick={() => setMobileDrawerOpen(false)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.5)",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            zIndex: 999,
-          }}
         >
-          <div
-            className="mobile-drawer-content"
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              bottom: 0,
-              width: "82%",
-              maxWidth: "340px",
-              background: "#FAF9F6",
-              padding: "24px",
-              display: "flex",
-              flexDirection: "column",
-              boxShadow: "-10px 0 30px rgba(0,0,0,0.2)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "28px" }}>
-              <span className="brand-logo" style={{ fontSize: "1.2rem" }}>
-                infimindss<span className="logo-degree">°</span>
-              </span>
+          <div className="space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-border">
+              <Link href="/" className="text-xl font-bold font-sans text-text">
+                infimindss<span className="text-accent font-serif">°</span>
+              </Link>
               <button
                 type="button"
                 onClick={() => setMobileDrawerOpen(false)}
-                style={{ background: "none", border: "none", padding: "6px", cursor: "pointer", color: "#111111" }}
+                className="w-10 h-10 rounded-full bg-surface-2 border border-border flex items-center justify-center text-text"
+                aria-label="Close menu"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
-            {/* Mobile Search Button */}
+            {/* Search Button in Mobile Menu */}
             <button
               type="button"
-              className="btn-search-pill"
               onClick={() => {
                 setMobileDrawerOpen(false);
                 onOpenSearch();
               }}
-              style={{ width: "100%", justifyContent: "space-between", marginBottom: "24px" }}
+              className="w-full h-12 px-4 rounded-2xl bg-surface-2 border border-border text-left flex items-center justify-between text-sm text-text-muted"
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Search size={16} color="#71717A" />
-                <span style={{ fontSize: "0.85rem", color: "#71717A" }}>Search reels, ads, categories...</span>
+              <div className="flex items-center gap-2.5">
+                <Search size={16} className="text-accent" />
+                <span>Search categories, reels, ads...</span>
               </div>
-              <span className="search-kbd-chip">{platformKey}</span>
+              <kbd className="px-2 py-0.5 rounded bg-surface-3 text-xs font-mono">{platformKey}</kbd>
             </button>
 
-            {/* Mobile Nav Links */}
-            <nav style={{ display: "flex", flexDirection: "column", gap: "12px", flex: 1 }}>
-              <Link
-                href="/"
-                onClick={() => setMobileDrawerOpen(false)}
-                style={{
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  color: "#111111",
-                  textDecoration: "none",
-                  padding: "8px 0",
-                  borderBottom: "1px solid rgba(0,0,0,0.05)",
-                }}
-              >
-                Home
-              </Link>
-              <Link
-                href="/explore"
-                onClick={() => setMobileDrawerOpen(false)}
-                style={{
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  color: "#111111",
-                  textDecoration: "none",
-                  padding: "8px 0",
-                  borderBottom: "1px solid rgba(0,0,0,0.05)",
-                }}
-              >
-                Explore Inspiration Hub
-              </Link>
-              <Link
-                href="/studio"
-                onClick={() => {
-                  handleStudioClick();
-                  setMobileDrawerOpen(false);
-                }}
-                style={{
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  color: "#111111",
-                  textDecoration: "none",
-                  padding: "8px 0",
-                  borderBottom: "1px solid rgba(0,0,0,0.05)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>Studio Chamber</span>
-                <span style={{ background: "#10B981", color: "#FFF", fontSize: "0.65rem", padding: "2px 8px", borderRadius: "999px" }}>
-                  ✦ New
-                </span>
-              </Link>
-              <Link
-                href="/studio/projects"
-                onClick={() => setMobileDrawerOpen(false)}
-                style={{
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  color: "#111111",
-                  textDecoration: "none",
-                  padding: "8px 0",
-                  borderBottom: "1px solid rgba(0,0,0,0.05)",
-                }}
-              >
-                My Projects
-              </Link>
-              <a
-                href="/#how-it-works"
-                onClick={() => setMobileDrawerOpen(false)}
-                style={{
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  color: "#71717A",
-                  textDecoration: "none",
-                  padding: "8px 0",
-                }}
-              >
-                How it works
-              </a>
-              <a
-                href="/#pricing"
-                onClick={() => setMobileDrawerOpen(false)}
-                style={{
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  color: "#71717A",
-                  textDecoration: "none",
-                  padding: "8px 0",
-                }}
-              >
-                Pricing
-              </a>
-            </nav>
-
-            {/* Mobile Bottom CTA */}
-            <div style={{ paddingTop: "20px" }}>
-              <Link
-                href="/studio"
-                onClick={() => {
-                  handleStudioClick();
-                  setMobileDrawerOpen(false);
-                }}
-                className="btn-start-project"
-                style={{ width: "100%", justifyContent: "center" }}
-              >
-                <span>Start a project free</span>
-                <span className="btn-arrow-circle" aria-hidden="true">
-                  <ArrowUpRight size={13} className="btn-arrow-icon primary" />
-                  <ArrowUpRight size={13} className="btn-arrow-icon clone" />
-                </span>
-              </Link>
+            {/* Navigation Links */}
+            <div className="space-y-2 pt-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.id}
+                  href={link.href}
+                  onClick={() => {
+                    if (link.isStudio) handleStudioClick();
+                    setMobileDrawerOpen(false);
+                  }}
+                  className="block px-4 py-3 rounded-2xl text-lg font-semibold text-text hover:text-accent hover:bg-surface-2 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <span>{link.label}</span>
+                    {link.isStudio && !hasVisitedStudio && (
+                      <Badge variant="lime">✦ NEW</Badge>
+                    )}
+                  </div>
+                </Link>
+              ))}
             </div>
+          </div>
+
+          {/* Drawer Bottom CTA */}
+          <div className="pt-6 border-t border-border space-y-3">
+            <Button
+              href="/studio"
+              variant="primary"
+              size="lg"
+              withArrow
+              className="w-full"
+              onClick={() => setMobileDrawerOpen(false)}
+            >
+              Start a project ↗
+            </Button>
+            <p className="text-center text-[11px] text-text-faint font-mono">
+              Real humans on camera • AI-fast delivery • 0 robotic faces
+            </p>
           </div>
         </div>
       )}

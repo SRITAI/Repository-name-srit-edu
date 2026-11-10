@@ -6,6 +6,14 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  async rewrites() {
+    return [
+      {
+        source: "/_kit",
+        destination: "/kit",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
