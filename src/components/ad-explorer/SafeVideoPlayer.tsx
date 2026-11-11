@@ -12,8 +12,11 @@ import {
   ChevronRight,
   Maximize2,
   FileVideo,
+  Loader2,
+  RotateCcw,
 } from "lucide-react";
 import { parseVideoMediaUrl, ParsedMediaEmbed } from "@/lib/media/video-embed";
+import { isMetaAdLibraryUrl } from "@/lib/validation/ad-listing";
 import { PlatformIcon } from "./PlatformIcon";
 import { AdPlatform, AdMediaItem } from "@/lib/supabase/types";
 
@@ -86,23 +89,57 @@ export function SafeVideoPlayer({
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [videoError, setVideoError] = useState<string | null>(null);
+  const [isVideoBuffering, setIsVideoBuffering] = useState(false);
 
-  // Reset play state when switching items
+  // Reset play state and errors when switching items
   useEffect(() => {
     setIsPlaying(false);
     setImgError(false);
+    setVideoError(null);
+    setIsVideoBuffering(false);
   }, [activeIndex]);
 
   const activeItem = items[activeIndex] || items[0];
-  const activeMediaUrl = activeItem?.media_url || "";
+  const rawMediaUrl = activeItem?.media_url || "";
   const activeThumbnail = activeItem?.thumbnail_url || previewImagePath || undefined;
 
+  // Intelligently resolve the true playable URL:
+  // 1. If active item has metadata.storage_path and rawMediaUrl is a Meta link or not a direct file,
+  //    reconstruct the direct Supabase Storage public URL.
+  const storagePath = activeItem?.metadata?.storage_path;
+  const isDirectFile =
+    rawMediaUrl.endsWith(".mp4") ||
+    rawMediaUrl.endsWith(".webm") ||
+    rawMediaUrl.endsWith(".mov");
+  const isRawMetaUrl = isMetaAdLibraryUrl(rawMediaUrl);
+
+  let activeMediaUrl = rawMediaUrl;
+  if (storagePath && (!isDirectFile || isRawMetaUrl)) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://phjtyfqmswarbeuuybnl.supabase.co";
+    activeMediaUrl = `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/ad-previews/${storagePath}`;
+  } else if (isRawMetaUrl && mediaUrl && !isMetaAdLibraryUrl(mediaUrl)) {
+    // If listing has a valid media_url, fallback to it
+    activeMediaUrl = mediaUrl;
+  }
+
   // Parse active item media URL using host allowlist
-  const embedInfo: ParsedMediaEmbed = parseVideoMediaUrl(activeMediaUrl || null);
+  const isMetaLib = isMetaAdLibraryUrl(activeMediaUrl);
+  const embedInfo: ParsedMediaEmbed = parseVideoMediaUrl(isMetaLib ? null : activeMediaUrl || null);
 
   // Robust mutually-exclusive media mode resolution
-  const isEmbed = embedInfo.canEmbed && !embedInfo.isDirectVideo;
-  const isHostedVideo = !isEmbed && (embedInfo.isDirectVideo || (activeItem.media_type === "hosted_video" && !activeMediaUrl.match(/\.(jpg|jpeg|png|webp|gif|svg)($|\?)/i)));
+  // Meta Ad Library pages can NEVER be embedded or streamed as direct video!
+  const isEmbed = !isMetaLib && embedInfo.canEmbed && !embedInfo.isDirectVideo;
+  const isHostedVideo =
+    !isMetaLib &&
+    !isEmbed &&
+    (embedInfo.isDirectVideo ||
+      activeMediaUrl.endsWith(".mp4") ||
+      activeMediaUrl.endsWith(".webm") ||
+      activeMediaUrl.endsWith(".mov") ||
+      (activeItem.media_type === "hosted_video" &&
+        !activeMediaUrl.match(/\.(jpg|jpeg|png|webp|gif|svg)($|\?)/i) &&
+        !isMetaLib));
   const isImage = !isEmbed && !isHostedVideo && (activeItem.media_type === "image" || Boolean(activeMediaUrl.match(/\.(jpg|jpeg|png|webp|gif|svg)($|\?)/i)));
   const isSourceLink = !isEmbed && !isHostedVideo && !isImage;
 
@@ -182,18 +219,74 @@ export function SafeVideoPlayer({
       <div className="relative overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl">
         {/* CASE 1: Hosted HTML5 Video Player */}
         {isHostedVideo && (
-          <div className={`relative w-full ${containerAspect} bg-black flex items-center justify-center`}>
-            <video
-              src={embedInfo.embedUrl || activeMediaUrl}
-              controls
-              playsInline
-              preload="metadata"
-              poster={activeThumbnail}
-              aria-label={`${brandName} - ${title} ad video`}
-              className="w-full h-full object-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            >
-              Your browser does not support HTML5 video playback. Please view the original source.
-            </video>
+          <div className={`relative w-full ${containerAspect} bg-black flex items-center justify-center overflow-hidden`}>
+            {videoError ? (
+              <div className="p-6 text-center space-y-3 max-w-md">
+                <div className="w-12 h-12 mx-auto rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+                  <AlertCircle className="w-6 h-6" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-sm font-semibold text-white">Video Playback Notice</h4>
+                  <p className="text-xs text-text-muted">
+                    {videoError}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                  <a
+                    href={activeMediaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-1.5 rounded-full bg-accent text-accent-ink text-xs font-bold hover:brightness-110 flex items-center gap-1.5 shadow"
+                  >
+                    <span>Open Direct Video Stream</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setVideoError(null)}
+                    className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-mono flex items-center gap-1 transition-colors"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Retry</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <video
+                  key={activeMediaUrl}
+                  src={embedInfo.embedUrl || activeMediaUrl}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  poster={activeThumbnail}
+                  aria-label={`${brandName} - ${title} ad video`}
+                  onWaiting={() => setIsVideoBuffering(true)}
+                  onPlaying={() => setIsVideoBuffering(false)}
+                  onCanPlay={() => setIsVideoBuffering(false)}
+                  onError={(e) => {
+                    const err = e.currentTarget.error;
+                    let msg = "The browser cannot stream this video file.";
+                    if (err?.code === 4) {
+                      msg = "Video format not supported or media file could not be loaded.";
+                    } else if (err?.code === 2) {
+                      msg = "Network interruption prevented video playback.";
+                    }
+                    setVideoError(msg);
+                  }}
+                  className="w-full h-full object-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  Your browser does not support HTML5 video playback. Please view the original source.
+                </video>
+
+                {isVideoBuffering && (
+                  <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-md border border-white/15 text-[10px] font-mono text-accent flex items-center gap-1.5 pointer-events-none">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    <span>Buffering...</span>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         )}
 

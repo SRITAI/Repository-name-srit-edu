@@ -656,14 +656,27 @@ export default function AdminAdExplorerPage() {
   const handleMoveMetaAdLibToSource = (metaUrl: string, itemIdx?: number) => {
     setSourceUrl(metaUrl);
     setMediaRightsStatus("platform_link_only");
-    if (typeof itemIdx === "number") {
-      handleRemoveMediaItem(itemIdx);
+    if (typeof itemIdx === "number" && mediaItems[itemIdx]) {
+      const item = mediaItems[itemIdx];
+      if (item.metadata?.storage_path) {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://phjtyfqmswarbeuuybnl.supabase.co";
+        const restoredUrl = `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/ad-previews/${item.metadata.storage_path}`;
+        handleUpdateMediaItem(itemIdx, { media_url: restoredUrl, media_type: "hosted_video" });
+        setSuccessMsg(
+          "Moved Meta Ad Library link to Official Source field and restored your uploaded video file stream."
+        );
+      } else {
+        handleRemoveMediaItem(itemIdx);
+        setSuccessMsg(
+          "Transferred Meta Ad Library link to Official Source URL field. Meta Ad Library pages cannot be played inline due to Meta security policy."
+        );
+      }
     } else {
       setMediaUrl("");
+      setSuccessMsg(
+        "Transferred Meta Ad Library link to Official Source URL field. Meta Ad Library pages cannot be played inline due to Meta security policy."
+      );
     }
-    setSuccessMsg(
-      "Transferred Meta Ad Library link to Official Source URL field. Meta Ad Library pages cannot be played inline due to Meta security policy."
-    );
     setTimeout(() => setSuccessMsg(null), 5000);
   };
 
@@ -1471,6 +1484,31 @@ export default function AdminAdExplorerPage() {
                             </div>
 
                             <div className="sm:col-span-2">
+                              {item.metadata?.storage_path && (
+                                <div className="flex items-center justify-between px-2.5 py-1 rounded bg-[#C8FF00]/10 border border-[#C8FF00]/30 text-[11px] font-mono text-[#C8FF00] mb-2">
+                                  <div className="flex items-center gap-1.5 truncate mr-2">
+                                    <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                                    <span className="truncate">
+                                      Storage: <strong>{item.metadata.original_filename || "Uploaded File"}</strong> ({formatBytes(item.metadata.file_size_bytes || 0)})
+                                    </span>
+                                  </div>
+                                  {item.media_url !== `${(process.env.NEXT_PUBLIC_SUPABASE_URL || "https://phjtyfqmswarbeuuybnl.supabase.co").replace(/\/$/, "")}/storage/v1/object/public/ad-previews/${item.metadata.storage_path}` && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://phjtyfqmswarbeuuybnl.supabase.co";
+                                        handleUpdateMediaItem(idx, {
+                                          media_url: `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/ad-previews/${item.metadata?.storage_path}`,
+                                        });
+                                      }}
+                                      className="text-[10px] underline hover:text-white flex-shrink-0"
+                                    >
+                                      Restore video URL
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+
                               <div className="flex items-center justify-between mb-1">
                                 <label className="block text-[11px] font-mono text-neutral-400">
                                   Media URL / Stream Link

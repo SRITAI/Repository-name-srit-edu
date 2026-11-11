@@ -176,17 +176,33 @@ export function AdCard({ ad, onInspect }: AdCardProps) {
           <span>Reviewed: {formattedDate}</span>
         </div>
 
-        {/* Direct Link to Official Library */}
-        <a
-          href={ad.source_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-xs font-mono text-text-muted hover:text-white transition-colors"
-          title={`View on official ${platformConfig.libraryName}`}
-        >
-          <span>View on {platformConfig.shortName}</span>
-          <ExternalLink className="w-3 h-3" />
-        </a>
+        {/* Actions: Make Video in Studio + Official Source */}
+        <div className="flex items-center gap-2.5">
+          <Link
+            href={`/studio?category=${ad.category}&ref=${ad.id}&brand=${encodeURIComponent(
+              ad.brand_name
+            )}&title=${encodeURIComponent(ad.title)}`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-[11px] font-mono font-bold text-accent hover:underline flex items-center gap-1 transition-colors"
+          >
+            <Sparkles className="w-3 h-3" />
+            <span>Make Video ↗</span>
+          </Link>
+
+          <span className="text-border">|</span>
+
+          <a
+            href={ad.source_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-xs font-mono text-text-muted hover:text-white transition-colors"
+            title={`View on official ${platformConfig.libraryName}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span>View Source</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>
       </div>
     </div>
   );

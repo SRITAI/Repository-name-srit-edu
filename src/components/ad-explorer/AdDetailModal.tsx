@@ -13,6 +13,10 @@ import {
   Info,
   CheckCircle2,
   Share2,
+  Wand2,
+  Film,
+  Video,
+  ArrowRight,
 } from "lucide-react";
 import { AdListing } from "@/lib/supabase/types";
 import { PLATFORMS_CONFIG } from "@/lib/data/ad-explorer-seed";
@@ -134,6 +138,70 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
             previewImagePath={ad.preview_image_path}
             aspectRatio={ad.platform_surface?.toLowerCase().includes("reel") || ad.platform_surface?.toLowerCase().includes("short") ? "reel" : "video"}
           />
+        </div>
+
+        {/* MAKE SAME VIDEO WITH US - Veyra AI Video Studio Feature Showcase */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#17191C] via-[#1F2327] to-[#17191C] border border-[#C8FF00]/40 p-5 sm:p-6 shadow-[0_0_40px_rgba(200,255,0,0.08)]">
+          {/* Subtle animated ambient glow */}
+          <div className="absolute -top-16 -right-16 w-52 h-52 rounded-full bg-[#C8FF00]/10 blur-3xl pointer-events-none animate-pulse" />
+          <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-[#38bdf8]/10 blur-3xl pointer-events-none animate-pulse" />
+
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+            <div className="space-y-2.5 max-w-xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30 text-xs font-mono font-bold tracking-wider">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>MAKE SAME VIDEO WITH US · VEYRA AI STUDIO</span>
+              </div>
+
+              <h3 className="text-lg sm:text-xl font-bold font-sans text-white tracking-tight leading-snug">
+                Want to recreate this winning video ad for your brand?
+              </h3>
+
+              <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed">
+                Take the proven hook, pacing, and visual style of this <span className="text-[#C8FF00] font-semibold">{ad.brand_name}</span> ad. Our Human + AI Video Studio produces custom-scripted variants, AI voiceovers, and high-converting 9:16 reels in minutes.
+              </p>
+
+              {/* Feature Tags */}
+              <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-mono text-neutral-300">
+                <span className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
+                  <Wand2 className="w-3 h-3 text-[#C8FF00]" />
+                  <span>Script &amp; Hook Generator</span>
+                </span>
+                <span className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
+                  <Film className="w-3 h-3 text-[#C8FF00]" />
+                  <span>9:16 Vertical &amp; 16:9 Landscape</span>
+                </span>
+                <span className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
+                  <Zap className="w-3 h-3 text-[#C8FF00]" />
+                  <span>Ready in 1-Click</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 w-full md:w-auto flex-shrink-0">
+              <Link
+                href={`/studio?category=${ad.category}&ref=${ad.id}&brand=${encodeURIComponent(
+                  ad.brand_name
+                )}&title=${encodeURIComponent(ad.title)}`}
+                className="w-full"
+              >
+                <button
+                  type="button"
+                  className="w-full px-5 py-3 rounded-xl bg-[#C8FF00] hover:bg-[#d8ff3d] text-black font-bold font-mono text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#C8FF00]/25 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4 fill-black" />
+                  <span>Make Same Video With Us ↗</span>
+                </button>
+              </Link>
+
+              <Link
+                href={`/studio/projects?create=true&ref=${ad.id}`}
+                className="text-center text-[11px] font-mono text-neutral-400 hover:text-white transition-colors"
+              >
+                Or open Studio workspace &rarr;
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Breakdown Grid */}

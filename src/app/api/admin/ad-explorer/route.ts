@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { AdListingSchema } from "@/lib/validation/ad-listing";
+import { AdListingSchema, isMetaAdLibraryUrl } from "@/lib/validation/ad-listing";
 import { parseVideoMediaUrl } from "@/lib/media/video-embed";
 import { SEED_AD_LISTINGS } from "@/lib/data/ad-explorer-seed";
 import { AdListing } from "@/lib/supabase/types";
@@ -305,15 +305,26 @@ export async function POST(request: NextRequest) {
     // Try inserting normalized media items into ad_media_items
     if (validData.media_items && validData.media_items.length > 0) {
       try {
-        const mediaToInsert = validData.media_items.map((m, idx) => ({
-          ad_listing_id: data.id,
-          media_type: m.media_type,
-          media_url: m.media_url,
-          thumbnail_url: m.thumbnail_url || null,
-          caption: m.caption || null,
-          display_order: m.display_order ?? idx,
-          metadata: m.metadata || {},
-        }));
+        const mediaToInsert = validData.media_items.map((m, idx) => {
+          let itemUrl = m.media_url;
+          if (
+            m.media_type === "hosted_video" &&
+            isMetaAdLibraryUrl(itemUrl) &&
+            m.metadata?.storage_path
+          ) {
+            const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://phjtyfqmswarbeuuybnl.supabase.co";
+            itemUrl = `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/ad-previews/${m.metadata.storage_path}`;
+          }
+          return {
+            ad_listing_id: data.id,
+            media_type: m.media_type,
+            media_url: itemUrl,
+            thumbnail_url: m.thumbnail_url || null,
+            caption: m.caption || null,
+            display_order: m.display_order ?? idx,
+            metadata: m.metadata || {},
+          };
+        });
         await auth.supabase.from("ad_media_items").insert(mediaToInsert);
       } catch (mErr) {
         console.warn("Could not insert ad_media_items:", mErr);
@@ -443,15 +454,26 @@ export async function PUT(request: NextRequest) {
       try {
         await auth.supabase.from("ad_media_items").delete().eq("ad_listing_id", id);
         if (validData.media_items.length > 0) {
-          const mediaToInsert = validData.media_items.map((m, idx) => ({
-            ad_listing_id: id,
-            media_type: m.media_type,
-            media_url: m.media_url,
-            thumbnail_url: m.thumbnail_url || null,
-            caption: m.caption || null,
-            display_order: m.display_order ?? idx,
-            metadata: m.metadata || {},
-          }));
+          const mediaToInsert = validData.media_items.map((m, idx) => {
+            let itemUrl = m.media_url;
+            if (
+              m.media_type === "hosted_video" &&
+              isMetaAdLibraryUrl(itemUrl) &&
+              m.metadata?.storage_path
+            ) {
+              const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://phjtyfqmswarbeuuybnl.supabase.co";
+              itemUrl = `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/ad-previews/${m.metadata.storage_path}`;
+            }
+            return {
+              ad_listing_id: id,
+              media_type: m.media_type,
+              media_url: itemUrl,
+              thumbnail_url: m.thumbnail_url || null,
+              caption: m.caption || null,
+              display_order: m.display_order ?? idx,
+              metadata: m.metadata || {},
+            };
+          });
           await auth.supabase.from("ad_media_items").insert(mediaToInsert);
         }
       } catch (mErr) {
