@@ -339,17 +339,17 @@ export function AdExplorerModule({
       </div>
 
       {/* Main Search Bar & Platform Selector Box */}
-      <div className="p-6 sm:p-8 rounded-[32px] bg-surface/90 border border-border backdrop-blur-xl shadow-2xl space-y-6">
+      <div className="p-4 sm:p-8 rounded-2xl sm:rounded-[32px] bg-surface/90 border border-border backdrop-blur-xl shadow-2xl space-y-5 sm:space-y-6">
         {/* Prominent Search Input with Standard Placeholder */}
         <form onSubmit={handleSearchSubmit} className="relative flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-accent pointer-events-none" />
+            <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-accent pointer-events-none" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search any brand, product, company, or keyword…"
-              className="w-full h-14 pl-12 pr-10 rounded-2xl bg-surface-2 border border-border text-white placeholder-text-muted text-sm sm:text-base focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all font-sans"
+              className="w-full h-12 sm:h-14 pl-10 sm:pl-12 pr-10 rounded-2xl bg-surface-2 border border-border text-white placeholder-text-muted text-sm sm:text-base focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all font-sans"
             />
             {query && (
               <button
@@ -366,12 +366,12 @@ export function AdExplorerModule({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button
               type="submit"
               variant="primary"
               size="lg"
-              className="w-full sm:w-auto h-14 px-8 text-sm sm:text-base"
+              className="flex-1 sm:flex-initial h-12 sm:h-14 px-5 sm:px-8 text-sm sm:text-base justify-center"
             >
               <span>Search</span>
               <ArrowUpRight className="w-4 h-4 ml-1" />
@@ -383,7 +383,7 @@ export function AdExplorerModule({
                 variant={showFilters ? "secondary" : "ghost"}
                 size="lg"
                 onClick={() => setShowFilters(!showFilters)}
-                className="h-14 px-4 hidden sm:flex items-center gap-2 border border-border"
+                className="flex-1 sm:flex-initial h-12 sm:h-14 px-4 flex items-center justify-center gap-2 border border-border"
                 aria-label="Toggle secondary filters"
               >
                 <SlidersHorizontal className="w-4 h-4 text-accent" />
@@ -396,7 +396,7 @@ export function AdExplorerModule({
           </div>
         </form>
 
-        {/* Platform Chips Row (All, Meta, Google, LinkedIn, TikTok, X) */}
+        {/* Platform Chips Row (All, Meta, Google, LinkedIn, TikTok, X, Amazon) */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-text-muted">
             <span>Filter by Platform</span>
@@ -405,12 +405,12 @@ export function AdExplorerModule({
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-0.5 scrollbar-none -mx-2 px-2 sm:mx-0 sm:px-0 sm:flex-wrap">
             {/* All Platforms Chip */}
             <button
               type="button"
               onClick={() => handlePlatformClick("all")}
-              className={`h-10 px-4 rounded-full text-xs font-sans font-medium transition-all duration-200 flex items-center gap-2 border select-none ${
+              className={`h-10 px-4 rounded-full text-xs font-sans font-medium transition-all duration-200 flex items-center gap-2 border select-none whitespace-nowrap flex-shrink-0 ${
                 isAllPlatformsSelected
                   ? "bg-accent text-accent-ink font-bold border-accent shadow-[0_0_16px_rgba(215,255,61,0.25)]"
                   : "bg-surface-2 text-text border-border hover:bg-surface-3 hover:border-border-strong"
@@ -430,7 +430,7 @@ export function AdExplorerModule({
                   key={plat}
                   type="button"
                   onClick={() => handlePlatformClick(plat)}
-                  className={`h-10 px-4 rounded-full text-xs font-sans font-medium transition-all duration-200 flex items-center gap-2 border select-none ${
+                  className={`h-10 px-4 rounded-full text-xs font-sans font-medium transition-all duration-200 flex items-center gap-2 border select-none whitespace-nowrap flex-shrink-0 ${
                     isSelected
                       ? "bg-accent/20 text-accent font-semibold border-accent shadow-[0_0_16px_rgba(215,255,61,0.18)]"
                       : "bg-surface-2 text-text border-border hover:bg-surface-3 hover:border-border-strong"
@@ -754,7 +754,7 @@ export function AdExplorerModule({
       ) : (
         /* Ads Grid */
         <div className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {items.map((ad) => (
               <AdCard
                 key={ad.id}

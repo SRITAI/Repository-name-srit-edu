@@ -944,7 +944,7 @@ export default function AdminAdExplorerPage() {
       )}
 
       {/* Top Header Card */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 sm:p-8 rounded-3xl bg-[#131517] border border-white/10 shadow-2xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#131517] border border-white/10 shadow-2xl">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2 text-xs font-mono font-semibold text-[#C8FF00]">
             <Sparkles className="w-3.5 h-3.5" />
@@ -1013,7 +1013,7 @@ export default function AdminAdExplorerPage() {
 
       {/* SIMPLIFIED 3-STEP AD EDITOR */}
       {isEditorOpen && (
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#141619] border border-[#C8FF00]/30 shadow-2xl space-y-6 motion-safe:animate-fade-in">
+        <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#141619] border border-[#C8FF00]/30 shadow-2xl space-y-6 motion-safe:animate-fade-in">
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#C8FF00] animate-pulse" />

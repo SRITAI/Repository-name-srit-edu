@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -22,6 +22,13 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#09090B",
+};
+
 export const metadata: Metadata = {
   title: "infimindss° — Real Humans. AI-Fast. Zero Robotic Videos.",
   description:
@@ -35,7 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`dark ${sans.variable} ${serif.variable} ${mono.variable}`}>
-      <body className="bg-bg text-text font-sans antialiased min-h-screen selection:bg-accent selection:text-accent-ink">
+      <body className="bg-bg text-text font-sans antialiased min-h-screen selection:bg-accent selection:text-accent-ink overflow-x-hidden w-full m-0 p-0">
         {/* Subtle Film Grain Noise Overlay (Section 1.1: 3-4% opacity, fixed, pointer-events: none) */}
         <div
           aria-hidden="true"
@@ -48,10 +55,10 @@ export default function RootLayout({
         {/* Ambient Radial Gradient Glow (Violet + Lime, heavily blurred) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed top-[-100px] left-1/2 -translate-x-1/2 w-[1100px] h-[600px] rounded-full blur-[160px] opacity-[0.10] bg-gradient-to-r from-accent-2 via-transparent to-accent z-0"
+          className="pointer-events-none fixed top-[-100px] left-1/2 -translate-x-1/2 w-[1100px] max-w-[100vw] h-[600px] rounded-full blur-[160px] opacity-[0.10] bg-gradient-to-r from-accent-2 via-transparent to-accent z-0"
         />
 
-        <div className="relative z-10 flex flex-col min-h-screen">
+        <div className="relative z-10 flex flex-col min-h-screen w-full overflow-x-hidden">
           {children}
         </div>
       </body>

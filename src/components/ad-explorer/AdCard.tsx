@@ -109,7 +109,7 @@ export function AdCard({ ad, onInspect }: AdCardProps) {
         </div>
 
         {/* Card Body */}
-        <div className="p-5 sm:p-6 space-y-4">
+        <div className="p-4 sm:p-6 space-y-3 sm:space-y-4 cursor-pointer" onClick={() => onInspect(ad)}>
           {/* Brand & Category Row */}
           <div className="flex items-center justify-between gap-2">
             <div>
@@ -169,7 +169,7 @@ export function AdCard({ ad, onInspect }: AdCardProps) {
       </div>
 
       {/* Card Footer */}
-      <div className="px-5 sm:px-6 pb-5 pt-3 border-t border-border flex items-center justify-between gap-2">
+      <div className="px-4 sm:px-6 pb-4 sm:pb-5 pt-3 border-t border-border flex flex-wrap items-center justify-between gap-2">
         {/* Date Last Reviewed */}
         <div className="text-[11px] font-mono text-text-faint flex items-center gap-1">
           <Calendar className="w-3 h-3 text-accent" />
@@ -177,13 +177,13 @@ export function AdCard({ ad, onInspect }: AdCardProps) {
         </div>
 
         {/* Actions: Make Video in Studio + Official Source */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-2.5">
           <Link
             href={`/studio?category=${ad.category}&ref=${ad.id}&brand=${encodeURIComponent(
               ad.brand_name
             )}&title=${encodeURIComponent(ad.title)}`}
             onClick={(e) => e.stopPropagation()}
-            className="text-[11px] font-mono font-bold text-accent hover:underline flex items-center gap-1 transition-colors"
+            className="text-[11px] font-mono font-bold text-accent hover:underline flex items-center gap-1 transition-colors py-1"
           >
             <Sparkles className="w-3 h-3" />
             <span>Make Video ↗</span>
@@ -195,7 +195,7 @@ export function AdCard({ ad, onInspect }: AdCardProps) {
             href={ad.source_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs font-mono text-text-muted hover:text-white transition-colors"
+            className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-mono text-text-muted hover:text-white transition-colors py-1"
             title={`View on official ${platformConfig.libraryName}`}
             onClick={(e) => e.stopPropagation()}
           >

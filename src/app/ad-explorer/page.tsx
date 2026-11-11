@@ -16,12 +16,12 @@ function AdExplorerPageContent() {
   const [isCmdOpen, setIsCmdOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-bg text-text selection:bg-accent selection:text-accent-ink pb-28">
+    <div className="min-h-screen bg-bg text-text selection:bg-accent selection:text-accent-ink pb-16 sm:pb-28">
       {/* Navbar */}
       <Navbar activeRoute="explore" onOpenSearch={() => setIsCmdOpen(true)} />
 
       {/* Main Container */}
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 space-y-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 space-y-6 sm:space-y-8">
         {/* Back Link */}
         <div>
           <Link

@@ -150,7 +150,7 @@ export function SafeVideoPlayer({
     embedInfo.provider === "tiktok";
 
   const containerAspect = isReelAspect
-    ? "aspect-[9/16] max-w-xs mx-auto"
+    ? "aspect-[9/16] max-w-[270px] sm:max-w-xs mx-auto"
     : "aspect-video w-full";
 
   // Helper to get tab label
@@ -187,7 +187,7 @@ export function SafeVideoPlayer({
     <div className={`space-y-2.5 ${className}`}>
       {/* Multi-Media Switcher Tabs (when > 1 item) */}
       {items.length > 1 && (
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none" role="tablist">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none touch-pan-x" role="tablist">
           <span className="text-[10px] font-mono text-text-muted flex items-center gap-1 uppercase mr-1">
             <Layers className="w-3 h-3 text-accent" />
             <span>Media ({items.length}):</span>

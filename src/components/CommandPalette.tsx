@@ -216,7 +216,7 @@ export default function CommandPalette({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -224,14 +224,14 @@ export default function CommandPalette({
     >
       <div
         className={cn(
-          "w-full max-w-[680px] rounded-[28px] bg-surface border border-border-strong shadow-[0_24px_80px_rgba(0,0,0,0.85)]",
-          "overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200 backdrop-blur-3xl"
+          "w-full max-w-[680px] rounded-2xl sm:rounded-[28px] bg-surface border border-border-strong shadow-[0_24px_80px_rgba(0,0,0,0.85)]",
+          "overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[85vh] animate-in zoom-in-95 duration-200 backdrop-blur-3xl"
         )}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
         {/* Top Input Bar */}
-        <div className="flex items-center gap-3.5 px-6 py-4.5 border-b border-border bg-surface-2/40">
+        <div className="flex items-center gap-3 px-4 sm:px-6 py-3.5 sm:py-4.5 border-b border-border bg-surface-2/40">
           <Search size={18} className="text-accent flex-shrink-0" />
           <input
             ref={inputRef}

@@ -56,26 +56,26 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-black/85 backdrop-blur-md animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="ad-modal-title"
     >
       <div
-        className="relative w-full max-w-3xl max-h-[92vh] overflow-y-auto rounded-3xl bg-surface border border-border-strong shadow-[0_20px_60px_rgba(0,0,0,0.85)] text-text p-6 sm:p-8 space-y-6 scrollbar-thin"
+        className="relative w-full max-w-3xl max-h-[96vh] sm:max-h-[92vh] overflow-y-auto rounded-2xl sm:rounded-3xl bg-surface border border-border-strong shadow-[0_20px_60px_rgba(0,0,0,0.85)] text-text p-4 sm:p-8 space-y-5 sm:space-y-6 scrollbar-thin"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full bg-surface-2 text-text-muted hover:text-white hover:bg-surface-3 transition-colors border border-border"
+          className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 p-2 rounded-full bg-surface-2 text-text-muted hover:text-white hover:bg-surface-3 transition-colors border border-border z-30"
           aria-label="Close details"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
 
         {/* Top Header Row */}
-        <div className="flex flex-wrap items-center gap-2 pt-1 pr-12">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 pr-10 sm:pr-14">
           {/* Platform Badge */}
           <div
             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border"
@@ -141,19 +141,19 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
         </div>
 
         {/* MAKE SAME VIDEO WITH US - Veyra AI Video Studio Feature Showcase */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#17191C] via-[#1F2327] to-[#17191C] border border-[#C8FF00]/40 p-5 sm:p-6 shadow-[0_0_40px_rgba(200,255,0,0.08)]">
+        <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#17191C] via-[#1F2327] to-[#17191C] border border-[#C8FF00]/40 p-4 sm:p-6 shadow-[0_0_40px_rgba(200,255,0,0.08)]">
           {/* Subtle animated ambient glow */}
           <div className="absolute -top-16 -right-16 w-52 h-52 rounded-full bg-[#C8FF00]/10 blur-3xl pointer-events-none animate-pulse" />
           <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-[#38bdf8]/10 blur-3xl pointer-events-none animate-pulse" />
 
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-5">
             <div className="space-y-2.5 max-w-xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30 text-xs font-mono font-bold tracking-wider">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>MAKE SAME VIDEO WITH US · VEYRA AI STUDIO</span>
               </div>
 
-              <h3 className="text-lg sm:text-xl font-bold font-sans text-white tracking-tight leading-snug">
+              <h3 className="text-base sm:text-xl font-bold font-sans text-white tracking-tight leading-snug">
                 Want to recreate this winning video ad for your brand?
               </h3>
 
@@ -162,7 +162,7 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
               </p>
 
               {/* Feature Tags */}
-              <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-mono text-neutral-300">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 text-[11px] font-mono text-neutral-300">
                 <span className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
                   <Wand2 className="w-3 h-3 text-[#C8FF00]" />
                   <span>Script &amp; Hook Generator</span>
@@ -178,7 +178,7 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 w-full md:w-auto flex-shrink-0">
+            <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 w-full md:w-auto flex-shrink-0 pt-1 md:pt-0">
               <Link
                 href={`/studio?category=${ad.category}&ref=${ad.id}&brand=${encodeURIComponent(
                   ad.brand_name
@@ -187,7 +187,7 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
               >
                 <button
                   type="button"
-                  className="w-full px-5 py-3 rounded-xl bg-[#C8FF00] hover:bg-[#d8ff3d] text-black font-bold font-mono text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#C8FF00]/25 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                  className="w-full px-5 py-3.5 rounded-xl bg-[#C8FF00] hover:bg-[#d8ff3d] text-black font-bold font-mono text-xs sm:text-sm min-h-[46px] flex items-center justify-center gap-2 shadow-lg shadow-[#C8FF00]/25 active:scale-[0.98] transition-all cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4 fill-black" />
                   <span>Make Same Video With Us ↗</span>
@@ -196,7 +196,7 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
 
               <Link
                 href={`/studio/projects?create=true&ref=${ad.id}`}
-                className="text-center text-[11px] font-mono text-neutral-400 hover:text-white transition-colors"
+                className="text-center text-[11px] font-mono text-neutral-400 hover:text-white transition-colors py-1"
               >
                 Or open Studio workspace &rarr;
               </Link>
@@ -205,7 +205,7 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
         </div>
 
         {/* Breakdown Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {/* Hook & Psychological Formulation */}
           <div className="p-4 rounded-2xl bg-surface-2 border border-border space-y-2">
             <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-accent font-semibold">
@@ -337,12 +337,12 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
             )}
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
             <Button
               variant="secondary"
               size="md"
               onClick={onClose}
-              className="flex-1 sm:flex-none"
+              className="w-full sm:w-auto order-2 sm:order-1"
             >
               Close
             </Button>
@@ -351,9 +351,9 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
               href={`/studio?category=${ad.category}&ref=${ad.id}&title=${encodeURIComponent(
                 ad.brand_name
               )}`}
-              className="flex-1 sm:flex-none"
+              className="w-full sm:w-auto order-1 sm:order-2"
             >
-              <Button variant="primary" size="md" className="w-full">
+              <Button variant="primary" size="md" className="w-full justify-center">
                 Make Similar Ad in Studio ↗
               </Button>
             </Link>

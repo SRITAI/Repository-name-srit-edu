@@ -507,12 +507,12 @@ function StudioWizardContent() {
   const selectedCategoryObj = CATEGORY_ITEMS.find((c) => c.id === category) || CATEGORY_ITEMS[0];
 
   return (
-    <div className="min-h-screen bg-bg text-text selection:bg-accent selection:text-accent-ink pb-28">
+    <div className="min-h-screen bg-bg text-text selection:bg-accent selection:text-accent-ink pb-16 sm:pb-28">
       {/* Navbar */}
       <Navbar onOpenSearch={() => setIsCmdOpen(true)} />
 
       {/* Main Container */}
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28">
         {/* Top Header */}
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-10">
           <div className="flex items-center justify-center gap-2">

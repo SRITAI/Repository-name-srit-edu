@@ -174,12 +174,12 @@ function ExploreContent() {
   };
 
   return (
-    <div className="min-h-screen bg-bg text-text selection:bg-accent selection:text-accent-ink pb-28">
+    <div className="min-h-screen bg-bg text-text selection:bg-accent selection:text-accent-ink pb-16 sm:pb-28">
       {/* Navbar */}
       <Navbar activeRoute="explore" onOpenSearch={() => setIsCmdOpen(true)} />
 
       {/* Main Container */}
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 space-y-10">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 space-y-6 sm:space-y-10">
         {/* Header Breadcrumb & Title */}
         <div className="space-y-3">
           <Link
@@ -217,7 +217,7 @@ function ExploreContent() {
         </div>
 
         {/* Filter & Search Bar */}
-        <div className="p-6 rounded-3xl bg-surface/80 border border-border backdrop-blur-xl space-y-6">
+        <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-surface/80 border border-border backdrop-blur-xl space-y-5 sm:space-y-6">
           {/* Top Search Input */}
           <div className="relative">
             <Input

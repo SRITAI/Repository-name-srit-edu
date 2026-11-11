@@ -37,6 +37,17 @@ export default function Navbar({ activeRoute = "home", onOpenSearch }: NavbarPro
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (mobileDrawerOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileDrawerOpen]);
+
   const handleStudioClick = () => {
     try {
       localStorage.setItem("infimindss_visited_studio", "true");
@@ -152,18 +163,18 @@ export default function Navbar({ activeRoute = "home", onOpenSearch }: NavbarPro
       {/* Mobile Drawer (Full screen slide-over) */}
       {mobileDrawerOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200 md:hidden flex flex-col justify-between p-6"
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-2xl animate-in fade-in duration-200 md:hidden flex flex-col justify-between p-4 sm:p-6 overflow-y-auto"
           onClick={() => setMobileDrawerOpen(false)}
         >
-          <div className="space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-border">
+          <div className="space-y-5" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between pb-3.5 border-b border-border">
               <Link href="/" className="text-xl font-bold font-sans text-text">
                 infimindss<span className="text-accent font-serif">°</span>
               </Link>
               <button
                 type="button"
                 onClick={() => setMobileDrawerOpen(false)}
-                className="w-10 h-10 rounded-full bg-surface-2 border border-border flex items-center justify-center text-text"
+                className="w-10 h-10 rounded-full bg-surface-2 border border-border flex items-center justify-center text-text hover:text-white transition-colors"
                 aria-label="Close menu"
               >
                 <X size={18} />
@@ -177,7 +188,7 @@ export default function Navbar({ activeRoute = "home", onOpenSearch }: NavbarPro
                 setMobileDrawerOpen(false);
                 onOpenSearch();
               }}
-              className="w-full h-12 px-4 rounded-2xl bg-surface-2 border border-border text-left flex items-center justify-between text-sm text-text-muted"
+              className="w-full h-12 px-4 rounded-2xl bg-surface-2 border border-border text-left flex items-center justify-between text-sm text-text-muted hover:border-accent/40 transition-colors"
             >
               <div className="flex items-center gap-2.5">
                 <Search size={16} className="text-accent" />
@@ -187,7 +198,7 @@ export default function Navbar({ activeRoute = "home", onOpenSearch }: NavbarPro
             </button>
 
             {/* Navigation Links */}
-            <div className="space-y-2 pt-2">
+            <div className="space-y-1.5 pt-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.id}
@@ -196,7 +207,7 @@ export default function Navbar({ activeRoute = "home", onOpenSearch }: NavbarPro
                     if (link.isStudio) handleStudioClick();
                     setMobileDrawerOpen(false);
                   }}
-                  className="block px-4 py-3 rounded-2xl text-lg font-semibold text-text hover:text-accent hover:bg-surface-2 transition-colors"
+                  className="block px-4 py-3 rounded-2xl text-base font-semibold text-text hover:text-accent hover:bg-surface-2 transition-colors active:scale-[0.99]"
                 >
                   <div className="flex items-center justify-between">
                     <span>{link.label}</span>
@@ -210,13 +221,13 @@ export default function Navbar({ activeRoute = "home", onOpenSearch }: NavbarPro
           </div>
 
           {/* Drawer Bottom CTA */}
-          <div className="pt-6 border-t border-border space-y-3">
+          <div className="pt-5 border-t border-border space-y-3 mt-6" onClick={(e) => e.stopPropagation()}>
             <Button
               href="/studio"
               variant="primary"
               size="lg"
               withArrow
-              className="w-full"
+              className="w-full h-12 text-sm justify-center"
               onClick={() => setMobileDrawerOpen(false)}
             >
               Start a project ↗
