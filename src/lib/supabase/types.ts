@@ -268,3 +268,94 @@ export interface HomepageVideo {
   updated_at: string;
 }
 
+// ==============================================================================
+// Script Reference Library & AI Script Writer Types
+// ==============================================================================
+export type ScriptCategoryStatus = 'active' | 'archived';
+export type ScriptReferenceStatus = 'active' | 'inactive' | 'archived';
+
+export interface ScriptCategory {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  icon: string | null;
+  sort_order: number;
+  is_active: boolean;
+  status: ScriptCategoryStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ScriptReference {
+  id: string;
+  category_id: string;
+  title: string;
+  description: string;
+  prompt_guidance: string; // Strictly private internal writing instructions
+  example_script?: string | null; // Optional team-provided reference script
+  suitable_platforms: string[];
+  suitable_tones: string[];
+  suitable_durations: number[];
+  style_tags: string[];
+  is_active: boolean;
+  status: ScriptReferenceStatus;
+  priority: number;
+  sort_order: number;
+  created_by?: string | null;
+  updated_by?: string | null;
+  created_at: string;
+  updated_at: string;
+  category?: ScriptCategory;
+}
+
+/**
+ * Sanitized client-facing reference option.
+ * Strictly hides internal prompt_guidance and team notes from customers.
+ */
+export interface ScriptReferenceOption {
+  id: string;
+  category_id: string;
+  category_slug?: string;
+  category_name?: string;
+  title: string;
+  description: string;
+  suitable_platforms: string[];
+  suitable_tones: string[];
+  suitable_durations: number[];
+  style_tags: string[];
+  priority: number;
+  sort_order: number;
+}
+
+export interface ScriptScene {
+  sceneNumber: number;
+  timeRange: string;
+  visualDirection: string;
+  voiceover: string;
+  onScreenText: string;
+}
+
+export interface GeneratedScriptResult {
+  id?: string;
+  title: string;
+  category: string;
+  referenceUsed?: {
+    id: string;
+    title: string;
+  } | null;
+  targetDurationSeconds: number;
+  fullScript: string;
+  hook: string;
+  scenes: ScriptScene[];
+  cta: string;
+  suggestedCaption: string;
+  editorialNotes: {
+    whatChangedFromDraft?: string;
+    pacingRationale: string;
+    unconfirmedDetails?: string[];
+  };
+  source: 'openrouter' | 'anthropic' | 'template_engine';
+}
+
+

@@ -50,6 +50,8 @@ import {
 } from "@/components/ui";
 import { SEED_CATEGORIES } from "@/lib/data/seed-data";
 import { createClient } from "@/lib/supabase/client";
+import ScriptWriterModule from "@/components/studio/ScriptWriterModule";
+import type { GeneratedScriptResult } from "@/lib/supabase/types";
 
 interface DriveLinkState {
   url: string;
@@ -149,6 +151,7 @@ function StudioWizardContent() {
   const [scriptHook, setScriptHook] = useState("");
   const [scriptCta, setScriptCta] = useState("");
   const [scriptSource, setScriptSource] = useState<"client" | "ai_draft">("client");
+  const [showScriptWriterInMode1, setShowScriptWriterInMode1] = useState(false);
 
   // Mode 2: Product Images & AI Script
   const [productFiles, setProductFiles] = useState<UploadedFile[]>([]);
@@ -361,25 +364,29 @@ function StudioWizardContent() {
       });
 
       const data = await res.json();
-      if (data.scripts && data.scripts.length > 0) {
-        setAiScriptOptions(data.scripts);
-      } else {
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to generate AI script");
+      }
+
+      if (data.options && data.options.length > 0) {
+        setAiScriptOptions(data.options);
+      } else if (data.script) {
         setAiScriptOptions([
           {
-            hook: `Stop scrolling if you care about real ${category.replace("-", " ")} results.`,
-            body: `${productName || "Our formula"} was engineered specifically to solve this problem without the fluff. Real human skin, real visible difference in 7 days.`,
-            cta: `Tap the link below to test it with a 30-day guarantee.`,
+            id: "opt-primary",
+            title: data.script.title,
+            hook: data.script.hook,
+            body: data.script.scenes.slice(1, -1).map((s: any) => s.voiceover).join(" "),
+            cta: data.script.cta,
+            fullScript: data.script.fullScript,
           },
         ]);
+      } else {
+        throw new Error("No script returned from OpenRouter generator");
       }
-    } catch {
-      setAiScriptOptions([
-        {
-          hook: `The single biggest mistake people make with ${category.replace("-", " ")}:`,
-          body: `${productName || "Our formula"} eliminates the guesswork with pure, active performance.`,
-          cta: `Tap below to get yours delivered with 20% off today.`,
-        },
-      ]);
+    } catch (err: any) {
+      setErrorMsg(err.message || "Failed to generate AI script. Please check your OpenRouter configuration.");
+      setAiScriptOptions([]);
     } finally {
       setIsGeneratingAiScript(false);
     }
@@ -394,6 +401,22 @@ function StudioWizardContent() {
     if (!selectedModes.includes("script")) {
       setSelectedModes([...selectedModes, "script"]);
     }
+  };
+
+  const handleApplyScriptFromModule = (data: {
+    fullScript: string;
+    hook: string;
+    cta: string;
+    rawResult: GeneratedScriptResult;
+  }) => {
+    setScriptText(data.fullScript);
+    setScriptHook(data.hook);
+    setScriptCta(data.cta);
+    setScriptSource("ai_draft");
+    if (!selectedModes.includes("script")) {
+      setSelectedModes([...selectedModes, "script"]);
+    }
+    setErrorMsg("");
   };
 
   // Step 1 Validation
@@ -838,14 +861,14 @@ function StudioWizardContent() {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <ChoiceCard
                       title="Script Ready"
-                      description="You already have a script or key talking points"
+                      description="Paste your script, notes, or use our AI Script Writer"
                       icon={<FileText className="w-6 h-6 text-accent" />}
                       selected={selectedModes.includes("script")}
                       onClick={() => toggleMode("script")}
                     />
                     <ChoiceCard
-                      title="Product Pictures"
-                      description="Upload photos + let AI draft viral script hooks"
+                      title="Product Pictures & AI Script"
+                      description="Upload photos + choose reference styles to generate scripts"
                       icon={<ImageIcon className="w-6 h-6 text-violet-400" />}
                       selected={selectedModes.includes("product_images")}
                       onClick={() => toggleMode("product_images")}
@@ -888,90 +911,80 @@ function StudioWizardContent() {
                         rows={7}
                         charCount={{ current: scriptText.length }}
                       />
+
+                      <div className="pt-2 flex items-center justify-between border-t border-border/60">
+                        <span className="text-xs text-text-muted">
+                          Want to restructure your talking points with proven reference styles?
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setShowScriptWriterInMode1(!showScriptWriterInMode1)}
+                          className="text-xs font-mono text-accent hover:underline flex items-center gap-1.5"
+                        >
+                          <Wand2 className="w-3.5 h-3.5" />
+                          <span>
+                            {showScriptWriterInMode1
+                              ? "Hide Script Writer"
+                              : "Open AI Script Writer with Reference Library"}
+                          </span>
+                        </button>
+                      </div>
+
+                      {showScriptWriterInMode1 && (
+                        <div className="pt-4">
+                          <ScriptWriterModule
+                            brandName={brandName}
+                            category={category}
+                            platform={platform}
+                            duration={duration}
+                            goal={goal}
+                            initialProductName={productName}
+                            initialUsp={productUsp}
+                            initialDraft={scriptText}
+                            onApplyScript={handleApplyScriptFromModule}
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
 
-                  {/* Mode 2: PRODUCT PICTURES & AI DRAFT */}
+                  {/* Mode 2: PRODUCT PICTURES & AI SCRIPT WRITER */}
                   {selectedModes.includes("product_images") && (
-                    <div className="p-6 rounded-2xl bg-surface-2/60 border border-border space-y-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <ImageIcon className="w-4 h-4 text-violet-400" />
-                          <span className="text-xs font-mono uppercase tracking-wider text-white">
-                            Product Photos &amp; AI Script Generator
-                          </span>
+                    <div className="space-y-6">
+                      <div className="p-6 rounded-2xl bg-surface-2/60 border border-border space-y-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <ImageIcon className="w-4 h-4 text-violet-400" />
+                            <span className="text-xs font-mono uppercase tracking-wider text-white">
+                              Product Photos &amp; Visual Assets
+                            </span>
+                          </div>
+                          <Badge variant="violet" className="text-[10px]">
+                            VISUAL ASSETS
+                          </Badge>
                         </div>
-                        <Badge variant="violet" className="text-[10px]">
-                          AI-ASSISTED
-                        </Badge>
+
+                        {/* Dropzone */}
+                        <Dropzone
+                          files={productFiles}
+                          onFilesAdded={handleFilesAdded}
+                          onFileRemoved={handleFileRemoved}
+                          onSetPrimary={handleSetPrimary}
+                        />
                       </div>
 
-                      {/* Dropzone */}
-                      <Dropzone
-                        files={productFiles}
-                        onFilesAdded={handleFilesAdded}
-                        onFileRemoved={handleFileRemoved}
-                        onSetPrimary={handleSetPrimary}
+                      {/* Script Writer Module with Reference Styles */}
+                      <ScriptWriterModule
+                        brandName={brandName}
+                        category={category}
+                        platform={platform}
+                        duration={duration}
+                        goal={goal}
+                        initialProductName={productName}
+                        initialUsp={productUsp}
+                        initialDraft={scriptText}
+                        onApplyScript={handleApplyScriptFromModule}
                       />
-
-                      {/* Product Name & USP */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Input
-                          label="Product Name"
-                          placeholder="e.g. Lumina Clarifying Serum"
-                          value={productName}
-                          onChange={(e) => setProductName(e.target.value)}
-                        />
-                        <Input
-                          label="Key Benefit / USP"
-                          placeholder="e.g. Clear skin in 7 days without drying"
-                          value={productUsp}
-                          onChange={(e) => setProductUsp(e.target.value)}
-                        />
-                      </div>
-
-                      {/* AI Script Generator Button */}
-                      <div className="pt-2">
-                        <Button
-                          variant="secondary"
-                          onClick={handleGenerateAiScript}
-                          isLoading={isGeneratingAiScript}
-                          className="w-full sm:w-auto"
-                        >
-                          <Wand2 className="w-4 h-4 mr-2 text-accent" />
-                          <span>Draft High-Converting Script Angles with AI</span>
-                        </Button>
-                      </div>
-
-                      {/* Generated AI Script Options */}
-                      {aiScriptOptions.length > 0 && (
-                        <div className="space-y-3 pt-2">
-                          <div className="text-xs font-mono uppercase tracking-wider text-accent">
-                            ✦ AI Generated Hook Angles
-                          </div>
-                          <div className="grid grid-cols-1 gap-3">
-                            {aiScriptOptions.map((opt, i) => (
-                              <div
-                                key={i}
-                                className="p-4 rounded-xl bg-surface-3/80 border border-border space-y-2 hover:border-accent/40 transition-colors"
-                              >
-                                <div className="text-xs font-mono text-accent">Angle #{i + 1}</div>
-                                <div className="text-sm font-semibold text-white">&ldquo;{opt.hook}&rdquo;</div>
-                                <div className="text-xs text-text-muted">{opt.body}</div>
-                                <div className="pt-2 flex justify-end">
-                                  <Button
-                                    size="sm"
-                                    variant="primary"
-                                    onClick={() => handleApplyAiScript(opt)}
-                                  >
-                                    Apply this Script
-                                  </Button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   )}
 

@@ -12,6 +12,7 @@ import {
   LogOut,
   AlertTriangle,
   Lock,
+  BookOpen,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { BrandLogo } from "@/components/BrandLogo";
@@ -24,8 +25,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   let isLocalPreview = false;
 
   if (!supabase) {
-    // Strictly deny admin access if Supabase is unavailable in production
-    if (process.env.NODE_ENV === "production") {
+    // Strictly deny admin access if Supabase is unavailable in deployed production
+    if (process.env.NODE_ENV === "production" && process.env.VERCEL) {
       redirect("/login?next=/admin");
     }
     isLocalPreview = true;
@@ -203,6 +204,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           >
             <Tag className="w-3.5 h-3.5 text-[#716C63]" />
             <span>Categories</span>
+          </Link>
+          <Link
+            href="/admin/script-library"
+            className="px-3.5 py-1.5 rounded-lg text-[#716C63] hover:text-[#302E29] hover:bg-[#EEE5D6] transition-colors flex items-center gap-1.5 font-semibold"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-[#C86446]" />
+            <span>Script Library</span>
           </Link>
         </div>
       </header>
