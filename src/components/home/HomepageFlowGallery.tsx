@@ -93,6 +93,12 @@ export function HomepageFlowGallery({
     setIsMotionPaused((prev) => {
       const next = !prev;
       userManuallyPausedRef.current = next;
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("infimindss-motion-toggle", { detail: { paused: next } })
+        );
+        document.documentElement.classList.toggle("motion-paused", next);
+      }
       return next;
     });
   };

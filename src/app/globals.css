@@ -220,6 +220,33 @@ body {
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
 }
 
+/* Refined Translucent Glass Panel (Task: Glass UI Navigation) */
+.navbar-glass-panel {
+  background-color: #FAF6EE; /* Solid fallback */
+  background-color: rgba(255, 252, 245, 0.76);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(48, 46, 41, 0.09);
+  box-shadow: 0 4px 20px -2px rgba(48, 46, 41, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.65) inset;
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.navbar-glass-panel.is-scrolled {
+  background-color: #F8F3E8; /* Solid fallback */
+  background-color: rgba(255, 252, 245, 0.92);
+  border-color: rgba(48, 46, 41, 0.12);
+  box-shadow: 0 12px 32px -4px rgba(48, 46, 41, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.85) inset;
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .navbar-glass-panel {
+    background-color: #FAF6EE !important;
+  }
+  .navbar-glass-panel.is-scrolled {
+    background-color: #F3EBDD !important;
+  }
+}
+
 /* Search Button Pill (Task B2) */
 .btn-search-pill {
   height: 44px;
@@ -457,39 +484,46 @@ body {
 /* --------------------------------------------------------------------------
    5. Hero Stage Layout
    -------------------------------------------------------------------------- */
+/* ==========================================================================
+   5. Hero Stage & Composition
+   ========================================================================== */
 .hero-stage {
   position: relative;
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  padding-top: 14px;
-  min-height: 700px;
-}
-
-/* Connecting SVG Splines */
-.connecting-splines {
-  position: absolute;
-  top: 0;
-  left: 0;
+  justify-content: center;
+  padding: 44px 24px 32px 24px;
+  min-height: auto;
   width: 100%;
-  height: 100%;
+  overflow: hidden;
+}
+
+/* Subtle painterly gouache wash (abstract, non-human) */
+.hero-paint-wash {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 760px;
+  max-width: 92vw;
+  height: 420px;
+  background: radial-gradient(ellipse at center, rgba(200, 100, 70, 0.045) 0%, rgba(226, 215, 196, 0.20) 48%, transparent 72%);
+  border-radius: 50% 40% 60% 50% / 45% 55% 45% 55%;
+  filter: blur(48px);
   pointer-events: none;
+  z-index: 1;
+}
+
+.hero-inner-container {
+  position: relative;
   z-index: 10;
-}
-
-.spline-path {
-  fill: none;
-  stroke: #D6CBBF;
-  stroke-width: 1.25;
-  stroke-linecap: round;
-  opacity: 0.9;
-}
-
-.pulse-dot-wire {
-  fill: var(--text-muted);
-  opacity: 0.6;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* --------------------------------------------------------------------------
@@ -498,9 +532,10 @@ body {
 .hero-content {
   text-align: center;
   position: relative;
-  z-index: 30;
-  max-width: 780px;
-  margin-bottom: -15px; /* Sits naturally right above the floating halo */
+  z-index: 20;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .hero-headline {
@@ -511,30 +546,31 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  line-height: 1.04;
-  margin-bottom: 14px;
+  line-height: 1.08;
+  max-width: 720px;
+  margin: 0 auto 16px auto;
 }
 
 .headline-regular {
-  font-size: clamp(3.0rem, 5.2vw, 4.8rem);
+  font-size: clamp(2.8rem, 5.0vw, 4.6rem);
   font-style: normal;
 }
 
 .headline-italic {
-  font-size: clamp(3.3rem, 5.8vw, 5.3rem);
+  font-size: clamp(3.0rem, 5.4vw, 5.0rem);
   font-style: italic;
   font-weight: 400;
-  margin-top: -6px;
-  letter-spacing: -0.01em;
+  margin-top: -4px;
+  letter-spacing: -0.015em;
 }
 
 .hero-subheading {
-  font-size: clamp(0.88rem, 1.2vw, 0.98rem);
+  font-size: clamp(0.92rem, 1.2vw, 1.02rem);
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--text-sub);
-  max-width: 520px;
-  margin: 0 auto 20px auto;
+  max-width: 540px;
+  margin: 0 auto 22px auto;
 }
 
 /* CTA Buttons */
@@ -542,9 +578,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 14px;
   position: relative;
-  z-index: 30;
+  z-index: 20;
+  margin-bottom: 22px;
 }
 
 .btn-primary-cta {
@@ -609,35 +646,160 @@ body {
   justify-content: center;
   transition: transform 0.2s ease;
 }
-.panel-glimmer {
-  width: 24px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
-  border-radius: 2px;
+
+/* --------------------------------------------------------------------------
+   7. Living Idea Network Constellation & Ink Connectors
+   -------------------------------------------------------------------------- */
+.hero-living-network-container {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 16px auto 0 auto;
+}
+
+.constellation-stage {
+  position: relative;
+  z-index: 20;
+  aspect-ratio: 980 / 430;
+}
+
+@keyframes hubWashPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.65;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.08);
+    opacity: 0.95;
+  }
+}
+.hub-wash-pulse {
+  animation: hubWashPulse 6s ease-in-out infinite;
+}
+
+@keyframes hubBreathing {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 4px 20px -2px rgba(200, 100, 70, 0.12);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.025);
+    box-shadow: 0 8px 32px -4px rgba(200, 100, 70, 0.22);
+  }
+}
+.hub-breathing {
+  animation: hubBreathing 5.2s ease-in-out infinite;
+}
+
+/* Varied, peaceful node drifting bobs */
+@keyframes nodeDriftA {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-4px);
+  }
+}
+.node-drift-a {
+  animation: nodeDriftA 5.6s ease-in-out infinite;
+}
+
+@keyframes nodeDriftB {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(3.5px);
+  }
+}
+.node-drift-b {
+  animation: nodeDriftB 6.8s ease-in-out infinite;
+}
+
+@keyframes nodeDriftC {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-3px);
+  }
+}
+.node-drift-c {
+  animation: nodeDriftC 6.2s ease-in-out infinite;
+}
+
+.network-droplet {
+  filter: drop-shadow(0 1px 3px rgba(200, 100, 70, 0.4));
+}
+
+.motion-paused .network-droplet,
+.motion-paused .hub-wash-pulse,
+.motion-paused .hub-breathing,
+.motion-paused .node-drift-a,
+.motion-paused .node-drift-b,
+.motion-paused .node-drift-c {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .network-droplet {
+    display: none !important;
+  }
+  .hub-wash-pulse,
+  .hub-breathing,
+  .node-drift-a,
+  .node-drift-b,
+  .node-drift-c,
+  .scanline-beam {
+    animation: none !important;
+    transform: translate(-50%, -50%) !important;
+  }
+}
+
+/* Subtle Technical Scanline Sweep (Polyghost Art Direction) */
+@keyframes scanlineSweep {
+  0% {
+    top: 0%;
+    opacity: 0.7;
+  }
+  50% {
+    top: 80%;
+    opacity: 0.95;
+  }
+  100% {
+    top: 0%;
+    opacity: 0.7;
+  }
+}
+.scanline-beam {
+  animation: scanlineSweep 4.5s ease-in-out infinite;
+}
+.motion-paused .scanline-beam {
+  animation-play-state: paused !important;
 }
 
 /* Notification Toast */
 .orbit-toast {
-  position: absolute;
-  bottom: 12px;
+  position: fixed;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%) translateY(20px);
-  background: rgba(18, 18, 18, 0.9);
+  background: rgba(18, 18, 18, 0.92);
   color: #FFFFFF;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  padding: 7px 16px;
+  padding: 8px 18px;
   border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
   pointer-events: none;
   opacity: 0;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
-  z-index: 50;
+  z-index: 9999;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   white-space: nowrap;
 }
 .orbit-toast.show {
@@ -660,7 +822,6 @@ body {
    8. Floating Cards (Left & Right Connected Cards)
    -------------------------------------------------------------------------- */
 .floating-card {
-  position: absolute;
   background-color: var(--surface);
   border-radius: 20px;
   padding: 18px 20px;
@@ -697,13 +858,6 @@ body {
   color: var(--text-muted);
 }
 
-/* Left Card: Turn thoughts into progress */
-.left-card {
-  top: 15%;
-  left: 6%;
-  width: 172px;
-}
-
 .card-icon-box {
   margin-bottom: 12px;
 }
@@ -727,13 +881,6 @@ body {
 .bar-3 { height: 22px; }
 .bar-4 { height: 14px; }
 .bar-5 { height: 8px; }
-
-/* Right Card: Ideas, anytime, anywhere */
-.right-card {
-  top: 25%;
-  right: 7%;
-  width: 172px;
-}
 
 .card-avatar-stack {
   display: flex;
@@ -769,15 +916,49 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
+/* Flanking Cards on Extra-Wide Desktop (>= 1280px) */
+@media (min-width: 1280px) {
+  .hero-flanking-cards {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 15;
+  }
+  .hero-flanking-cards .floating-card {
+    pointer-events: auto;
+  }
+  .hero-flanking-cards .left-card {
+    position: absolute;
+    left: 12px;
+    top: 22%;
+    transform: translateY(-50%);
+    width: 175px;
+  }
+  .hero-flanking-cards .right-card {
+    position: absolute;
+    right: 12px;
+    top: 22%;
+    transform: translateY(-50%);
+    width: 175px;
+  }
+}
+
+/* On screens < 1280px, hide flanking cards so hero constellation has clean focus */
+@media (max-width: 1279px) {
+  .hero-flanking-cards {
+    display: none;
+  }
+}
+
 /* --------------------------------------------------------------------------
    9. Circular Rotating Stamp (Top Right)
    -------------------------------------------------------------------------- */
 .circular-stamp {
   position: absolute;
-  top: 6%;
-  right: 7%;
-  width: 90px;
-  height: 90px;
+  top: 18px;
+  right: 28px;
+  width: 84px;
+  height: 84px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -814,15 +995,40 @@ body {
   z-index: 2;
 }
 
+@media (max-width: 1024px) {
+  .circular-stamp {
+    top: 12px;
+    right: 16px;
+    transform: scale(0.85);
+    transform-origin: top right;
+  }
+}
+
+@media (max-width: 640px) {
+  .circular-stamp {
+    display: none;
+  }
+}
+
 /* --------------------------------------------------------------------------
-   10. Bottom Proof & Philosophy Badges
+   10. Hero Bottom Bar: Proof & Philosophy Badges
    -------------------------------------------------------------------------- */
-/* Bottom Left: Trusted by 50,000+ creators */
+.hero-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1240px;
+  margin: 36px auto 0 auto;
+  padding: 20px 12px 0 12px;
+  border-top: 1px solid rgba(48, 46, 41, 0.08);
+  position: relative;
+  z-index: 15;
+}
+
 .bottom-left-proof {
-  position: absolute;
-  bottom: 28px;
-  left: 42px;
-  z-index: 25;
+  display: flex;
+  flex-direction: column;
 }
 
 .proof-bar {
@@ -873,12 +1079,7 @@ body {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
-/* Bottom Right: Less chaos. More clarity. */
 .bottom-right-credo {
-  position: absolute;
-  bottom: 34px;
-  right: 48px;
-  z-index: 25;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -903,6 +1104,26 @@ body {
   font-weight: 500;
   line-height: 1.4;
   color: var(--text-sub);
+}
+
+@media (max-width: 860px) {
+  .hero-bottom-bar {
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    margin-top: 24px;
+    padding-top: 18px;
+    text-align: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Flow Gallery Section Boundary
+   -------------------------------------------------------------------------- */
+.flow-gallery-section {
+  position: relative;
+  width: 100%;
+  border-top: 1px solid rgba(48, 46, 41, 0.08);
 }
 
 /* --------------------------------------------------------------------------
@@ -1004,22 +1225,6 @@ body {
 /* --------------------------------------------------------------------------
    12. Responsive Adjustments
    -------------------------------------------------------------------------- */
-@media (max-width: 1100px) {
-  .left-card {
-    left: 1.5%;
-    width: 155px;
-    padding: 16px;
-  }
-  .right-card {
-    right: 2%;
-    width: 155px;
-    padding: 16px;
-  }
-  .circular-stamp {
-    right: 4%;
-  }
-}
-
 @media (max-width: 860px) {
   .window-frame {
     padding: 18px 20px 28px 20px;
@@ -1027,27 +1232,6 @@ body {
   }
   .nav-pill {
     display: none; /* Mobile navigation */
-  }
-  .connecting-splines {
-    display: none;
-  }
-  .left-card,
-  .right-card {
-    position: static;
-    width: 100%;
-    max-width: 280px;
-    margin: 12px 0;
-  }
-  .circular-stamp {
-    display: none;
-  }
-  .bottom-left-proof,
-  .bottom-right-credo {
-    position: static;
-    margin-top: 24px;
-  }
-  .hero-stage {
-    min-height: auto;
   }
 }
 
@@ -1062,41 +1246,27 @@ body {
     padding: 14px 14px 24px 14px;
   }
   .headline-regular {
-    font-size: 2.8rem;
+    font-size: 2.3rem;
   }
   .headline-italic {
-    font-size: 3.2rem;
+    font-size: 2.5rem;
   }
   .hero-cta-group {
     flex-direction: column;
     width: 100%;
+    gap: 10px;
   }
   .btn-primary-cta,
   .btn-video-cta {
     width: 100%;
     justify-content: center;
   }
-  .halo-chip {
-    padding: 6px 10px;
-    gap: 7px;
+  .hero-chips-bar {
+    gap: 6px;
   }
-  .chip-title {
-    font-size: 0.70rem;
-  }
-  .chip-desc {
-    font-size: 0.58rem;
-  }
-  .chip-icon {
-    width: 18px;
-    height: 18px;
-  }
-  .chip-image-inner {
-    width: 78px;
-    height: 54px;
-  }
-  .halo-chip.chip-panel {
-    width: 58px;
-    height: 40px;
+  .hero-summary-chip {
+    padding: 5px 11px;
+    font-size: 0.72rem;
   }
 }
 

@@ -14,6 +14,7 @@ import {
   Lock,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -119,10 +120,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <header className="sticky top-0 z-40 bg-[#FFFCF5]/90 backdrop-blur-md border-b border-[#302E29]/10 px-4 sm:px-8 py-3.5 shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="font-bold text-lg tracking-tight text-[#302E29] flex items-center gap-1 group">
-              <span>infimindss</span>
-              <span className="text-xs align-super text-[#C86446] font-mono">°</span>
-            </Link>
+            <BrandLogo size="md" />
 
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C86446]/10 border border-[#C86446]/25 text-[#C86446] text-xs font-mono font-semibold">
               <Shield className="w-3 h-3" />

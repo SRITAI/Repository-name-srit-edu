@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { getSafeRedirectUrl, isAdminPath, DEFAULT_STUDIO_PATH } from "@/lib/auth/safe-redirect";
+import { BrandLogo } from "@/components/BrandLogo";
 import {
   Sparkles,
   ArrowRight,
@@ -229,12 +230,9 @@ function LoginContent() {
       <div className="w-full max-w-md">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <Link
-            href="/"
-            className="inline-block text-2xl font-bold tracking-tight text-[#302E29] mb-3 hover:text-[#C86446] transition-colors"
-          >
-            infimindss<span className="text-xs align-super opacity-70">°</span>
-          </Link>
+          <div className="flex justify-center mb-4">
+            <BrandLogo size="lg" />
+          </div>
 
           {isAdminContext ? (
             <>

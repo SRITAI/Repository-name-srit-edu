@@ -50,7 +50,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const commonClasses = cn(
-      "group relative inline-flex items-center justify-center select-none overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+      "group relative inline-flex items-center justify-center select-none overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] whitespace-nowrap shrink-0",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
       "hover:-translate-y-0.5 active:scale-[0.97] active:translate-y-0",
       "disabled:opacity-50 disabled:pointer-events-none disabled:transform-none",
@@ -93,7 +93,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <>
         {shineElement}
         {isLoading && <Loader2 size={16} className="animate-spin text-current" />}
-        <span>{children}</span>
+        <span className="whitespace-nowrap">{children}</span>
         {arrowElement}
       </>
     );

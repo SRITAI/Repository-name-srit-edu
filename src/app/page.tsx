@@ -24,9 +24,13 @@ import InstagramEmbedModal from "@/components/InstagramEmbedModal";
 import AgeGateModal from "@/components/AgeGateModal";
 import CookieConsent from "@/components/CookieConsent";
 import Navbar from "@/components/Navbar";
+import { BrandLogo } from "@/components/BrandLogo";
 import { AdExplorerModule } from "@/components/ad-explorer/AdExplorerModule";
 import { PlatformIcon } from "@/components/ad-explorer/PlatformIcon";
 import { HomepageFlowGallery } from "@/components/home/HomepageFlowGallery";
+import { LivingIdeaNetwork, NetworkNodeItem } from "@/components/home/LivingIdeaNetwork";
+import { AiAssistedProductionCard } from "@/components/home/AiAssistedProductionCard";
+import { EditorialTrendXrayCard } from "@/components/home/EditorialTrendXrayCard";
 
 import {
   SEED_CATEGORIES,
@@ -124,20 +128,18 @@ export default function MindlyPage() {
   const [activeToast, setActiveToast] = useState<string | null>(null);
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Category Filtering for Famous Ads
+  // Category Filtering for Famous Ads & Trending Reels
   const [activeAdCategory, setActiveAdCategory] = useState<string>("all");
+  const [selectedReelCat, setSelectedReelCat] = useState<string>("all");
+
+  // Filter trending reels based on active selection
+  const filteredReels =
+    selectedReelCat === "all"
+      ? SEED_REELS
+      : SEED_REELS.filter((r) => r.category_id === selectedReelCat);
 
   // FAQ Accordion State
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-
-  // Refs for Spline & Orbit
-  const leftCardRef = useRef<HTMLDivElement>(null);
-  const rightCardRef = useRef<HTMLDivElement>(null);
-  const centerPieceRef = useRef<HTMLDivElement>(null);
-  const haloContainerRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const pathLeftRef = useRef<SVGPathElement>(null);
-  const pathRightRef = useRef<SVGPathElement>(null);
 
   // Check adult verification on mount
   useEffect(() => {
@@ -168,212 +170,19 @@ export default function MindlyPage() {
     };
   }, [isCmdOpen]);
 
-  // Connecting Splines update
-  useEffect(() => {
-    function updateSplines() {
-      if (typeof window === "undefined" || window.innerWidth <= 860) return;
-
-      const stage = document.querySelector(".hero-stage");
-      const leftCard = leftCardRef.current;
-      const rightCard = rightCardRef.current;
-      const centerPiece = centerPieceRef.current;
-      const pathLeft = pathLeftRef.current;
-      const pathRight = pathRightRef.current;
-
-      if (!stage || !leftCard || !rightCard || !centerPiece || !pathLeft || !pathRight) return;
-
-      const stageRect = stage.getBoundingClientRect();
-      const leftRect = leftCard.getBoundingClientRect();
-      const rightRect = rightCard.getBoundingClientRect();
-      const centerRect = centerPiece.getBoundingClientRect();
-
-      const startLeftX = leftRect.left + leftRect.width / 2 - stageRect.left;
-      const startLeftY = leftRect.bottom - 4 - stageRect.top;
-
-      const startRightX = rightRect.left + 8 - stageRect.left;
-      const startRightY = rightRect.top + rightRect.height * 0.45 - stageRect.top;
-
-      const targetLeftX = centerRect.left + centerRect.width * 0.28 - stageRect.left;
-      const targetLeftY = centerRect.top + centerRect.height * 0.38 - stageRect.top;
-
-      const targetRightX = centerRect.left + centerRect.width * 0.72 - stageRect.left;
-      const targetRightY = centerRect.top + centerRect.height * 0.38 - stageRect.top;
-
-      const cp1LeftX = startLeftX;
-      const cp1LeftY = startLeftY + (targetLeftY - startLeftY) * 0.65;
-      const cp2LeftX = targetLeftX - 60;
-      const cp2LeftY = targetLeftY;
-
-      const cp1RightX = startRightX - (startRightX - targetRightX) * 0.4;
-      const cp1RightY = startRightY + 40;
-      const cp2RightX = targetRightX + 40;
-      const cp2RightY = targetRightY;
-
-      pathLeft.setAttribute(
-        "d",
-        `M ${startLeftX.toFixed(1)} ${startLeftY.toFixed(1)} C ${cp1LeftX.toFixed(1)} ${cp1LeftY.toFixed(1)}, ${cp2LeftX.toFixed(1)} ${cp2LeftY.toFixed(1)}, ${targetLeftX.toFixed(1)} ${targetLeftY.toFixed(1)}`
-      );
-      pathRight.setAttribute(
-        "d",
-        `M ${startRightX.toFixed(1)} ${startRightY.toFixed(1)} C ${cp1RightX.toFixed(1)} ${cp1RightY.toFixed(1)}, ${cp2RightX.toFixed(1)} ${cp2RightY.toFixed(1)}, ${targetRightX.toFixed(1)} ${targetRightY.toFixed(1)}`
-      );
-    }
-
-    updateSplines();
-    window.addEventListener("resize", updateSplines, { passive: true });
-    window.addEventListener("load", updateSplines);
-    return () => {
-      window.removeEventListener("resize", updateSplines);
-      window.removeEventListener("load", updateSplines);
-    };
-  }, []);
-
-  // 3D Orbital Carousel Animation Loop
-  useEffect(() => {
-    let rafId: number;
-    let rotation = 0;
-    let velocity = 0;
-    let isHovered = false;
-    let isDragging = false;
-    let dragStartX = 0;
-    let dragStartRotation = 0;
-    let lastDragX = 0;
-    let lastDragTime = 0;
-
-    const container = haloContainerRef.current;
-    if (!container) return;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const updateTransforms = () => {
-      if (!container) return;
-      const width = container.offsetWidth || 500;
-      const height = container.offsetHeight || 500;
-      const isMobile = window.innerWidth <= 640;
-
-      const rx = isMobile ? Math.min(160, width * 0.42) : Math.min(240, width * 0.45);
-      const ry = rx * 0.32;
-      const cx = width / 2;
-      const cy = height * 0.38;
-      const tiltAngle = -0.11;
-
-      const total = ORBIT_ITEMS.length;
-
-      for (let i = 0; i < total; i++) {
-        const el = itemRefs.current[i];
-        if (!el) continue;
-
-        const baseAngle = (i * 2 * Math.PI) / total;
-        const angle = baseAngle + rotation;
-
-        const cosA = Math.cos(angle);
-        const sinA = Math.sin(angle);
-
-        const x = cosA * rx;
-        const y = sinA * ry + x * Math.sin(tiltAngle);
-        const z = sinA;
-
-        const rotY = -cosA * 32;
-        const rotZ = rotY * 0.12;
-
-        if (z >= -0.15) {
-          const scale = isMobile ? 0.88 + z * 0.14 : 0.96 + z * 0.16;
-          const zIndex = Math.round(20 + z * 15);
-          el.style.transform = `translate3d(${cx + x}px, ${cy + y}px, 0px) translate(-50%, -50%) rotateY(${rotY.toFixed(1)}deg) rotateZ(${rotZ.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
-          el.style.zIndex = String(zIndex);
-          el.style.opacity = "1";
-          el.style.filter = "none";
-        } else {
-          const scale = isMobile ? 0.72 + (z + 1) * 0.16 : 0.82 + (z + 1) * 0.14;
-          const opacity = 0.52 + (z + 1) * 0.38;
-          const zIndex = Math.round(4 + (z + 1) * 4);
-          el.style.transform = `translate3d(${cx + x}px, ${cy + y}px, 0px) translate(-50%, -50%) rotateY(${rotY.toFixed(1)}deg) rotateZ(${rotZ.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
-          el.style.zIndex = String(zIndex);
-          el.style.opacity = opacity.toFixed(3);
-          el.style.filter = "blur(0.8px)";
-        }
-      }
-    };
-
-    const animate = () => {
-      if (!isDragging && !prefersReducedMotion) {
-        const baseSpeed = isHovered ? 0.0008 : 0.0032;
-        rotation += baseSpeed + velocity;
-        velocity *= 0.94;
-      }
-      updateTransforms();
-      rafId = requestAnimationFrame(animate);
-    };
-
-    rafId = requestAnimationFrame(animate);
-
-    const handlePointerDown = (e: PointerEvent) => {
-      isDragging = true;
-      dragStartX = e.clientX;
-      dragStartRotation = rotation;
-      lastDragX = e.clientX;
-      lastDragTime = performance.now();
-      velocity = 0;
-      try {
-        container.setPointerCapture(e.pointerId);
-      } catch {}
-    };
-
-    const handlePointerMove = (e: PointerEvent) => {
-      if (!isDragging) return;
-      const deltaX = e.clientX - dragStartX;
-      rotation = dragStartRotation + deltaX * 0.006;
-
-      const now = performance.now();
-      const dt = Math.max(1, now - lastDragTime);
-      const dx = e.clientX - lastDragX;
-      velocity = (dx / dt) * 0.04;
-      lastDragX = e.clientX;
-      lastDragTime = now;
-    };
-
-    const handlePointerUp = (e: PointerEvent) => {
-      isDragging = false;
-      try {
-        container.releasePointerCapture(e.pointerId);
-      } catch {}
-    };
-
-    const handlePointerEnter = () => {
-      isHovered = true;
-    };
-
-    const handlePointerLeave = () => {
-      isHovered = false;
-      isDragging = false;
-    };
-
-    container.addEventListener("pointerdown", handlePointerDown);
-    container.addEventListener("pointermove", handlePointerMove);
-    container.addEventListener("pointerup", handlePointerUp);
-    container.addEventListener("pointercancel", handlePointerUp);
-    container.addEventListener("pointerenter", handlePointerEnter);
-    container.addEventListener("pointerleave", handlePointerLeave);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      container.removeEventListener("pointerdown", handlePointerDown);
-      container.removeEventListener("pointermove", handlePointerMove);
-      container.removeEventListener("pointerup", handlePointerUp);
-      container.removeEventListener("pointercancel", handlePointerUp);
-      container.removeEventListener("pointerenter", handlePointerEnter);
-      container.removeEventListener("pointerleave", handlePointerLeave);
-    };
-  }, []);
-
   const triggerToast = (msg: string) => {
     setActiveToast(msg);
     if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
     toastTimeoutRef.current = setTimeout(() => {
       setActiveToast(null);
     }, 2800);
+  };
+
+  const handleNetworkNodeSelect = (node: NetworkNodeItem) => {
+    triggerToast(`${node.label}: ${node.desc}`);
+    if (node.href) {
+      router.push(node.href);
+    }
   };
 
   const handleCardClick = (item: OrbitItemData) => {
@@ -420,33 +229,20 @@ export default function MindlyPage() {
         {/* Header Navigation (Task B) */}
         <Navbar activeRoute="home" onOpenSearch={() => setIsCmdOpen(true)} />
 
-        {/* Existing Hero Stage (Preserved Intact) */}
+        {/* Editorial Hero Stage */}
         <main className="hero-stage">
-          {/* Connecting SVG Splines */}
-          <svg className="connecting-splines" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden="true">
-            <path id="spline-left" ref={pathLeftRef} className="spline-path" d="M 235 300 C 235 365, 340 410, 440 430" />
-            <path id="spline-right" ref={pathRightRef} className="spline-path" d="M 945 325 C 870 360, 780 410, 730 425" />
-            <circle className="pulse-dot-wire" r="2.5">
-              <animateMotion dur="4s" repeatCount="indefinite">
-                <mpath href="#spline-left" />
-              </animateMotion>
-            </circle>
-            <circle className="pulse-dot-wire" r="2.5">
-              <animateMotion dur="4.5s" repeatCount="indefinite">
-                <mpath href="#spline-right" />
-              </animateMotion>
-            </circle>
-          </svg>
+          {/* Subtle painterly gouache wash (abstract, non-human) */}
+          <div className="hero-paint-wash" aria-hidden="true" />
 
           {/* Top Right Rotating Circular Stamp */}
-          <div className="circular-stamp" aria-label="A more focused you, everyday">
+          <div className="circular-stamp" aria-label="Real humans, AI production, short-form ads">
             <svg className="rotating-text-svg" viewBox="0 0 120 120" width="88" height="88">
               <defs>
                 <path id="stampCircle" d="M 60,60 m -42,0 a 42,42 0 1,1 84,0 a 42,42 0 1,1 -84,0" />
               </defs>
               <text className="stamp-text">
                 <textPath href="#stampCircle" startOffset="0%">
-                  A MORE FOCUSED YOU • EVERYDAY •
+                  REAL HUMANS • AI PRODUCTION • SHORT-FORM ADS •
                 </textPath>
               </text>
             </svg>
@@ -457,207 +253,119 @@ export default function MindlyPage() {
             </div>
           </div>
 
-          {/* Left Floating Card */}
-          <div className="floating-card left-card" ref={leftCardRef} tabIndex={0}>
-            <div className="card-icon-box">
-              <div className="soundwave-icon" aria-hidden="true">
-                <span className="bar bar-1"></span>
-                <span className="bar bar-2"></span>
-                <span className="bar bar-3"></span>
-                <span className="bar bar-4"></span>
-                <span className="bar bar-5"></span>
-              </div>
-            </div>
-            <h3 className="card-title">Turn thoughts<br />into progress.</h3>
-            <p className="card-subtitle">Capture, organise and<br />do more.</p>
-          </div>
-
-          {/* Right Floating Card */}
-          <div className="floating-card right-card" ref={rightCardRef} tabIndex={0}>
-            <div className="card-avatar-stack" aria-label="Collaborators">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="Team member" className="avatar-img" />
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80" alt="Team member" className="avatar-img" />
-              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=80&q=80" alt="Team member" className="avatar-img" />
-              <span className="avatar-plus-badge">+</span>
-            </div>
-            <h3 className="card-title">Ideas, anytime,<br />anywhere.</h3>
-            <p className="card-subtitle">Sync across all<br />your devices.</p>
-          </div>
-
-          {/* Hero Content */}
-          <div className="hero-content">
-            <h1 className="hero-headline">
-              <span className="headline-regular">A clearer mind</span>
-              <span className="headline-italic">for a brighter you.</span>
-            </h1>
-
-            <p className="hero-subheading">
-              infimindss helps you capture ideas, organize your thoughts,<br />
-              and stay focused — all in one beautiful space.
-            </p>
-
-            <div className="hero-cta-group">
-              <Link href="/studio" className="btn-start-project btn-hero" aria-label="Start a project free">
-                <span className="btn-pulse-badge">
-                  <span className="pulse-dot-green"></span>
-                  <span>New</span>
-                </span>
-                <span>Start a project free</span>
-                <span className="btn-arrow-circle" aria-hidden="true">
-                  <ArrowUpRight size={15} className="btn-arrow-icon primary" />
-                  <ArrowUpRight size={15} className="btn-arrow-icon clone" />
-                </span>
-              </Link>
-
-              <button type="button" className="btn-video-cta" onClick={() => setIsVideoModalOpen(true)}>
-                <span className="video-play-disc" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
-                    <polygon points="6 4 20 12 6 20 6 4"></polygon>
-                  </svg>
-                </span>
-                <span>Watch showreel</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Centerpiece Visual with 3D Orbiting Halo Ribbon */}
-          <div className="hero-centerpiece" id="hero-centerpiece" ref={centerPieceRef}>
-            <div className="centerpiece-canvas">
-              <img
-                src="/assets/hero_man_clean.png"
-                alt="Real creator portrait surrounded by orbiting productivity and creative ideas"
-                className="center-man-image"
-              />
-
-              <div
-                className="orbiting-halo-container"
-                ref={haloContainerRef}
-                title="Drag or swipe to rotate the halo"
-                aria-label="Orbiting productivity tools. Drag horizontally to rotate."
-              >
-                {ORBIT_ITEMS.map((item, index) => {
-                  if (item.type === "chip") {
-                    return (
-                      <div
-                        key={item.id}
-                        ref={(el) => { itemRefs.current[index] = el; }}
-                        className={`halo-chip chip-${item.id}`}
-                        onClick={() => handleCardClick(item)}
-                        tabIndex={0}
-                        role="button"
-                        aria-label={`${item.title}: ${item.desc}`}
-                      >
-                        <span className={`chip-icon ${item.iconClass || ""}`}>
-                          {item.icon === "spark" && (
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
-                              <path d="M9 18h6"></path>
-                              <path d="M10 22h4"></path>
-                              <path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6v1a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-1c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"></path>
-                            </svg>
-                          )}
-                          {item.icon === "calendar" && (
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
-                              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                              <line x1="16" y1="2" x2="16" y2="6"></line>
-                              <line x1="8" y1="2" x2="8" y2="6"></line>
-                              <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                          )}
-                          {item.icon === "target" && (
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
-                              <circle cx="12" cy="12" r="10"></circle>
-                              <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
-                            </svg>
-                          )}
-                          {item.icon === "flame" && (
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
-                              <path d="M12 2c0 4-5 6-5 10a7 7 0 0 0 14 0c0-4-5-6-5-10z"></path>
-                            </svg>
-                          )}
-                          {item.icon === "sun" && (
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
-                              <circle cx="12" cy="12" r="4"></circle>
-                              <line x1="12" y1="2" x2="12" y2="4"></line>
-                              <line x1="12" y1="20" x2="12" y2="22"></line>
-                              <line x1="2" y1="12" x2="4" y2="12"></line>
-                              <line x1="20" y1="12" x2="22" y2="12"></line>
-                            </svg>
-                          )}
-                        </span>
-                        <div className="chip-text">
-                          <span className="chip-title">{item.title}</span>
-                          <span className="chip-desc">{item.desc}</span>
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  if (item.type === "image") {
-                    return (
-                      <div
-                        key={item.id}
-                        ref={(el) => { itemRefs.current[index] = el; }}
-                        className={`halo-chip chip-image chip-${item.id}`}
-                        onClick={() => handleCardClick(item)}
-                        tabIndex={0}
-                        role="button"
-                        aria-label={item.badge}
-                      >
-                        <div className="chip-image-inner">
-                          <img src={item.imageSrc} alt={item.imageAlt} />
-                          {item.badge && <span className="chip-image-badge">{item.badge}</span>}
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <div
-                      key={item.id}
-                      ref={(el) => { itemRefs.current[index] = el; }}
-                      className="halo-chip chip-panel"
-                      onClick={() => handleCardClick(item)}
-                      aria-hidden="true"
-                    >
-                      <div className="panel-glimmer"></div>
-                    </div>
-                  );
-                })}
+          <div className="hero-inner-container">
+            {/* Hero Main Content */}
+            <div className="hero-content">
+              {/* Eyebrow */}
+              <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-[#C86446]/10 border border-[#C86446]/25 text-[#C86446] text-xs font-mono font-semibold uppercase tracking-wider mb-4 text-center">
+                <span>HUMAN CREATIVITY × AI PRODUCTION</span>
               </div>
 
-              {activeToast && (
-                <div className="orbit-toast show" role="status" aria-live="polite">
-                  <span className="toast-dot"></span>
-                  <span>{activeToast}</span>
+              {/* Headline */}
+              <h1 className="hero-headline">
+                <span className="headline-regular">Your next ad starts</span>{" "}
+                <span className="headline-italic">with a sharper story.</span>
+              </h1>
+
+              {/* Description */}
+              <p className="hero-subheading">
+                Trend research, AI-assisted scripts, human-led production, and polished graphics—brought together to help brands create compelling short-form video.
+              </p>
+
+              {/* CTA Group */}
+              <div className="hero-cta-group">
+                <Link href="/studio" className="btn-start-project btn-hero" aria-label="Start a video project">
+                  <span className="btn-pulse-badge">
+                    <span className="pulse-dot-green"></span>
+                    <span>Studio</span>
+                  </span>
+                  <span>Start a video project</span>
+                  <span className="btn-arrow-circle" aria-hidden="true">
+                    <ArrowUpRight size={15} className="btn-arrow-icon primary" />
+                    <ArrowUpRight size={15} className="btn-arrow-icon clone" />
+                  </span>
+                </Link>
+
+                <a href="#trending-reels" className="btn-video-cta" aria-label="Explore trending reels">
+                  <span className="video-play-disc" aria-hidden="true">
+                    <Instagram size={13} />
+                  </span>
+                  <span>Explore trending reels</span>
+                </a>
+              </div>
+
+              {/* Central Animated Node Network: infimindss verse with Brain & Hands */}
+              <div className="hero-living-network-container mt-6 sm:mt-8 w-full" id="verse">
+                <LivingIdeaNetwork onNodeSelect={handleNetworkNodeSelect} />
+              </div>
+            </div>
+
+            {/* Flanking Supporting Cards */}
+            <div className="hero-flanking-cards">
+              {/* Left Floating Card */}
+              <div className="floating-card left-card" tabIndex={0}>
+                <div className="card-icon-box">
+                  <div className="soundwave-icon" aria-hidden="true">
+                    <span className="bar bar-1"></span>
+                    <span className="bar bar-2"></span>
+                    <span className="bar bar-3"></span>
+                    <span className="bar bar-4"></span>
+                    <span className="bar bar-5"></span>
+                  </div>
                 </div>
-              )}
+                <h3 className="card-title">Hook, script &amp;<br />visual rhythm.</h3>
+                <p className="card-subtitle">Crafted to stop the scroll<br />on Instagram Reels.</p>
+              </div>
+
+              {/* Right Floating Card */}
+              <div className="floating-card right-card" tabIndex={0}>
+                <div className="card-avatar-stack" aria-label="Real creators">
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="Creator" className="avatar-img" />
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80" alt="Creator" className="avatar-img" />
+                  <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=80&q=80" alt="Creator" className="avatar-img" />
+                  <span className="avatar-plus-badge">+</span>
+                </div>
+                <h3 className="card-title">Real creators<br />on camera.</h3>
+                <p className="card-subtitle">Authentic charisma<br />paired with AI speed.</p>
+              </div>
             </div>
           </div>
 
-          {/* Bottom Left Proof */}
-          <div className="bottom-badge bottom-left-proof">
-            <div className="proof-bar" aria-hidden="true"></div>
-            <p className="proof-text">Trusted by 50,000+<br />creators worldwide.</p>
-            <div className="proof-avatars" aria-label="Creator avatars">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="Creator" className="proof-avatar" />
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80" alt="Creator" className="proof-avatar" />
-              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=80&q=80" alt="Creator" className="proof-avatar" />
-              <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=80&q=80" alt="Creator" className="proof-avatar" />
-              <span className="proof-avatar-plus">+</span>
+          {/* Interactive Toast */}
+          {activeToast && (
+            <div className="orbit-toast show" role="status" aria-live="polite">
+              <span className="toast-dot"></span>
+              <span>{activeToast}</span>
             </div>
-          </div>
+          )}
 
-          {/* Bottom Right Credo */}
-          <div className="bottom-badge bottom-right-credo">
-            <div className="credo-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M12 0 L14 9 L23 12 L14 15 L12 24 L10 15 L1 12 L10 9 Z"></path>
-              </svg>
+          {/* Hero Bottom Bar: Proof & Credo */}
+          <div className="hero-bottom-bar">
+            {/* Bottom Left Proof */}
+            <div className="bottom-badge bottom-left-proof">
+              <div className="proof-bar" aria-hidden="true"></div>
+              <p className="proof-text">Trusted by 50+<br className="hidden sm:inline" /> scaling D2C brands.</p>
+              <div className="proof-avatars" aria-label="Creator avatars">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="Creator" className="proof-avatar" />
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80" alt="Creator" className="proof-avatar" />
+                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=80&q=80" alt="Creator" className="proof-avatar" />
+                <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=80&q=80" alt="Creator" className="proof-avatar" />
+                <span className="proof-avatar-plus">+</span>
+              </div>
             </div>
-            <div className="credo-line" aria-hidden="true"></div>
-            <div className="credo-text">
-              <span>Less chaos.</span>
-              <span>More clarity.</span>
+
+            {/* Bottom Right Credo */}
+            <div className="bottom-badge bottom-right-credo">
+              <div className="credo-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M12 0 L14 9 L23 12 L14 15 L12 24 L10 15 L1 12 L10 9 Z"></path>
+                </svg>
+              </div>
+              <div className="credo-line" aria-hidden="true"></div>
+              <div className="credo-text">
+                <span>Sharper stories.</span>
+                <span>Higher converting reels.</span>
+              </div>
             </div>
           </div>
         </main>
@@ -666,7 +374,7 @@ export default function MindlyPage() {
             FEATURED: Cinematic Flow Video Collage (Google Flow-Inspired)
             Staggered drifting rows of real human creator footage in cream mats
             ==================================================================== */}
-        <section className="relative w-full z-10 -mt-6 sm:-mt-8 mb-4">
+        <section className="flow-gallery-section relative w-full z-10 pt-10 sm:pt-14 pb-10" id="flow-gallery">
           <HomepageFlowGallery />
         </section>
 
@@ -730,7 +438,7 @@ export default function MindlyPage() {
         </section>
 
         {/* ====================================================================
-            NEW SECTION 2: Trending on Instagram
+            FEATURED: Trending Reels (Short-Form Intelligence & Formats)
             ==================================================================== */}
         <section className="home-section" id="trending-reels">
           <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px" }}>
@@ -742,38 +450,96 @@ export default function MindlyPage() {
                 Trending on <em>Instagram.</em>
               </h2>
               <p className="section-desc">
-                Hand-curated viral formats created by real humans. Verified engagement benchmarks.
+                Browse timely short-form examples, creative formats, and verified benchmarks created by real human performers.
               </p>
             </div>
             <Link href="/explore" className="btn-video-cta" style={{ fontSize: "0.85rem" }}>
-              <span>View all trending reels</span>
+              <span>Explore all reels</span>
               <ArrowUpRight size={14} />
             </Link>
           </div>
 
-          <div className="reels-scroll-row">
-            {SEED_REELS.map((reel) => (
-              <div
-                key={reel.id}
-                className="reel-card-916"
-                onClick={() => setSelectedReel(reel)}
+          {/* Simple Interactive Category Filter Chips */}
+          <div className="category-chips-row" style={{ marginBottom: "20px" }}>
+            <button
+              type="button"
+              className={`category-pill-btn ${selectedReelCat === "all" ? "active" : ""}`}
+              onClick={() => setSelectedReelCat("all")}
+            >
+              <span>All Formats</span>
+            </button>
+            {SEED_CATEGORIES.slice(0, 5).map((cat) => (
+              <button
+                key={`reel-cat-${cat.id}`}
+                type="button"
+                className={`category-pill-btn ${selectedReelCat === cat.id ? "active" : ""}`}
+                onClick={() => setSelectedReelCat(cat.id)}
               >
-                {reel.is_seed && <span className="sample-badge">Sample</span>}
-                <img src={reel.thumbnail_url || ""} alt="" className="reel-thumb-img" />
-                <div className="reel-card-overlay">
-                  <div className="reel-top-meta">
-                    <span className="ig-badge-pill">
-                      <Instagram size={11} /> Reel
-                    </span>
-                    <span className="reel-views-tag">{reel.views_label} views</span>
-                  </div>
-                  <div className="reel-bottom-info">
-                    <span className="reel-creator-handle">{reel.creator_handle}</span>
-                    <p className="reel-caption-text">{reel.caption}</p>
+                <span className="category-pill-dot" style={{ backgroundColor: cat.accent_color || "#C86446" }} />
+                <span>{cat.name}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="reels-scroll-row">
+            {filteredReels.map((reel) => {
+              const cat = SEED_CATEGORIES.find((c) => c.id === reel.category_id);
+              return (
+                <div
+                  key={reel.id}
+                  className="reel-card-916 group cursor-pointer"
+                  onClick={() => setSelectedReel(reel)}
+                >
+                  {reel.is_seed && <span className="sample-badge">Sample</span>}
+                  <img src={reel.thumbnail_url || ""} alt={reel.caption} className="reel-thumb-img transition-transform duration-500 group-hover:scale-105" />
+                  <div className="reel-card-overlay">
+                    <div className="reel-top-meta flex items-center justify-between w-full">
+                      <div className="flex items-center gap-1.5">
+                        <span className="ig-badge-pill">
+                          <Instagram size={11} /> Reel
+                        </span>
+                        {cat && (
+                          <span className="text-[9px] font-mono font-medium px-1.5 py-0.5 rounded bg-black/40 text-white/90 backdrop-blur-sm border border-white/10">
+                            {cat.name.split(" ")[0]}
+                          </span>
+                        )}
+                      </div>
+                      <span className="reel-views-tag">{reel.views_label} views</span>
+                    </div>
+                    <div className="reel-bottom-info">
+                      <span className="reel-creator-handle">{reel.creator_handle}</span>
+                      <p className="reel-caption-text line-clamp-2">{reel.caption}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ====================================================================
+            FEATURED: Creative Capabilities & Intelligence (Image 1 & Image 2)
+            ==================================================================== */}
+        <section className="home-section" id="capabilities">
+          <div className="section-header">
+            <span className="section-eyebrow">
+              <Sparkles size={14} className="text-[#C86446]" /> Creative Capabilities &amp; Intelligence
+            </span>
+            <h2 className="section-title">
+              Trend research, neural scripting, <br />
+              <em>and real human production.</em>
+            </h2>
+            <p className="section-desc">
+              How we deconstruct short-form advertising down to the microsecond and pair deep data with authentic on-camera performance.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-8 mt-6 max-w-5xl mx-auto">
+            {/* Reference Image 2: Editorial X-Ray Trend Intelligence Card */}
+            <EditorialTrendXrayCard />
+
+            {/* Reference Image 1: Polyghost Point-Cloud & Scanline AI-Assisted Production Suite */}
+            <AiAssistedProductionCard />
           </div>
         </section>
 
@@ -876,6 +642,29 @@ export default function MindlyPage() {
             <p className="section-desc">
               We combine real on-camera creators with custom AI audio and editing pipelines to deliver high-converting brand videos in 72 hours.
             </p>
+          </div>
+
+          {/* Connected Step Accents in Pipeline (Living Node Motif) */}
+          <div className="hidden lg:flex items-center justify-between max-w-4xl mx-auto px-8 mb-6 relative z-10" aria-hidden="true">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#C86446] ring-4 ring-[#C86446]/20" />
+              <span className="text-[11px] font-mono text-[#302E29] font-semibold">1. Brief</span>
+            </div>
+            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#C86446]/50 via-[#302E29]/20 to-[#C86446]/50 mx-4 border-t border-dashed border-[#C86446]/40" />
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#302E29]/50 ring-4 ring-[#302E29]/10" />
+              <span className="text-[11px] font-mono text-[#302E29] font-semibold">2. Shoot</span>
+            </div>
+            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#302E29]/20 via-[#C86446]/50 to-[#302E29]/20 mx-4 border-t border-dashed border-[#C86446]/40" />
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#302E29]/50 ring-4 ring-[#302E29]/10" />
+              <span className="text-[11px] font-mono text-[#302E29] font-semibold">3. Enhance</span>
+            </div>
+            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#302E29]/20 via-[#C86446]/50 to-[#C86446]/80 mx-4 border-t border-dashed border-[#C86446]/40" />
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#C86446] ring-4 ring-[#C86446]/20" />
+              <span className="text-[11px] font-mono text-[#302E29] font-semibold">4. Deliver</span>
+            </div>
           </div>
 
           <div className="pipeline-grid">
@@ -1133,9 +922,7 @@ export default function MindlyPage() {
           <footer className="footer-container">
             <div className="footer-top">
               <div>
-                <Link href="/" className="brand-logo" style={{ fontSize: "1.5rem" }}>
-                  infimindss<span className="logo-degree">°</span>
-                </Link>
+                <BrandLogo size="lg" />
                 <p style={{ fontSize: "0.86rem", color: "#71717A", marginTop: "8px", maxWidth: "340px" }}>
                   Real humans. AI-fast. Zero robotic-looking videos. The modern video marketing studio for fast-moving brands.
                 </p>
