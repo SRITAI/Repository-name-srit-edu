@@ -15,7 +15,7 @@ export function Badge({
 }: BadgeProps) {
   const variantStyles = {
     default: "bg-surface-2 text-text-muted border border-border",
-    lime: "bg-accent/15 text-accent border border-accent/30 font-semibold shadow-[0_0_12px_rgba(215,255,61,0.2)]",
+    lime: "bg-accent/15 text-accent border border-accent/30 font-semibold shadow-paper-sm",
     violet: "bg-accent-2/15 text-accent-2 border border-accent-2/30 font-semibold",
     orange: "bg-accent-3/15 text-accent-3 border border-accent-3/30 font-semibold",
     danger: "bg-danger/15 text-danger border border-danger/30 font-bold",

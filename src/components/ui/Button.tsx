@@ -38,7 +38,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variantClasses = {
       primary:
-        "bg-accent text-accent-ink font-semibold shadow-[0_0_0_1px_rgba(215,255,61,0.4),0_8px_32px_rgba(215,255,61,0.25)] hover:shadow-[0_0_0_1px_rgba(215,255,61,0.6),0_12px_44px_rgba(215,255,61,0.38)] hover:bg-[#e4ff5e]",
+        "bg-accent text-accent-ink font-semibold shadow-[0_4px_16px_rgba(200,100,70,0.25)] hover:shadow-[0_6px_24px_rgba(200,100,70,0.38)] hover:bg-[#b55539]",
       secondary:
         "bg-surface-2 text-text border border-border hover:border-border-strong hover:bg-surface-3 shadow-sm",
       glass:
@@ -73,7 +73,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         aria-hidden="true"
         className={cn(
           "relative flex items-center justify-center rounded-full overflow-hidden flex-shrink-0 transition-transform duration-300",
-          variant === "primary" ? "w-6 h-6 bg-accent-ink text-accent" : "w-6 h-6 bg-surface-3 text-text",
+          variant === "primary" ? "w-6 h-6 bg-white/20 text-white" : "w-6 h-6 bg-surface-3 text-text",
           size === "sm" && "w-5 h-5",
           size === "lg" && "w-7 h-7"
         )}

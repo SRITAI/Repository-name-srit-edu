@@ -54,7 +54,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             error
               ? "border-danger shadow-[0_0_0_1px_rgba(255,92,108,0.35)]"
               : isFocused
-              ? "border-accent shadow-[0_0_0_1px_rgba(215,255,61,0.35),0_0_24px_rgba(215,255,61,0.12)]"
+              ? "border-accent shadow-[0_0_0_1px_rgba(200,100,70,0.35),0_0_20px_rgba(200,100,70,0.12)]"
               : "border-border hover:border-border-strong",
             "h-[52px] px-4"
           )}

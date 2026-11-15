@@ -45,7 +45,7 @@ export function Stepper({
               className={cn(
                 "relative z-10 flex items-center gap-2 py-1.5 px-3.5 rounded-full text-xs font-sans font-medium transition-all duration-200",
                 isCurrent
-                  ? "bg-accent text-accent-ink font-bold shadow-[0_0_16px_rgba(215,255,61,0.25)]"
+                  ? "bg-accent text-white font-bold shadow-[0_0_16px_rgba(200,100,70,0.25)]"
                   : isCompleted
                   ? "text-accent hover:bg-surface-3 cursor-pointer"
                   : isClickable

@@ -56,19 +56,19 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-black/85 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-[#1E1C19]/65 backdrop-blur-md animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="ad-modal-title"
     >
       <div
-        className="relative w-full max-w-3xl max-h-[96vh] sm:max-h-[92vh] overflow-y-auto rounded-2xl sm:rounded-3xl bg-surface border border-border-strong shadow-[0_20px_60px_rgba(0,0,0,0.85)] text-text p-4 sm:p-8 space-y-5 sm:space-y-6 scrollbar-thin"
+        className="relative w-full max-w-3xl max-h-[96vh] sm:max-h-[92vh] overflow-y-auto rounded-2xl sm:rounded-3xl bg-surface border border-border shadow-[0_24px_70px_rgba(48,46,41,0.2)] text-text p-4 sm:p-8 space-y-5 sm:space-y-6 scrollbar-thin"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 p-2 rounded-full bg-surface-2 text-text-muted hover:text-white hover:bg-surface-3 transition-colors border border-border z-30"
+          className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 p-2 rounded-full bg-surface-2 text-text-muted hover:text-text hover:bg-surface-3 transition-colors border border-border z-30"
           aria-label="Close details"
         >
           <X className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -78,7 +78,7 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 pr-10 sm:pr-14">
           {/* Platform Badge */}
           <div
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border shadow-sm"
             style={{
               backgroundColor: platformConfig.badgeBg,
               color: platformConfig.badgeText,
@@ -105,7 +105,7 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
           </Badge>
 
           {ad.is_featured && (
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-accent/15 text-accent border border-accent/30">
               ★ EDITOR&rsquo;S PICK
             </span>
           )}
@@ -114,9 +114,9 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
         {/* Main Title & Brand */}
         <div className="space-y-1">
           <div className="text-xs font-mono text-text-muted">
-            Brand / Advertiser: <span className="text-white font-medium">{ad.advertiser_name || ad.brand_name}</span>
+            Brand / Advertiser: <span className="text-text font-semibold">{ad.advertiser_name || ad.brand_name}</span>
           </div>
-          <h2 id="ad-modal-title" className="text-2xl sm:text-3xl font-bold font-sans text-white tracking-tight">
+          <h2 id="ad-modal-title" className="text-2xl sm:text-3xl font-bold font-serif text-text tracking-tight">
             {ad.title}
           </h2>
           {ad.short_description && (
@@ -141,39 +141,39 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
         </div>
 
         {/* MAKE SAME VIDEO WITH US - Veyra AI Video Studio Feature Showcase */}
-        <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#17191C] via-[#1F2327] to-[#17191C] border border-[#C8FF00]/40 p-4 sm:p-6 shadow-[0_0_40px_rgba(200,255,0,0.08)]">
-          {/* Subtle animated ambient glow */}
-          <div className="absolute -top-16 -right-16 w-52 h-52 rounded-full bg-[#C8FF00]/10 blur-3xl pointer-events-none animate-pulse" />
-          <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-[#38bdf8]/10 blur-3xl pointer-events-none animate-pulse" />
+        <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-surface-2 border border-accent/30 p-4 sm:p-6 shadow-paper-sm">
+          {/* Subtle animated ambient watercolor wash */}
+          <div className="absolute -top-16 -right-16 w-52 h-52 rounded-full bg-accent/10 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-accent-2/10 blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-5">
             <div className="space-y-2.5 max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30 text-xs font-mono font-bold tracking-wider">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/15 text-accent border border-accent/30 text-xs font-mono font-bold tracking-wider">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>MAKE SAME VIDEO WITH US · VEYRA AI STUDIO</span>
+                <span>MAKE SAME VIDEO WITH US · STUDIO CHAMBER</span>
               </div>
 
-              <h3 className="text-base sm:text-xl font-bold font-sans text-white tracking-tight leading-snug">
+              <h3 className="text-base sm:text-xl font-bold font-serif text-text tracking-tight leading-snug">
                 Want to recreate this winning video ad for your brand?
               </h3>
 
-              <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed">
-                Take the proven hook, pacing, and visual style of this <span className="text-[#C8FF00] font-semibold">{ad.brand_name}</span> ad. Our Human + AI Video Studio produces custom-scripted variants, AI voiceovers, and high-converting 9:16 reels in minutes.
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
+                Take the proven hook, pacing, and visual style of this <span className="text-accent font-semibold">{ad.brand_name}</span> ad. Our Human + AI Video Studio produces custom-scripted variants, authentic human creators on camera, and high-converting 9:16 reels in 72 hours.
               </p>
 
               {/* Feature Tags */}
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 text-[11px] font-mono text-neutral-300">
-                <span className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
-                  <Wand2 className="w-3 h-3 text-[#C8FF00]" />
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 text-[11px] font-mono text-text">
+                <span className="flex items-center gap-1.5 bg-surface px-2.5 py-1 rounded-lg border border-border shadow-xs">
+                  <Wand2 className="w-3 h-3 text-accent" />
                   <span>Script &amp; Hook Generator</span>
                 </span>
-                <span className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
-                  <Film className="w-3 h-3 text-[#C8FF00]" />
+                <span className="flex items-center gap-1.5 bg-surface px-2.5 py-1 rounded-lg border border-border shadow-xs">
+                  <Film className="w-3 h-3 text-accent" />
                   <span>9:16 Vertical &amp; 16:9 Landscape</span>
                 </span>
-                <span className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
-                  <Zap className="w-3 h-3 text-[#C8FF00]" />
-                  <span>Ready in 1-Click</span>
+                <span className="flex items-center gap-1.5 bg-surface px-2.5 py-1 rounded-lg border border-border shadow-xs">
+                  <Zap className="w-3 h-3 text-accent" />
+                  <span>Ready in 72 Hours</span>
                 </span>
               </div>
             </div>
@@ -187,16 +187,16 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
               >
                 <button
                   type="button"
-                  className="w-full px-5 py-3.5 rounded-xl bg-[#C8FF00] hover:bg-[#d8ff3d] text-black font-bold font-mono text-xs sm:text-sm min-h-[46px] flex items-center justify-center gap-2 shadow-lg shadow-[#C8FF00]/25 active:scale-[0.98] transition-all cursor-pointer"
+                  className="w-full px-5 py-3.5 rounded-xl bg-accent hover:bg-[#b55539] text-white font-bold font-sans text-xs sm:text-sm min-h-[46px] flex items-center justify-center gap-2 shadow-paper active:scale-[0.98] transition-all cursor-pointer"
                 >
-                  <Sparkles className="w-4 h-4 fill-black" />
+                  <Sparkles className="w-4 h-4 fill-white" />
                   <span>Make Same Video With Us ↗</span>
                 </button>
               </Link>
 
               <Link
                 href={`/studio/projects?create=true&ref=${ad.id}`}
-                className="text-center text-[11px] font-mono text-neutral-400 hover:text-white transition-colors py-1"
+                className="text-center text-[11px] font-mono text-text-muted hover:text-text transition-colors py-1"
               >
                 Or open Studio workspace &rarr;
               </Link>
@@ -212,7 +212,7 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
               <Zap className="w-3.5 h-3.5" />
               <span>Hook Psychology</span>
             </div>
-            <p className="text-sm text-white italic font-medium leading-relaxed">
+            <p className="text-sm text-text italic font-medium leading-relaxed">
               &ldquo;{ad.hook_summary || "Direct value proposition delivered in initial 3 seconds."}&rdquo;
             </p>
           </div>
@@ -223,7 +223,7 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
               <Sparkles className="w-3.5 h-3.5" />
               <span>Call to Action &amp; Offer</span>
             </div>
-            <div className="text-sm font-semibold text-white">
+            <div className="text-sm font-semibold text-text">
               {ad.call_to_action || "Learn More ↗"}
             </div>
             <div className="text-xs text-text-muted">
@@ -310,10 +310,10 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
           </div>
 
           {ad.performance_evidence_note && (
-            <div className="p-3.5 rounded-xl bg-surface-3/50 border border-border text-xs text-text-muted flex items-start gap-2.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-xl bg-surface-2 border border-border text-xs text-text-muted flex items-start gap-2.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold text-white">Verification Evidence: </span>
+                <span className="font-semibold text-text">Verification Evidence: </span>
                 <span>{ad.performance_evidence_note}</span>
                 <span className="block text-[11px] text-text-faint mt-1">
                   * Note: Evidence reflects observed runtime and active variants in public transparency libraries, not self-reported revenue or ROAS.
@@ -328,11 +328,11 @@ export function AdDetailModal({ ad, onClose }: AdDetailModalProps) {
           <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-text-muted">
             <div className="flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-accent" />
-              <span>Verified: <strong className="text-white">{formattedDate}</strong></span>
+              <span>Verified: <strong className="text-text">{formattedDate}</strong></span>
             </div>
             {ad.first_seen_at && (
               <div className="text-text-faint">
-                · First Seen: <span className="text-neutral-300">{new Date(ad.first_seen_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                · First Seen: <span className="text-text-muted">{new Date(ad.first_seen_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
               </div>
             )}
           </div>

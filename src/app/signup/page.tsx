@@ -73,28 +73,28 @@ export default function SignupPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FAF9F6] text-[#111111] py-12 px-4 sm:px-6 flex items-center justify-center font-sans antialiased">
+    <main className="min-h-screen bg-[#F6F1E7] text-[#302E29] py-12 px-4 sm:px-6 flex items-center justify-center font-sans antialiased">
       <div className="w-full max-w-md">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block text-2xl font-bold tracking-tight text-[#111111] mb-3">
+          <Link href="/" className="inline-block text-2xl font-bold tracking-tight text-[#302E29] mb-3 hover:text-[#C86446] transition-colors">
             infimindss<span className="text-xs align-super opacity-70">°</span>
           </Link>
-          <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/60 px-3 py-1 rounded-full w-fit mx-auto mb-3">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+          <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-[#5B7065] bg-[#5B7065]/10 border border-[#5B7065]/25 px-3 py-1 rounded-full w-fit mx-auto mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-[#5B7065]" />
             <span>Human + AI Studio</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-serif text-[#111111] leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-serif text-[#302E29] leading-tight">
             Create high-performing ads <br />
-            <span className="italic font-normal">with real humans & AI.</span>
+            <span className="italic font-normal text-[#716C63]">with real humans & AI.</span>
           </h1>
-          <p className="text-xs text-[#6B6B6B] mt-2">
+          <p className="text-xs text-[#716C63] mt-2">
             Get your first viral reel draft in under 48 hours. Zero synthetic face videos.
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-black/[0.06]">
+        <div className="bg-[#FFFCF5] rounded-3xl p-6 sm:p-8 shadow-paper-lg border border-[rgba(48,46,41,0.12)]">
           {errorMsg && (
             <div className="mb-5 p-3 rounded-xl bg-red-50 border border-red-200/80 text-xs text-red-700 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />

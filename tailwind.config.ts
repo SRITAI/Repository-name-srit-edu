@@ -34,19 +34,41 @@ const config: Config = {
           2: "var(--accent-2)",
           3: "var(--accent-3)",
         },
+        terracotta: {
+          DEFAULT: "#C86446",
+          dark: "#B85637",
+          light: "#EAD5CE",
+        },
+        sage: {
+          DEFAULT: "#5B7065",
+          light: "#D8E0DA",
+        },
+        dusty: {
+          blue: "#4A6D88",
+        },
+        butter: {
+          DEFAULT: "#E2C879",
+          light: "#F5ECD0",
+        },
+        lavender: {
+          DEFAULT: "#7C6C92",
+          light: "#E3DFEB",
+        },
         success: "var(--success)",
         warning: "var(--warning)",
         danger: "var(--danger)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)", "Inter Tight", "Geist", "Inter", "sans-serif"],
+        sans: ["var(--font-sans)", "Plus Jakarta Sans", "Inter Tight", "sans-serif"],
         serif: ["var(--font-serif)", "Instrument Serif", "Georgia", "serif"],
-        mono: ["var(--font-mono)", "Geist Mono", "JetBrains Mono", "monospace"],
+        mono: ["var(--font-mono)", "JetBrains Mono", "monospace"],
       },
       boxShadow: {
+        paper: "0 4px 16px -2px rgba(48, 46, 41, 0.08), 0 2px 6px -1px rgba(48, 46, 41, 0.04)",
+        "paper-sm": "0 1px 3px rgba(48, 46, 41, 0.06), 0 1px 2px rgba(48, 46, 41, 0.04)",
+        "paper-lg": "0 16px 36px -6px rgba(48, 46, 41, 0.10), 0 4px 12px -2px rgba(48, 46, 41, 0.05)",
+        "paper-lift": "0 12px 28px -4px rgba(48, 46, 41, 0.12), 0 0 0 1px rgba(48, 46, 41, 0.08)",
         glow: "var(--glow-accent)",
-        "glow-violet": "0 0 0 1px rgba(139,108,255,.35), 0 8px 40px rgba(139,108,255,.18)",
-        spotlight: "0 24px 60px -12px rgba(0,0,0,.7)",
       },
       borderRadius: {
         "3xl": "24px",

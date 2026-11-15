@@ -341,7 +341,7 @@ export function AdExplorerModule({
           </div>
         </div>
 
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white font-sans">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-text font-serif">
           Ad <span className="font-serif italic text-accent font-normal">Explorer.</span>
         </h2>
 
@@ -361,7 +361,7 @@ export function AdExplorerModule({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search any brand, product, company, or keyword…"
-              className="w-full h-12 sm:h-14 pl-10 sm:pl-12 pr-10 rounded-2xl bg-surface-2 border border-border text-white placeholder-text-muted text-sm sm:text-base focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all font-sans"
+              className="w-full h-12 sm:h-14 pl-10 sm:pl-12 pr-10 rounded-2xl bg-surface-2 border border-border text-text placeholder-text-muted text-sm sm:text-base focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all font-sans"
             />
             {query && (
               <button
@@ -370,7 +370,7 @@ export function AdExplorerModule({
                   setQuery("");
                   setDebouncedQuery("");
                 }}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-white"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text"
                 aria-label="Clear query"
               >
                 <X className="w-4 h-4" />
@@ -424,7 +424,7 @@ export function AdExplorerModule({
               onClick={() => handlePlatformClick("all")}
               className={`h-10 px-4 rounded-full text-xs font-sans font-medium transition-all duration-200 flex items-center gap-2 border select-none whitespace-nowrap flex-shrink-0 ${
                 isAllPlatformsSelected
-                  ? "bg-accent text-accent-ink font-bold border-accent shadow-[0_0_16px_rgba(215,255,61,0.25)]"
+                  ? "bg-accent text-white font-bold border-accent shadow-paper-sm"
                   : "bg-surface-2 text-text border-border hover:bg-surface-3 hover:border-border-strong"
               }`}
             >
@@ -444,7 +444,7 @@ export function AdExplorerModule({
                   onClick={() => handlePlatformClick(plat)}
                   className={`h-10 px-4 rounded-full text-xs font-sans font-medium transition-all duration-200 flex items-center gap-2 border select-none whitespace-nowrap flex-shrink-0 ${
                     isSelected
-                      ? "bg-accent/20 text-accent font-semibold border-accent shadow-[0_0_16px_rgba(215,255,61,0.18)]"
+                      ? "bg-accent/15 text-accent font-semibold border-accent shadow-paper-sm"
                       : "bg-surface-2 text-text border-border hover:bg-surface-3 hover:border-border-strong"
                   }`}
                   style={
@@ -473,10 +473,10 @@ export function AdExplorerModule({
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-2 border border-border text-white text-xs font-sans focus:outline-none focus:border-accent cursor-pointer"
+                className="w-full h-11 px-3 rounded-xl bg-surface-2 border border-border text-text text-xs font-sans focus:outline-none focus:border-accent cursor-pointer"
               >
                 {availableCategories.map((cat) => (
-                  <option key={cat.id} value={cat.id} className="bg-surface text-white">
+                  <option key={cat.id} value={cat.id} className="bg-surface text-text">
                     {cat.label}
                   </option>
                 ))}
@@ -491,10 +491,10 @@ export function AdExplorerModule({
               <select
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-2 border border-border text-white text-xs font-sans focus:outline-none focus:border-accent cursor-pointer"
+                className="w-full h-11 px-3 rounded-xl bg-surface-2 border border-border text-text text-xs font-sans focus:outline-none focus:border-accent cursor-pointer"
               >
                 {AD_COUNTRIES.map((c) => (
-                  <option key={c.id} value={c.id} className="bg-surface text-white">
+                  <option key={c.id} value={c.id} className="bg-surface text-text">
                     {c.label}
                   </option>
                 ))}
@@ -509,10 +509,10 @@ export function AdExplorerModule({
               <select
                 value={format}
                 onChange={(e) => setFormat(e.target.value as any)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-2 border border-border text-white text-xs font-sans focus:outline-none focus:border-accent cursor-pointer"
+                className="w-full h-11 px-3 rounded-xl bg-surface-2 border border-border text-text text-xs font-sans focus:outline-none focus:border-accent cursor-pointer"
               >
                 {CREATIVE_FORMATS.map((f) => (
-                  <option key={f.id} value={f.id} className="bg-surface text-white">
+                  <option key={f.id} value={f.id} className="bg-surface text-text">
                     {f.label}
                   </option>
                 ))}
@@ -527,11 +527,11 @@ export function AdExplorerModule({
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value as any)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-2 border border-border text-white text-xs font-sans focus:outline-none focus:border-accent cursor-pointer"
+                className="w-full h-11 px-3 rounded-xl bg-surface-2 border border-border text-text text-xs font-sans focus:outline-none focus:border-accent cursor-pointer"
               >
-                <option value="reviewed" className="bg-surface text-white">Recently Reviewed</option>
-                <option value="added" className="bg-surface text-white">Recently Added</option>
-                <option value="featured" className="bg-surface text-white">Editor&apos;s Picks First</option>
+                <option value="reviewed" className="bg-surface text-text">Recently Reviewed</option>
+                <option value="added" className="bg-surface text-text">Recently Added</option>
+                <option value="featured" className="bg-surface text-text">Editor&apos;s Picks First</option>
               </select>
             </div>
           </div>
@@ -558,7 +558,7 @@ export function AdExplorerModule({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Film className="w-5 h-5 text-accent" />
-          <h3 className="text-xl sm:text-2xl font-bold text-white font-sans">
+          <h3 className="text-xl sm:text-2xl font-bold text-text font-serif">
             Curated Listings{" "}
             <span className="text-text-muted font-normal text-sm sm:text-base font-mono">
               ({totalCount})
@@ -596,7 +596,7 @@ export function AdExplorerModule({
         /* Error State with Retry */
         <div className="p-12 rounded-3xl bg-surface/60 border border-danger/30 text-center space-y-4 max-w-md mx-auto">
           <AlertCircle className="w-10 h-10 text-danger mx-auto" />
-          <h4 className="text-lg font-bold text-white">Unable to Load Ads</h4>
+          <h4 className="text-lg font-bold text-text font-serif">Unable to Load Ads</h4>
           <p className="text-xs text-text-muted">{errorMsg}</p>
           <Button variant="secondary" size="md" onClick={() => fetchAds(debouncedQuery)}>
             Retry Search
@@ -612,7 +612,7 @@ export function AdExplorerModule({
             </div>
 
             <div className="space-y-2">
-              <h4 className="text-xl sm:text-2xl font-bold text-white font-sans">
+              <h4 className="text-xl sm:text-2xl font-bold text-text font-serif">
                 {cleanQuery ? (
                   <>
                     No curated ads found for{" "}
@@ -634,12 +634,12 @@ export function AdExplorerModule({
             {cleanQuery && (
               <div className="inline-flex items-center gap-3 p-2 pl-4 rounded-xl bg-surface-2 border border-border text-xs text-text-muted font-mono">
                 <span>
-                  Query: <strong className="text-white">&ldquo;{cleanQuery}&rdquo;</strong>
+                  Query: <strong className="text-text">&ldquo;{cleanQuery}&rdquo;</strong>
                 </span>
                 <button
                   type="button"
                   onClick={() => handleCopyTerm(cleanQuery)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-3 text-white hover:bg-surface-3/80 border border-border transition-all text-xs font-sans font-medium"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-3 text-text hover:bg-surface-2 border border-border transition-all text-xs font-sans font-medium"
                   title="Copy search term to clipboard"
                 >
                   {copiedTerm ? (
@@ -720,7 +720,7 @@ export function AdExplorerModule({
                       </div>
 
                       <div>
-                        <h5 className="text-sm font-bold text-white">{lib.name}</h5>
+                        <h5 className="text-sm font-bold text-text font-serif text-base">{lib.name}</h5>
                         <p className="text-xs text-text-muted mt-1 leading-relaxed">
                           {lib.description}
                         </p>
@@ -732,7 +732,7 @@ export function AdExplorerModule({
                         <button
                           type="button"
                           onClick={() => handleCopyTerm(cleanQuery)}
-                          className="text-[11px] font-mono text-text-muted hover:text-white flex items-center gap-1"
+                          className="text-[11px] font-mono text-text-muted hover:text-text flex items-center gap-1"
                         >
                           <Copy className="w-3 h-3" />
                           <span>{copiedTerm ? "Copied" : "Copy term"}</span>
@@ -747,7 +747,7 @@ export function AdExplorerModule({
                         href={lib.directUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-2 hover:bg-surface-3 text-white text-xs font-medium border border-border transition-colors ml-auto"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-2 hover:bg-surface-3 text-text text-xs font-medium border border-border transition-colors ml-auto"
                       >
                         <span>Open Library</span>
                         <ExternalLink className="w-3.5 h-3.5 text-accent" />
@@ -816,7 +816,7 @@ export function AdExplorerModule({
 
       {/* Transparency Disclaimer Notice */}
       <div className="p-4 rounded-2xl bg-surface-2/40 border border-border text-xs text-text-muted space-y-1">
-        <div className="flex items-center gap-1.5 font-semibold text-white/90">
+        <div className="flex items-center gap-1.5 font-semibold text-text">
           <Info className="w-3.5 h-3.5 text-accent" />
           <span>Curated Intelligence Disclaimer</span>
         </div>

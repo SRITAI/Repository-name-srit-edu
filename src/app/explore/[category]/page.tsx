@@ -87,7 +87,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
         <div>
           <Link
             href="/explore"
-            className="inline-flex items-center gap-1.5 text-xs font-mono text-text-muted hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-mono text-text-muted hover:text-text transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>BACK TO ALL CATEGORIES</span>
@@ -95,11 +95,11 @@ export default function CategoryDetailPage({ params }: PageProps) {
         </div>
 
         {/* Category Hero Banner with Unique Accent Glow */}
-        <div className="relative p-8 sm:p-14 rounded-[36px] bg-surface/80 border border-border backdrop-blur-xl overflow-hidden shadow-2xl">
+        <div className="relative p-8 sm:p-14 rounded-[36px] bg-surface border border-border shadow-paper-lg overflow-hidden">
           {/* Ambient Glow using Category Accent */}
           <div
-            className="absolute -top-32 -right-32 w-96 h-96 rounded-full blur-[120px] pointer-events-none opacity-25"
-            style={{ backgroundColor: category.accent_color || "#D7FF3D" }}
+            className="absolute -top-32 -right-32 w-96 h-96 rounded-full blur-[120px] pointer-events-none opacity-20"
+            style={{ backgroundColor: category.accent_color || "#C86446" }}
           />
 
           <div className="relative z-10 max-w-2xl space-y-4">
@@ -114,7 +114,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
               )}
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white font-sans">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-text font-serif">
               {category.name}{" "}
               <span className="font-serif italic text-accent font-normal block sm:inline">
                 Intelligence.

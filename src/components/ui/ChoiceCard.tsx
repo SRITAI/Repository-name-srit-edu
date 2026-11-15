@@ -41,7 +41,7 @@ export function ChoiceCard({
         "group relative p-5 rounded-2xl border text-left cursor-pointer transition-all duration-300 select-none overflow-hidden flex flex-col justify-between",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
         selected
-          ? "bg-surface-3/90 border-accent/60 shadow-[0_0_0_1px_rgba(215,255,61,0.4),0_12px_36px_rgba(215,255,61,0.14)] -translate-y-1"
+          ? "bg-surface-3/90 border-accent/60 shadow-[0_4px_20px_rgba(200,100,70,0.18)] -translate-y-1"
           : "bg-surface border-border hover:border-border-strong hover:bg-surface-2 hover:-translate-y-0.5",
         className
       )}

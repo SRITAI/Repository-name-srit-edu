@@ -76,14 +76,14 @@ export default function Navbar({ activeRoute = "home", onOpenSearch }: NavbarPro
             "flex items-center justify-between px-4 sm:px-6 py-2.5 rounded-full transition-all duration-300",
             "bg-surface/70 backdrop-blur-2xl border border-border",
             isScrolled
-              ? "shadow-[0_16px_40px_-12px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.06)] bg-surface/90"
-              : "shadow-[0_8px_24px_-8px_rgba(0,0,0,0.5)]"
+              ? "shadow-[0_12px_32px_-8px_rgba(48,46,41,0.08),0_0_0_1px_rgba(48,46,41,0.06)] bg-surface/95"
+              : "shadow-[0_4px_16px_-4px_rgba(48,46,41,0.05)]"
           )}
         >
           {/* Brand Wordmark with signature degree */}
           <Link
             href="/"
-            className="flex items-center gap-1 text-base sm:text-lg font-bold font-sans tracking-tight text-text hover:text-white transition-colors"
+            className="flex items-center gap-1 text-base sm:text-lg font-bold font-sans tracking-tight text-text hover:text-accent transition-colors"
           >
             <span>infimindss</span>
             <span className="text-accent font-serif text-sm -mt-2">°</span>
@@ -151,7 +151,7 @@ export default function Navbar({ activeRoute = "home", onOpenSearch }: NavbarPro
             <button
               type="button"
               onClick={() => setMobileDrawerOpen(true)}
-              className="md:hidden w-10 h-10 rounded-full bg-surface-2 border border-border flex items-center justify-center text-text hover:text-white"
+              className="md:hidden w-10 h-10 rounded-full bg-surface-2 border border-border flex items-center justify-center text-text hover:text-accent transition-colors"
               aria-label="Open navigation drawer"
             >
               <Menu size={18} />
@@ -163,7 +163,7 @@ export default function Navbar({ activeRoute = "home", onOpenSearch }: NavbarPro
       {/* Mobile Drawer (Full screen slide-over) */}
       {mobileDrawerOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-2xl animate-in fade-in duration-200 md:hidden flex flex-col justify-between p-4 sm:p-6 overflow-y-auto"
+          className="fixed inset-0 z-50 bg-[#F6F1E7]/98 backdrop-blur-2xl animate-in fade-in duration-200 md:hidden flex flex-col justify-between p-4 sm:p-6 overflow-y-auto text-text"
           onClick={() => setMobileDrawerOpen(false)}
         >
           <div className="space-y-5" onClick={(e) => e.stopPropagation()}>
@@ -174,7 +174,7 @@ export default function Navbar({ activeRoute = "home", onOpenSearch }: NavbarPro
               <button
                 type="button"
                 onClick={() => setMobileDrawerOpen(false)}
-                className="w-10 h-10 rounded-full bg-surface-2 border border-border flex items-center justify-center text-text hover:text-white transition-colors"
+                className="w-10 h-10 rounded-full bg-surface-2 border border-border flex items-center justify-center text-text hover:text-accent transition-colors"
                 aria-label="Close menu"
               >
                 <X size={18} />

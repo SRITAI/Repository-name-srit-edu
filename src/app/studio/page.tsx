@@ -493,7 +493,7 @@ function StudioWizardContent() {
           particleCount: 80,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ["#D7FF3D", "#8B6CFF", "#FFFFFF"],
+          colors: ["#C86446", "#5B7065", "#E2C879"],
         });
       } catch {}
     } catch (err: any) {
@@ -551,12 +551,12 @@ function StudioWizardContent() {
         {/* Success View */}
         {submittedProjectId ? (
           <div className="max-w-3xl mx-auto bg-surface/80 border border-border backdrop-blur-xl rounded-[32px] p-8 sm:p-14 text-center space-y-8 shadow-2xl relative overflow-hidden">
-            <div className="w-20 h-20 rounded-full bg-accent/20 border-2 border-accent text-accent flex items-center justify-center mx-auto shadow-[0_0_40px_rgba(215,255,61,0.3)]">
+            <div className="w-20 h-20 rounded-full bg-accent/20 border-2 border-accent text-accent flex items-center justify-center mx-auto shadow-paper-lg">
               <Check className="w-10 h-10 stroke-[2.5]" />
             </div>
 
             <div className="space-y-3">
-              <h2 className="text-3xl sm:text-4xl font-bold text-white font-sans">
+              <h2 className="text-3xl sm:text-4xl font-bold text-text font-serif">
                 We got your brief <span className="text-accent font-serif italic">✦</span>
               </h2>
               <p className="text-text-muted max-w-lg mx-auto text-sm sm:text-base">

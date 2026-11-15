@@ -92,7 +92,7 @@ export function VideoTile({
       onClick={onOpenModal}
       className={cn(
         "group relative rounded-[20px] overflow-hidden bg-surface-2 border border-border cursor-pointer select-none",
-        "transition-all duration-300 hover:scale-[1.02] hover:border-accent/50 hover:shadow-[0_0_30px_rgba(215,255,61,0.15)]",
+        "transition-all duration-300 hover:scale-[1.02] hover:border-accent/50 hover:shadow-[0_0_30px_rgba(48,46,41,0.12)]",
         ratioClass,
         className
       )}

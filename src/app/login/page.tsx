@@ -225,41 +225,41 @@ function LoginContent() {
   const isSupabaseConfigured = Boolean(getSupabaseBrowserClient());
 
   return (
-    <main className="min-h-screen py-12 px-4 sm:px-6 flex items-center justify-center font-sans antialiased relative">
+    <main className="min-h-screen bg-[#F6F1E7] text-[#302E29] py-12 px-4 sm:px-6 flex items-center justify-center font-sans antialiased relative">
       <div className="w-full max-w-md">
         {/* Header Branding */}
         <div className="text-center mb-8">
           <Link
             href="/"
-            className="inline-block text-2xl font-bold tracking-tight text-white mb-3 hover:text-white/80 transition-colors"
+            className="inline-block text-2xl font-bold tracking-tight text-[#302E29] mb-3 hover:text-[#C86446] transition-colors"
           >
             infimindss<span className="text-xs align-super opacity-70">°</span>
           </Link>
 
           {isAdminContext ? (
             <>
-              <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-lime-300 bg-lime-950/60 border border-lime-500/30 px-3.5 py-1 rounded-full w-fit mx-auto mb-3 shadow-[0_0_12px_rgba(215,255,61,0.15)]">
-                <ShieldCheck className="w-3.5 h-3.5 text-lime-400" />
+              <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-[#C86446] bg-[#C86446]/10 border border-[#C86446]/25 px-3.5 py-1 rounded-full w-fit mx-auto mb-3 shadow-paper-sm">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#C86446]" />
                 <span>Admin Portal · Ad Explorer</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-serif text-white leading-tight">
-                Admin <span className="italic font-normal text-neutral-200">sign in</span>
+              <h1 className="text-3xl sm:text-4xl font-serif text-[#302E29] leading-tight">
+                Admin <span className="italic font-normal text-[#716C63]">sign in</span>
               </h1>
-              <p className="text-xs text-neutral-400 mt-2 max-w-xs mx-auto leading-relaxed">
+              <p className="text-xs text-[#716C63] mt-2 max-w-xs mx-auto leading-relaxed">
                 Sign in with an approved administrator account to manage Ad Explorer listings.
               </p>
             </>
           ) : (
             <>
-              <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-300 bg-emerald-950/60 border border-emerald-500/30 px-3.5 py-1 rounded-full w-fit mx-auto mb-3">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-[#5B7065] bg-[#5B7065]/10 border border-[#5B7065]/25 px-3.5 py-1 rounded-full w-fit mx-auto mb-3">
+                <Sparkles className="w-3.5 h-3.5 text-[#5B7065]" />
                 <span>Human + AI Studio</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-serif text-white leading-tight">
+              <h1 className="text-3xl sm:text-4xl font-serif text-[#302E29] leading-tight">
                 Welcome back to <br />
-                <span className="italic font-normal text-neutral-200">your creator chamber.</span>
+                <span className="italic font-normal text-[#716C63]">your creator chamber.</span>
               </h1>
-              <p className="text-xs text-neutral-400 mt-2 max-w-xs mx-auto leading-relaxed">
+              <p className="text-xs text-[#716C63] mt-2 max-w-xs mx-auto leading-relaxed">
                 Sign in to track your brief, review edits, or submit new campaigns.
               </p>
             </>
@@ -268,19 +268,19 @@ function LoginContent() {
 
         {/* Local Configuration Notice (Environment Variable Guidance Only) */}
         {!isSupabaseConfigured && isAdminContext && (
-          <div className="mb-4 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-[11px] text-amber-200 flex items-start gap-2 leading-relaxed">
-            <AlertCircle className="w-4 h-4 flex-shrink-0 text-amber-400 mt-0.5" />
+          <div className="mb-4 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-[11px] text-amber-900 flex items-start gap-2 leading-relaxed">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 text-amber-700 mt-0.5" />
             <div>
-              <span className="font-semibold text-amber-300 block">Configuration Notice:</span>
-              Supabase environment variables (<code className="font-mono text-white">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
-              <code className="font-mono text-white">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>) are not configured in this environment.
-              Set them in your local <code className="font-mono text-white">.env.local</code> to authenticate admin accounts.
+              <span className="font-semibold text-amber-900 block">Configuration Notice:</span>
+              Supabase environment variables (<code className="font-mono text-[#302E29]">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
+              <code className="font-mono text-[#302E29]">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>) are not configured in this environment.
+              Set them in your local <code className="font-mono text-[#302E29]">.env.local</code> to authenticate admin accounts.
             </div>
           </div>
         )}
 
         {/* Cream Sign-In Panel */}
-        <div className="bg-[#FAF9F6] text-[#111111] rounded-3xl p-6 sm:p-8 shadow-2xl border border-black/[0.08]">
+        <div className="bg-[#FFFCF5] text-[#302E29] rounded-3xl p-6 sm:p-8 shadow-paper-lg border border-[rgba(48,46,41,0.12)]">
           {/* STATE 1: ACCESS DENIED (Authenticated but Non-Admin) */}
           {accessDeniedState.isDenied ? (
             <div className="space-y-5 text-center">

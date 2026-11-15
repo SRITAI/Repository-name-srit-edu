@@ -37,8 +37,8 @@ export function BentoTile({
       className={cn(
         "group relative rounded-3xl bg-surface border border-border overflow-hidden transition-all duration-300",
         "shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_16px_36px_-12px_rgba(0,0,0,0.6)]",
-        glow && "hover:border-accent/40 hover:shadow-[0_0_32px_rgba(215,255,61,0.12)]",
-        featured && "border-accent/50 shadow-[0_0_0_1px_rgba(215,255,61,0.3),0_20px_50px_rgba(215,255,61,0.1)]",
+        glow && "hover:border-accent/40 hover:shadow-[0_0_32px_rgba(200,100,70,0.12)]",
+        featured && "border-accent/50 shadow-[0_0_0_1px_rgba(200,100,70,0.3),0_20px_50px_rgba(200,100,70,0.1)]",
         className
       )}
       {...props}
@@ -50,7 +50,7 @@ export function BentoTile({
           className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
           style={{
             background:
-              "radial-gradient(500px circle at var(--mx, 0px) var(--my, 0px), rgba(215, 255, 61, 0.08), transparent 80%)",
+              "radial-gradient(500px circle at var(--mx, 0px) var(--my, 0px), rgba(200, 100, 70, 0.08), transparent 80%)",
           }}
         />
       )}

@@ -92,7 +92,7 @@ export function Select({
         className={cn(
           "w-full h-[52px] px-4 rounded-[14px] bg-surface-2 border text-left flex items-center justify-between transition-all duration-200 select-none",
           isOpen
-            ? "border-accent shadow-[0_0_0_1px_rgba(215,255,61,0.35),0_0_24px_rgba(215,255,61,0.12)]"
+            ? "border-accent shadow-[0_0_0_1px_rgba(200,100,70,0.35),0_0_20px_rgba(200,100,70,0.12)]"
             : error
             ? "border-danger"
             : "border-border hover:border-border-strong",

@@ -29,7 +29,7 @@ export function Chip({
         "h-10 px-4 rounded-full text-xs font-sans font-medium select-none transition-all duration-200 inline-flex items-center gap-2",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
         selected
-          ? "bg-accent/15 text-accent border border-accent/40 font-semibold shadow-[0_0_16px_rgba(215,255,61,0.18)]"
+          ? "bg-accent/15 text-accent border border-accent/40 font-semibold shadow-paper-sm"
           : "bg-surface-2 text-text border border-border hover:border-border-strong hover:bg-surface-3",
         className
       )}

@@ -203,8 +203,8 @@ export function SafeVideoPlayer({
                 onClick={() => setActiveIndex(idx)}
                 className={`px-3 py-1 rounded-full text-xs font-mono flex items-center gap-1.5 transition-all flex-shrink-0 ${
                   isActive
-                    ? "bg-accent text-accent-ink font-bold shadow-md"
-                    : "bg-surface-2 text-text-muted hover:text-white hover:bg-surface-3 border border-border"
+                    ? "bg-accent text-white font-bold shadow-paper-sm"
+                    : "bg-surface-2 text-text-muted hover:text-text hover:bg-surface-3 border border-border"
                 }`}
               >
                 {getItemIcon(item.media_type)}
@@ -216,10 +216,10 @@ export function SafeVideoPlayer({
       )}
 
       {/* Main Playback / Preview Container */}
-      <div className="relative overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl">
+      <div className="relative overflow-hidden rounded-2xl bg-[#1C1B18] border border-[rgba(48,46,41,0.18)] shadow-paper-lg">
         {/* CASE 1: Hosted HTML5 Video Player */}
         {isHostedVideo && (
-          <div className={`relative w-full ${containerAspect} bg-black flex items-center justify-center overflow-hidden`}>
+          <div className={`relative w-full ${containerAspect} bg-[#141311] flex items-center justify-center overflow-hidden`}>
             {videoError ? (
               <div className="p-6 text-center space-y-3 max-w-md">
                 <div className="w-12 h-12 mx-auto rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
@@ -236,7 +236,7 @@ export function SafeVideoPlayer({
                     href={activeMediaUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-3.5 py-1.5 rounded-full bg-accent text-accent-ink text-xs font-bold hover:brightness-110 flex items-center gap-1.5 shadow"
+                    className="px-3.5 py-1.5 rounded-full bg-accent text-white text-xs font-bold hover:bg-[#b55539] flex items-center gap-1.5 shadow-paper"
                   >
                     <span>Open Direct Video Stream</span>
                     <ExternalLink className="w-3 h-3" />
@@ -422,7 +422,7 @@ export function SafeVideoPlayer({
             href={sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-white hover:text-accent transition-colors"
+            className="inline-flex items-center gap-1 text-text-muted hover:text-accent transition-colors"
           >
             <span>Original Source</span>
             <ExternalLink className="w-3 h-3" />

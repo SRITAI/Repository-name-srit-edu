@@ -62,7 +62,7 @@ export function Dropzone({
         className={cn(
           "group relative flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-dashed cursor-pointer transition-all duration-300 select-none overflow-hidden",
           isDragging
-            ? "border-accent bg-accent/5 scale-[1.01] shadow-[0_0_32px_rgba(215,255,61,0.15)]"
+            ? "border-accent bg-accent/5 scale-[1.01] shadow-[0_0_24px_rgba(200,100,70,0.15)]"
             : "border-border bg-surface hover:border-border-strong hover:bg-surface-2"
         )}
       >
