@@ -22,6 +22,7 @@ import { MEDIA_ITEMS } from "@/lib/media";
 import { Badge } from "@/components/ui/Badge";
 import { Chip } from "@/components/ui/Chip";
 import { cn } from "@/lib/utils";
+import { PlatformIcon } from "@/components/ad-explorer/PlatformIcon";
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -353,8 +354,8 @@ export default function CommandPalette({
                             alt={item.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
-                          <div className="absolute top-1 left-1 p-0.5 rounded bg-black/60 text-white">
-                            <Instagram size={9} className="text-pink-400" />
+                          <div className="absolute top-1 left-1 p-0.5 rounded bg-black/60 text-white flex items-center justify-center">
+                            <PlatformIcon platform="instagram" size={10} />
                           </div>
                         </div>
 

@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { Play, Pause, Heart, Instagram, Sparkles, ExternalLink } from "lucide-react";
+import { Play, Pause, Heart, Sparkles, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "./Badge";
+import { PlatformIcon } from "@/components/ad-explorer/PlatformIcon";
 
 export interface VideoTileProps {
   id?: string;
@@ -126,8 +127,8 @@ export function VideoTile({
       {/* Top Bar Badges */}
       <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10 pointer-events-auto">
         <div className="flex items-center gap-1.5">
-          <span className="p-1.5 rounded-full bg-black/60 backdrop-blur-md text-white border border-white/10">
-            <Instagram size={13} className="text-pink-400" />
+          <span className="p-1.5 rounded-full bg-black/60 backdrop-blur-md text-white border border-white/10 flex items-center justify-center">
+            <PlatformIcon platform="instagram" size={13} />
           </span>
           {isSeed && <Badge variant="sample">Sample</Badge>}
         </div>

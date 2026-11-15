@@ -25,6 +25,7 @@ import AgeGateModal from "@/components/AgeGateModal";
 import CookieConsent from "@/components/CookieConsent";
 import Navbar from "@/components/Navbar";
 import { AdExplorerModule } from "@/components/ad-explorer/AdExplorerModule";
+import { PlatformIcon } from "@/components/ad-explorer/PlatformIcon";
 
 import {
   SEED_CATEGORIES,
@@ -920,8 +921,9 @@ export default function MindlyPage() {
         <section className="home-section" id="meta-strip">
           <div className="meta-strip-card">
             <div>
-              <span className="section-eyebrow" style={{ color: "#0081FB" }}>
-                Built for Meta Ads & Reels
+              <span className="section-eyebrow" style={{ color: "#0081FB", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <PlatformIcon platform="meta" size={16} />
+                Built for Meta Ads &amp; Reels
               </span>
               <h3 className="section-title" style={{ fontSize: "2rem", marginBottom: "8px" }}>
                 Every deliverable formatted for <em>maximum ROAS.</em>
@@ -934,8 +936,9 @@ export default function MindlyPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-video-cta"
-                style={{ fontSize: "0.85rem" }}
+                style={{ fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: "8px" }}
               >
+                <PlatformIcon platform="meta" size={14} />
                 <span>Browse live ads on Meta Ad Library</span>
                 <ArrowUpRight size={14} />
               </a>

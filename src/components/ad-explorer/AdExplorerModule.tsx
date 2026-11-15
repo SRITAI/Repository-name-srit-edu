@@ -324,9 +324,21 @@ export function AdExplorerModule({
     <div className="space-y-8">
       {/* Search Header Banner */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Badge variant="lime">CROSS-PLATFORM INTELLIGENCE</Badge>
-          <Badge variant="outline">Meta · Google · LinkedIn · TikTok · X · Amazon</Badge>
+          <div className="inline-flex flex-wrap items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono border border-border bg-surface-2 text-text-muted">
+            <span className="inline-flex items-center gap-1"><PlatformIcon platform="meta" size={12} /> Meta</span>
+            <span className="opacity-40">·</span>
+            <span className="inline-flex items-center gap-1"><PlatformIcon platform="google" size={12} /> Google</span>
+            <span className="opacity-40">·</span>
+            <span className="inline-flex items-center gap-1"><PlatformIcon platform="linkedin" size={12} /> LinkedIn</span>
+            <span className="opacity-40">·</span>
+            <span className="inline-flex items-center gap-1"><PlatformIcon platform="tiktok" size={12} /> TikTok</span>
+            <span className="opacity-40">·</span>
+            <span className="inline-flex items-center gap-1"><PlatformIcon platform="x" size={12} /> X</span>
+            <span className="opacity-40">·</span>
+            <span className="inline-flex items-center gap-1"><PlatformIcon platform="amazon" size={12} /> Amazon</span>
+          </div>
         </div>
 
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white font-sans">
