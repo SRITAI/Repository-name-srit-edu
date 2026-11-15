@@ -2132,3 +2132,62 @@ body {
   color: #A1A1AA;
   text-align: center;
 }
+
+/* ==========================================================================
+   GOOGLE FLOW-INSPIRED CINEMATIC VIDEO DRIFT ANIMATIONS
+   Subtle continuous horizontal drift across staggered rows in cream art-studio mats
+   ========================================================================== */
+
+@keyframes flowDriftLeft {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes flowDriftRight {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.flow-drift-left {
+  animation: flowDriftLeft 52s linear infinite;
+  will-change: transform;
+}
+
+.flow-drift-right {
+  animation: flowDriftRight 62s linear infinite;
+  will-change: transform;
+}
+
+.flow-track:hover {
+  animation-play-state: paused;
+}
+
+.animation-paused {
+  animation-play-state: paused !important;
+}
+
+@media (max-width: 768px) {
+  .flow-drift-left {
+    animation-duration: 40s;
+  }
+  .flow-drift-right {
+    animation-duration: 48s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-drift-left,
+  .flow-drift-right {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+

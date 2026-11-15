@@ -23,7 +23,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   let isLocalPreview = false;
 
   if (!supabase) {
-    // Local dev mode without Supabase environment variables configured
+    // Strictly deny admin access if Supabase is unavailable in production
+    if (process.env.NODE_ENV === "production") {
+      redirect("/login?next=/admin");
+    }
     isLocalPreview = true;
   } else {
     const {
@@ -163,10 +166,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </Link>
           <Link
             href="/admin/ad-explorer"
-            className="px-3.5 py-1.5 rounded-lg bg-[#C86446]/15 text-[#C86446] font-semibold border border-[#C86446]/30 transition-colors flex items-center gap-1.5"
+            className="px-3.5 py-1.5 rounded-lg text-[#716C63] hover:text-[#302E29] hover:bg-[#EEE5D6] transition-colors flex items-center gap-1.5"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#C86446]" />
             <span>Ad Explorer</span>
+          </Link>
+          <Link
+            href="/admin/videos"
+            className="px-3.5 py-1.5 rounded-lg text-[#716C63] hover:text-[#302E29] hover:bg-[#EEE5D6] transition-colors flex items-center gap-1.5 font-semibold"
+          >
+            <Film className="w-3.5 h-3.5 text-[#C86446]" />
+            <span>Video Library</span>
           </Link>
           <Link
             href="/admin/projects"

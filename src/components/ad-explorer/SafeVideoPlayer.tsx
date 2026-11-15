@@ -216,37 +216,43 @@ export function SafeVideoPlayer({
       )}
 
       {/* Main Playback / Preview Container */}
-      <div className="relative overflow-hidden rounded-2xl bg-[#1C1B18] border border-[rgba(48,46,41,0.18)] shadow-paper-lg">
+      <div className="relative overflow-hidden rounded-2xl bg-[#FFFCF5] border border-[#302E29]/15 shadow-paper-lg">
         {/* CASE 1: Hosted HTML5 Video Player */}
         {isHostedVideo && (
-          <div className={`relative w-full ${containerAspect} bg-[#141311] flex items-center justify-center overflow-hidden`}>
+          <div className={`relative w-full ${containerAspect} bg-[#F6F1E7] flex items-center justify-center overflow-hidden`}>
             {videoError ? (
-              <div className="p-6 text-center space-y-3 max-w-md">
-                <div className="w-12 h-12 mx-auto rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+              <div className="p-6 text-center space-y-3 max-w-md bg-[#FFFCF5] m-4 rounded-2xl border border-[#302E29]/10 shadow-paper">
+                <div className="w-12 h-12 mx-auto rounded-full bg-[#C86446]/10 border border-[#C86446]/20 flex items-center justify-center text-[#C86446]">
                   <AlertCircle className="w-6 h-6" />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="text-sm font-semibold text-white">Video Playback Notice</h4>
-                  <p className="text-xs text-text-muted">
+                  <h4 className="text-sm font-serif font-bold text-[#302E29]">Video Playback Notice</h4>
+                  <p className="text-xs text-[#716C63] leading-relaxed">
                     {videoError}
+                  </p>
+                  <p className="text-[11px] text-[#716C63]/80 font-mono">
+                    Official advertiser source is available via platform transparency link.
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
                   <a
-                    href={activeMediaUrl}
+                    href={sourceUrl || activeMediaUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-3.5 py-1.5 rounded-full bg-accent text-white text-xs font-bold hover:bg-[#b55539] flex items-center gap-1.5 shadow-paper"
+                    className="px-4 py-2 rounded-full bg-[#C86446] text-white text-xs font-semibold hover:bg-[#B55539] flex items-center gap-1.5 shadow-paper transition-all"
                   >
-                    <span>Open Direct Video Stream</span>
-                    <ExternalLink className="w-3 h-3" />
+                    <span>View on {platform.toUpperCase()} Transparency</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                   <button
                     type="button"
-                    onClick={() => setVideoError(null)}
-                    className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-mono flex items-center gap-1 transition-colors"
+                    onClick={() => {
+                      setVideoError(null);
+                      setIsVideoBuffering(false);
+                    }}
+                    className="px-3.5 py-2 rounded-full bg-[#EEE5D6] hover:bg-[#E2D7C4] text-[#302E29] text-xs font-mono flex items-center gap-1 transition-colors"
                   >
-                    <RotateCcw className="w-3 h-3" />
+                    <RotateCcw className="w-3.5 h-3.5" />
                     <span>Retry</span>
                   </button>
                 </div>
@@ -259,30 +265,30 @@ export function SafeVideoPlayer({
                   controls
                   playsInline
                   preload="metadata"
-                  poster={activeThumbnail}
+                  poster={activeThumbnail || undefined}
                   aria-label={`${brandName} - ${title} ad video`}
                   onWaiting={() => setIsVideoBuffering(true)}
                   onPlaying={() => setIsVideoBuffering(false)}
                   onCanPlay={() => setIsVideoBuffering(false)}
                   onError={(e) => {
                     const err = e.currentTarget.error;
-                    let msg = "The browser cannot stream this video file.";
+                    let msg = "The browser cannot stream this video file directly.";
                     if (err?.code === 4) {
-                      msg = "Video format not supported or media file could not be loaded.";
+                      msg = "Video format not supported or media stream is restricted by publisher policy.";
                     } else if (err?.code === 2) {
                       msg = "Network interruption prevented video playback.";
                     }
                     setVideoError(msg);
                   }}
-                  className="w-full h-full object-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                  className="w-full h-full object-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C86446] bg-black"
                 >
                   Your browser does not support HTML5 video playback. Please view the original source.
                 </video>
 
                 {isVideoBuffering && (
-                  <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-md border border-white/15 text-[10px] font-mono text-accent flex items-center gap-1.5 pointer-events-none">
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    <span>Buffering...</span>
+                  <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-[#FFFCF5]/90 backdrop-blur-md border border-[#302E29]/15 text-[11px] font-mono text-[#C86446] flex items-center gap-1.5 shadow-paper-sm">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C86446]" />
+                    <span>Buffering…</span>
                   </div>
                 )}
               </>

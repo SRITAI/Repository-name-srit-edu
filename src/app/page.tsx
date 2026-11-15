@@ -26,6 +26,7 @@ import CookieConsent from "@/components/CookieConsent";
 import Navbar from "@/components/Navbar";
 import { AdExplorerModule } from "@/components/ad-explorer/AdExplorerModule";
 import { PlatformIcon } from "@/components/ad-explorer/PlatformIcon";
+import { HomepageFlowGallery } from "@/components/home/HomepageFlowGallery";
 
 import {
   SEED_CATEGORIES,
@@ -660,6 +661,14 @@ export default function MindlyPage() {
             </div>
           </div>
         </main>
+
+        {/* ====================================================================
+            FEATURED: Cinematic Flow Video Collage (Google Flow-Inspired)
+            Staggered drifting rows of real human creator footage in cream mats
+            ==================================================================== */}
+        <section className="relative w-full z-10 -mt-6 sm:-mt-8 mb-4">
+          <HomepageFlowGallery />
+        </section>
 
         {/* ====================================================================
             FEATURED: Cross-Platform Ad Explorer Module

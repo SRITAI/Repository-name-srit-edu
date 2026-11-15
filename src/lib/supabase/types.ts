@@ -245,3 +245,26 @@ export interface AdSearchResult {
   items: AdListing[];
   total: number;
 }
+
+export type VideoPlacement = 'hero_drift_top' | 'hero_drift_bottom' | 'trending_rail' | 'curated_feature';
+export type VideoStatus = 'draft' | 'published' | 'archived';
+
+export interface HomepageVideo {
+  id: string;
+  title: string;
+  caption?: string | null;
+  alt_text?: string | null;
+  category?: string | null;
+  video_url: string;
+  storage_path?: string | null;
+  poster_url?: string | null;
+  placement: VideoPlacement;
+  aspect_ratio: '9:16' | '16:9';
+  trim_start_seconds?: number | null;
+  trim_end_seconds?: number | null;
+  display_order: number;
+  status: VideoStatus;
+  created_at: string;
+  updated_at: string;
+}
+
